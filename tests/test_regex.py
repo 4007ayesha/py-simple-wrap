@@ -3,6 +3,7 @@ import pytest
 from py_simple_package.src.py_simple import (
     extract_hashtag_names as public_extract_hashtag_names,
     extract_hex_colors as public_extract_hex_colors,
+    extract_phone_numbers as public_extract_phone_numbers,
 )
 from py_simple_package.src.py_simple.easy_regex import (
     extract_emails,
@@ -13,6 +14,7 @@ from py_simple_package.src.py_simple.easy_regex import (
     extract_mentions,
     extract_number_sequences,
     extract_numbers,
+    extract_phone_numbers,
     extract_urls,
     clean_extra_whitespace,
 )
@@ -187,3 +189,61 @@ def test_public_export():
 
 def test_existing_regex_hashtags_keep_hash_symbols():
     assert extract_hashtags("#Python #coding") == ["#Python", "#coding"]
+
+
+# phone number test
+@pytest.mark.parametrize(
+    "input_text, expected",
+    [
+        (
+            "Call us at 555-123-4567 or (555) 987-6543 today.",
+            ["555-123-4567", "(555) 987-6543"],
+        ),
+        (
+            "Contact +1-555-234-5678 or +1 (555) 345-6789 for help.",
+            ["+1-555-234-5678", "+1 (555) 345-6789"],
+        ),
+        (
+            "Dot format: 555.456.7890, space format: 555 456 7890.",
+            ["555.456.7890", "555 456 7890"],
+        ),
+        (
+            "Plain ten digits: 5551234567.",
+            ["5551234567"],
+        ),
+        (
+            "In parentheses: ((555) 123-4567) or call ((555) 987-6543).",
+            ["(555) 123-4567", "(555) 987-6543"],
+        ),
+        (
+            "Country code without symbol: 1-555-123-4567 and 1 (555) 123-4567.",
+            ["1-555-123-4567", "1 (555) 123-4567"],
+        ),
+        (
+            "No phone numbers in this sentence.",
+            [],
+        ),
+        (
+            "",
+            [],
+        ),
+        (
+            "Invalid: 12345, 123-45-6789, 123456789012, abc555-123-4567, 555-123-4567xyz.",
+            [],
+        ),
+        (
+            "Malformed partials: (555 123-4567, 555-123-4567-999, 999-555-123-4567.",
+            [],
+        ),
+        (
+            "Malformed formats: 555-123-45678, (555) 123-4567-89, 555) 123-4567, 555.123.4567.890.",
+            [],
+        ),
+    ],
+)
+def test_is_phone_number_extracted(input_text, expected):
+    assert extract_phone_numbers(input_text) == expected
+
+
+def test_extract_phone_numbers_is_available_from_public_api():
+    assert public_extract_phone_numbers is extract_phone_numbers
