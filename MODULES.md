@@ -20,6 +20,7 @@
 | 🗄️ Easy SQL         | open a SQLite connection and run queries/writes without the boilerplate              |         [Docs](https://sara-czasak.github.io/py-simple-wrap/docs/reference/easy_sql/) ·  [Tutorial](https://sara-czasak.github.io/py-simple-wrap/docs/tutorial/easy_sql/)          |
 | 🗜️ Easy Archive     | zip and unzip files/folders without the `zipfile` boilerplate                        |      [Docs](https://sara-czasak.github.io/py-simple-wrap/docs/reference/easy_archive/) · [Tutorial](https://sara-czasak.github.io/py-simple-wrap/docs/tutorial/easy_archive/)      |
 | 🔤 Easy Base64      | encode and decode text as Base64 without the bytes boilerplate                       |      [Docs](https://sara-czasak.github.io/py-simple-wrap/docs/reference/easy_base64/) · [Tutorial](https://sara-czasak.github.io/py-simple-wrap/docs/tutorial/easy_base64/)        |
+| 📦 Easy Bytes       | readable file sizes without dividing by 1024 yourself                                |       [Docs](https://sara-czasak.github.io/py-simple-wrap/docs/reference/easy_bytes/) · [Tutorial](https://sara-czasak.github.io/py-simple-wrap/docs/tutorial/easy_bytes/)        |
 | ⚙️ Easy Config       | config file templates with guiding comments, so you don't have to look up the syntax |       [Docs](https://sara-czasak.github.io/py-simple-wrap/docs/reference/easy_config/) · [Tutorial](https://sara-czasak.github.io/py-simple-wrap/docs/tutorial/easy_config/)       |
 
 ## Text & validation
