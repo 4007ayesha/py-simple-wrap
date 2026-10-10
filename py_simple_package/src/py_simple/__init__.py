@@ -272,6 +272,7 @@ from .easy_sql import (
     EasySqlError,
     conditional_run_select,
     delete_all_from_table,
+    list_tables,
     open_db,
     run_delete,
     run_insert,
