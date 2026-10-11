@@ -80,6 +80,7 @@ from .easy_converter import (
 )
 from .easy_csv import (
     count_csv_rows,
+    drop_empty_csv_rows,
     filter_csv_rows,
     get_csv_columns,
     read_csv_column,
@@ -204,12 +205,12 @@ from .easy_lists import (
 )
 from .easy_logging import (
     clear_log_file,
-    count_log_levels,
     find_log_lines,
     log_function,
     log_step,
     log_to_file,
     read_recent_log_lines,
+    count_log_levels,
 )
 from .easy_math import (
     calculate_simple_interest,
