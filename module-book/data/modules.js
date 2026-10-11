@@ -218,6 +218,23 @@ window.BOOK_DATA = {
       ]
     },
     {
+      id: "easy_hash",
+      name: "Easy Hash",
+      icon: "#️⃣",
+      category: "files-data",
+      summary: "checksums for text and files without the hashlib boilerplate",
+      useCases: [
+        "Fingerprint a class note so you can tell if it changed",
+        "Checksum a downloaded file before you open it",
+        "Compare a sentence with a checksum someone sent you"
+      ],
+      links: [
+        { label: "Docs", icon: "📘", url: "https://sara-czasak.github.io/py-simple-wrap/docs/reference/easy_hash/" },
+        { label: "Tutorial", icon: "🎓", url: "https://sara-czasak.github.io/py-simple-wrap/docs/tutorial/easy_hash/" },
+        { label: "Source", icon: "🐍", url: "https://github.com/sara-czasak/py-simple-wrap/blob/main/py_simple_package/src/py_simple/easy_hash.py" }
+      ]
+    },
+    {
       id: "easy_config",
       name: "Easy Config",
       icon: "⚙️",
@@ -348,6 +365,23 @@ window.BOOK_DATA = {
         { label: "Docs", icon: "📘", url: "https://sara-czasak.github.io/py-simple-wrap/docs/reference/easy_math/" },
         { label: "Tutorial", icon: "🎓", url: "https://sara-czasak.github.io/py-simple-wrap/docs/tutorial/easy_math/" },
         { label: "Source", icon: "🐍", url: "https://github.com/sara-czasak/py-simple-wrap/blob/main/py_simple_package/src/py_simple/easy_math.py" }
+      ]
+    },
+    {
+      id: "easy_money",
+      name: "Easy Money",
+      icon: "💵",
+      category: "numbers-math",
+      summary: "prices, tax, and split bills without decimal surprises",
+      useCases: [
+        "Print a price with a dollar sign and two decimal places",
+        "Add sales tax before showing a total",
+        "Split a restaurant bill evenly between friends"
+      ],
+      links: [
+        { label: "Docs", icon: "📘", url: "https://sara-czasak.github.io/py-simple-wrap/docs/reference/easy_money/" },
+        { label: "Tutorial", icon: "🎓", url: "https://sara-czasak.github.io/py-simple-wrap/docs/tutorial/easy_money/" },
+        { label: "Source", icon: "🐍", url: "https://github.com/sara-czasak/py-simple-wrap/blob/main/py_simple_package/src/py_simple/easy_money.py" }
       ]
     },
     {

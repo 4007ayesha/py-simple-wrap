@@ -49,12 +49,14 @@ nav:
         - Easy File Manager: tutorial/easy_file_manager.md
         - Easy Game: tutorial/easy_game.md
         - Easy Generator: tutorial/easy_generator.md
+        - Easy Hash: tutorial/easy_hash.md
         - Easy Images: tutorial/easy_images.md
         - Easy Json:
             - Tutorial 1: tutorial/easy_json.md
             - Tutorial 2: tutorial/easy_json2.md
         - Easy Lists: tutorial/easy_lists.md
         - Easy Logging: tutorial/easy_logging.md
+        - Easy Money: tutorial/easy_money.md
         - Easy Math:
             - Tutorial 1: tutorial/easy_math.md
             - Tutorial 2: tutorial/easy_math2.md
@@ -101,11 +103,13 @@ nav:
       - Easy Flow: reference/easy_flow.md
       - Easy Game: reference/easy_game
       - Easy Generator: reference/easy_generator.md
+      - Easy Hash: reference/easy_hash.md
       - Easy Images: reference/easy_images.md
       - Easy Json: reference/easy_json.md
       - Easy Lists: reference/easy_lists.md
       - Easy Logging: reference/easy_logging.md
       - Easy Math: reference/easy_math.md
+      - Easy Money: reference/easy_money.md
       - Easy Numbers: reference/easy_numbers.md
       - Easy Random: reference/easy_random.md
       - Easy Regex: reference/easy_regex.md

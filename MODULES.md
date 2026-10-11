@@ -20,6 +20,7 @@
 | 🗄️ Easy SQL         | open a SQLite connection and run queries/writes without the boilerplate              |         [Docs](https://sara-czasak.github.io/py-simple-wrap/docs/reference/easy_sql/) ·  [Tutorial](https://sara-czasak.github.io/py-simple-wrap/docs/tutorial/easy_sql/)          |
 | 🗜️ Easy Archive     | zip and unzip files/folders without the `zipfile` boilerplate                        |      [Docs](https://sara-czasak.github.io/py-simple-wrap/docs/reference/easy_archive/) · [Tutorial](https://sara-czasak.github.io/py-simple-wrap/docs/tutorial/easy_archive/)      |
 | 🔤 Easy Base64      | encode and decode text as Base64 without the bytes boilerplate                       |      [Docs](https://sara-czasak.github.io/py-simple-wrap/docs/reference/easy_base64/) · [Tutorial](https://sara-czasak.github.io/py-simple-wrap/docs/tutorial/easy_base64/)        |
+| #️⃣ Easy Hash        | checksums for text and files without the `hashlib` boilerplate                       |        [Docs](https://sara-czasak.github.io/py-simple-wrap/docs/reference/easy_hash/) · [Tutorial](https://sara-czasak.github.io/py-simple-wrap/docs/tutorial/easy_hash/)          |
 | ⚙️ Easy Config       | config file templates with guiding comments, so you don't have to look up the syntax |       [Docs](https://sara-czasak.github.io/py-simple-wrap/docs/reference/easy_config/) · [Tutorial](https://sara-czasak.github.io/py-simple-wrap/docs/tutorial/easy_config/)       |
 
 ## Text & validation
@@ -39,6 +40,7 @@
 | 🧮 Easy Math      | math helpers without re-deriving the formulas          |      [Docs](https://sara-czasak.github.io/py-simple-wrap/docs/reference/easy_math/) · [Tutorial](https://sara-czasak.github.io/py-simple-wrap/docs/tutorial/easy_math/)      |
 | 📊 Easy Stats     | statistics operations without memorizing the formulas  |     [Docs](https://sara-czasak.github.io/py-simple-wrap/docs/reference/easy_stats/) · [Tutorial](https://sara-czasak.github.io/py-simple-wrap/docs/tutorial/easy_stats/)     |
 | 🔄 Easy Converter | unit conversions without memorizing formulas           | [Docs](https://sara-czasak.github.io/py-simple-wrap/docs/reference/easy_converter/) · [Tutorial](https://sara-czasak.github.io/py-simple-wrap/docs/tutorial/easy_converter/) |
+| 💵 Easy Money     | prices, tax, and split bills without decimal surprises |     [Docs](https://sara-czasak.github.io/py-simple-wrap/docs/reference/easy_money/) · [Tutorial](https://sara-czasak.github.io/py-simple-wrap/docs/tutorial/easy_money/)     |
 
 ## Time & control flow
 
