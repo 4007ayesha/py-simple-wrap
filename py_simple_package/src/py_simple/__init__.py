@@ -12,6 +12,7 @@ from .easy_ai import (
     translate_text,
     rewrite_text,
     analyze_sentiment,
+    chunk_text,
 )
 from .easy_base64 import (
     EasyBase64Error,
