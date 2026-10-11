@@ -6,13 +6,13 @@ from .easy_ai import (
     EasyAIError,
     ai_chat,
     ask_ai,
-    chunk_text,
     detect_language,
     get_model,
     summarize_text,
     translate_text,
     rewrite_text,
     analyze_sentiment,
+    chunk_text,
 )
 from .easy_base64 import (
     EasyBase64Error,
@@ -80,6 +80,7 @@ from .easy_converter import (
 )
 from .easy_csv import (
     count_csv_rows,
+    drop_empty_csv_rows,
     filter_csv_rows,
     get_csv_columns,
     read_csv_column,
@@ -162,7 +163,6 @@ from .easy_game import (
 )
 from .easy_generator import (
     generate_api_key,
-    generate_coupon_code,
     generate_otp,
     generate_password,
     generate_pin,
@@ -170,6 +170,13 @@ from .easy_generator import (
     generate_slug,
     generate_uuid,
     generate_passphrase,
+    generate_coupon_code,
+)
+from .easy_hash import (
+    EasyHashError,
+    hash_file,
+    hash_text,
+    hashes_match,
 )
 from .easy_images import (
     convert_image,
@@ -202,14 +209,20 @@ from .easy_lists import (
     sum_all,
     unique_items,
 )
+from .easy_money import (
+    EasyMoneyError,
+    add_tax,
+    format_money,
+    split_bill,
+)
 from .easy_logging import (
     clear_log_file,
-    count_log_levels,
     find_log_lines,
     log_function,
     log_step,
     log_to_file,
     read_recent_log_lines,
+    count_log_levels,
 )
 from .easy_math import (
     calculate_simple_interest,
@@ -320,6 +333,12 @@ from .easy_validator import (
     is_valid_url,
     is_valid_username,
     is_valid_zipcode,
+)
+from .easy_url import (
+    EasyUrlError,
+    add_query_param,
+    get_domain,
+    is_https,
 )
 from .easy_web import (
     count_links,
