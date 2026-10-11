@@ -210,6 +210,7 @@ from .easy_logging import (
     log_step,
     log_to_file,
     read_recent_log_lines,
+    count_log_levels,
 )
 from .easy_math import (
     calculate_simple_interest,
