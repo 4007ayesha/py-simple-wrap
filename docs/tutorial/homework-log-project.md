@@ -26,7 +26,7 @@ The weekday and date follow the day you run the script.
 ## What happened?
 
 1. `get_pretty_date()` returns today as words, such as
-   `Friday, October 10, 2026`, so you do not have to remember a
+   `Saturday, October 10, 2026`, so you do not have to remember a
    `strftime` pattern.
 2. `log_to_file()` creates `homework.log` if needed and appends the message
    as one line. Call it again with a different subject and the new line
