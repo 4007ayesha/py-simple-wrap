@@ -83,6 +83,12 @@ Every tile below is a real person who showed up for this project. 💛
         <sub><b>SpaceShaman</b></sub>
       </a>
     </td>
+    <td align="center" valign="top" width="8.6%">
+      <a href="https://github.com/Ymax27">
+        <img src="https://github.com/Ymax27.png" width="100px;" alt="Ymax27"/><br />
+        <sub><b>Ymax27</b></sub>
+      </a>
+    </td>
   </tr>
 </table>
 
@@ -404,6 +410,12 @@ Every tile below is a real person who showed up for this project. 💛
       <a href="https://github.com/mansi-singh4">
         <img src="https://github.com/mansi-singh4.png" width="100px;" alt="Mansi Singh"/><br />
         <sub><b>Mansi Singh</b></sub>
+      </a>
+    </td>
+    <td align="center" valign="top" width="8.6%">
+      <a href="https://github.com/Ymax27">
+        <img src="https://github.com/Ymax27.png" width="100px;" alt="Ymax27"/><br />
+        <sub><b>Ymax27</b></sub>
       </a>
     </td>
     <td align="center" valign="top" width="8.6%">
@@ -950,6 +962,12 @@ Every tile below is a real person who showed up for this project. 💛
         <sub><b>veligetisamanvi</b></sub>
       </a>
     </td>
+    <td align="center" valign="top" width="8.6%">
+      <a href="https://github.com/Ymax27">
+        <img src="https://github.com/Ymax27.png" width="100px;" alt="Ymax27"/><br />
+        <sub><b>Ymax27</b></sub>
+      </a>
+    </td>
   </tr>
 </table>
 
@@ -1042,6 +1060,12 @@ Every tile below is a real person who showed up for this project. 💛
       <a href="https://github.com/Onion0121">
         <img src="https://github.com/Onion0121.png" width="100px;" alt="Yassin Azzouzi"/><br />
         <sub><b>Yassin Azzouzi</b></sub>
+      </a>
+    </td>
+    <td align="center" valign="top" width="8.6%">
+      <a href="https://github.com/Ymax27">
+        <img src="https://github.com/Ymax27.png" width="100px;" alt="Ymax27"/><br />
+        <sub><b>Ymax27</b></sub>
       </a>
     </td>
   </tr>
