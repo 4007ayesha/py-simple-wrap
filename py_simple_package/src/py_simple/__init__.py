@@ -6,13 +6,13 @@ from .easy_ai import (
     EasyAIError,
     ai_chat,
     ask_ai,
-    chunk_text,
     detect_language,
     get_model,
     summarize_text,
     translate_text,
     rewrite_text,
     analyze_sentiment,
+    chunk_text,
 )
 from .easy_base64 import (
     EasyBase64Error,
@@ -163,7 +163,6 @@ from .easy_game import (
 )
 from .easy_generator import (
     generate_api_key,
-    generate_coupon_code,
     generate_otp,
     generate_password,
     generate_pin,
@@ -171,6 +170,13 @@ from .easy_generator import (
     generate_slug,
     generate_uuid,
     generate_passphrase,
+    generate_coupon_code,
+)
+from .easy_hash import (
+    EasyHashError,
+    hash_file,
+    hash_text,
+    hashes_match,
 )
 from .easy_images import (
     convert_image,
