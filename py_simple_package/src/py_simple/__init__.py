@@ -12,6 +12,7 @@ from .easy_ai import (
     translate_text,
     rewrite_text,
     analyze_sentiment,
+    chunk_text,
 )
 from .easy_base64 import (
     EasyBase64Error,
@@ -168,6 +169,7 @@ from .easy_generator import (
     generate_slug,
     generate_uuid,
     generate_passphrase,
+    generate_coupon_code,
 )
 from .easy_images import (
     convert_image,
@@ -213,6 +215,7 @@ from .easy_logging import (
     log_step,
     log_to_file,
     read_recent_log_lines,
+    count_log_levels,
 )
 from .easy_math import (
     calculate_simple_interest,
