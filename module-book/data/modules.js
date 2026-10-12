@@ -201,6 +201,54 @@ window.BOOK_DATA = {
       ]
     },
     {
+      id: "easy_base64",
+      name: "Easy Base64",
+      icon: "🔤",
+      category: "files-data",
+      summary: "encode and decode text as Base64 without the bytes boilerplate",
+      useCases: [
+        "Hide a short answer inside a shareable code",
+        "Check that a pasted code is really Base64 before decoding it",
+        "Turn a message into plain text you can store in a form field"
+      ],
+      links: [
+        { label: "Docs", icon: "📘", url: "https://sara-czasak.github.io/py-simple-wrap/docs/reference/easy_base64/" },
+        { label: "Tutorial", icon: "🎓", url: "https://sara-czasak.github.io/py-simple-wrap/docs/tutorial/easy_base64/" },
+        { label: "Source", icon: "🐍", url: "https://github.com/sara-czasak/py-simple-wrap/blob/main/py_simple_package/src/py_simple/easy_base64.py" }
+      ]
+    },
+    {
+      id: "easy_bytes",
+      name: "Easy Bytes",
+      icon: "📦",
+      category: "files-data",
+      summary: "readable file sizes without dividing by 1024 yourself",
+      useCases: [
+        "Show a folder size as 2.5 MB instead of a huge byte count",
+        "Turn a typed size like 10 MB back into bytes",
+        "Report what percent of a drive is already full"
+      ],
+      links: [
+        { label: "Docs", icon: "📘", url: "https://sara-czasak.github.io/py-simple-wrap/docs/reference/easy_bytes/" },
+        { label: "Tutorial", icon: "🎓", url: "https://sara-czasak.github.io/py-simple-wrap/docs/tutorial/easy_bytes/" },
+        { label: "Source", icon: "🐍", url: "https://github.com/sara-czasak/py-simple-wrap/blob/main/py_simple_package/src/py_simple/easy_bytes.py" }
+      id: "easy_hash",
+      name: "Easy Hash",
+      icon: "#️⃣",
+      category: "files-data",
+      summary: "checksums for text and files without the hashlib boilerplate",
+      useCases: [
+        "Fingerprint a class note so you can tell if it changed",
+        "Checksum a downloaded file before you open it",
+        "Compare a sentence with a checksum someone sent you"
+      ],
+      links: [
+        { label: "Docs", icon: "📘", url: "https://sara-czasak.github.io/py-simple-wrap/docs/reference/easy_hash/" },
+        { label: "Tutorial", icon: "🎓", url: "https://sara-czasak.github.io/py-simple-wrap/docs/tutorial/easy_hash/" },
+        { label: "Source", icon: "🐍", url: "https://github.com/sara-czasak/py-simple-wrap/blob/main/py_simple_package/src/py_simple/easy_hash.py" }
+      ]
+    },
+    {
       id: "easy_config",
       name: "Easy Config",
       icon: "⚙️",
@@ -331,6 +379,23 @@ window.BOOK_DATA = {
         { label: "Docs", icon: "📘", url: "https://sara-czasak.github.io/py-simple-wrap/docs/reference/easy_math/" },
         { label: "Tutorial", icon: "🎓", url: "https://sara-czasak.github.io/py-simple-wrap/docs/tutorial/easy_math/" },
         { label: "Source", icon: "🐍", url: "https://github.com/sara-czasak/py-simple-wrap/blob/main/py_simple_package/src/py_simple/easy_math.py" }
+      ]
+    },
+    {
+      id: "easy_money",
+      name: "Easy Money",
+      icon: "💵",
+      category: "numbers-math",
+      summary: "prices, tax, and split bills without decimal surprises",
+      useCases: [
+        "Print a price with a dollar sign and two decimal places",
+        "Add sales tax before showing a total",
+        "Split a restaurant bill evenly between friends"
+      ],
+      links: [
+        { label: "Docs", icon: "📘", url: "https://sara-czasak.github.io/py-simple-wrap/docs/reference/easy_money/" },
+        { label: "Tutorial", icon: "🎓", url: "https://sara-czasak.github.io/py-simple-wrap/docs/tutorial/easy_money/" },
+        { label: "Source", icon: "🐍", url: "https://github.com/sara-czasak/py-simple-wrap/blob/main/py_simple_package/src/py_simple/easy_money.py" }
       ]
     },
     {
@@ -479,6 +544,23 @@ window.BOOK_DATA = {
         { label: "Docs", icon: "📘", url: "https://sara-czasak.github.io/py-simple-wrap/docs/reference/easy_web/" },
         { label: "Tutorial", icon: "🎓", url: "https://sara-czasak.github.io/py-simple-wrap/docs/tutorial/easy_web/" },
         { label: "Source", icon: "🐍", url: "https://github.com/sara-czasak/py-simple-wrap/blob/main/py_simple_package/src/py_simple/easy_web.py" }
+      ]
+    },
+    {
+      id: "easy_url",
+      name: "Easy URL",
+      icon: "🔗",
+      category: "web-visuals",
+      summary: "read a link's host, check HTTPS, and add a query parameter",
+      useCases: [
+        "Show only the site name from a long link",
+        "Refuse a bookmark that is not HTTPS",
+        "Add page=2 to a club page link"
+      ],
+      links: [
+        { label: "Docs", icon: "📘", url: "https://sara-czasak.github.io/py-simple-wrap/docs/reference/easy_url/" },
+        { label: "Tutorial", icon: "🎓", url: "https://sara-czasak.github.io/py-simple-wrap/docs/tutorial/easy_url/" },
+        { label: "Source", icon: "🐍", url: "https://github.com/sara-czasak/py-simple-wrap/blob/main/py_simple_package/src/py_simple/easy_url.py" }
       ]
     },
     {

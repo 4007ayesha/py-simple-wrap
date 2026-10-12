@@ -6,7 +6,10 @@ from py_simple_package.src.py_simple.easy_config import (
     gh_workflow_config,
     create_env_file,
     read_env_file,
+    gitignore_config,
+    requirements_config,
 )
+from py_simple import gitignore_config as top_level_gitignore_config
 
 
 def test_gh_workflow_config_writes_template_at_current_directory(tmp_path, monkeypatch):
@@ -148,3 +151,153 @@ def test_read_env_file_keeps_equals_signs_in_values(tmp_path):
 def test_read_env_file_wraps_missing_file_error(tmp_path):
     with pytest.raises(EasyConfigError, match="does_not_exist"):
         read_env_file(str(tmp_path / "does_not_exist.env"))
+
+
+def test_gitignore_config_creates_file_at_current_directory(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+
+    gitignore_config()
+
+    gitignore_file = tmp_path / ".gitignore"
+    assert gitignore_file.exists()
+    content = gitignore_file.read_text(encoding="utf-8")
+    assert "__pycache__/" in content
+    assert "*.py[cod]" in content
+    assert ".venv/" in content
+    assert ".env" in content
+
+
+def test_gitignore_config_does_not_overwrite_existing_file(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+    gitignore_file = tmp_path / ".gitignore"
+    gitignore_file.write_text("custom gitignore\n", encoding="utf-8")
+
+    gitignore_config()
+
+    assert gitignore_file.read_text(encoding="utf-8") == "custom gitignore\n"
+
+
+def test_gitignore_config_can_target_repository_root(tmp_path, monkeypatch):
+    git.Repo.init(tmp_path)
+    nested = tmp_path / "nested"
+    nested.mkdir()
+    monkeypatch.chdir(nested)
+
+    gitignore_config(at_root=False)
+
+    gitignore_file = tmp_path / ".gitignore"
+    assert gitignore_file.exists()
+    content = gitignore_file.read_text(encoding="utf-8")
+    assert "__pycache__/" in content
+    assert not (nested / ".gitignore").exists()
+
+
+def test_gitignore_config_wraps_template_errors(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+
+    def missing_template(_package):
+        raise FileNotFoundError("template missing")
+
+    monkeypatch.setattr(
+        "py_simple_package.src.py_simple.easy_config.files", missing_template
+    )
+
+    with pytest.raises(EasyConfigError, match="template missing"):
+        gitignore_config()
+
+
+def test_gitignore_config_wraps_git_errors(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+
+    with pytest.raises(EasyConfigError):
+        gitignore_config(at_root=False)
+
+
+def test_gitignore_config_wraps_permission_errors(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+
+    def mock_open(*args, **kwargs):
+        raise PermissionError("Permission denied")
+
+    monkeypatch.setattr("builtins.open", mock_open)
+
+    with pytest.raises(EasyConfigError, match="Permission denied"):
+        gitignore_config()
+
+
+def test_gitignore_config_imported_from_py_simple():
+    assert callable(top_level_gitignore_config)
+
+def test_requirements_config_creates_file(tmp_path):
+    requirements_file = tmp_path / "requirements.txt"
+
+    requirements_config(
+        ["numpy", "pandas", "scikit-learn"],
+        file_path=str(requirements_file),
+    )
+
+    assert requirements_file.exists()
+    assert requirements_file.read_text(encoding="utf-8") == (
+        "numpy\n"
+        "pandas\n"
+        "scikit-learn\n"
+    )
+
+def test_requirements_config_does_not_overwrite_by_default(tmp_path):
+    requirements_file = tmp_path / "requirements.txt"
+    requirements_file.write_text("old-package\n", encoding="utf-8")
+
+    requirements_config(
+        ["numpy", "pandas"],
+        file_path=str(requirements_file),
+    )
+
+    assert requirements_file.read_text(encoding="utf-8") == "old-package\n"
+    
+def test_requirements_config_overwrites_when_flag_is_true(tmp_path):
+    requirements_file = tmp_path / "requirements.txt"
+    requirements_file.write_text("old-package\n", encoding="utf-8")
+
+    requirements_config(
+        ["numpy", "pandas"],
+        file_path=str(requirements_file),
+        overwrite=True,
+    )
+
+    assert requirements_file.read_text(encoding="utf-8") == (
+        "numpy\n"
+        "pandas\n"
+    )
+    
+def test_requirements_config_creates_parent_directories(tmp_path):
+    requirements_file = tmp_path / "config" / "requirements.txt"
+
+    requirements_config(
+        ["numpy", "pandas"],
+        file_path=str(requirements_file),
+    )
+
+    assert requirements_file.exists()
+    assert requirements_file.read_text(encoding="utf-8") == (
+        "numpy\n"
+        "pandas\n"
+    )
+    
+def test_requirements_config_wraps_errors(tmp_path, monkeypatch):
+    requirements_file = tmp_path / "requirements.txt"
+
+    def mock_open(*args, **kwargs):
+        raise PermissionError("Permission denied")
+
+    monkeypatch.setattr("builtins.open", mock_open)
+
+    with pytest.raises(EasyConfigError):
+        requirements_config(
+            ["numpy"],
+            file_path=str(requirements_file),
+        )
+        
+def test_requirements_config_imported_from_py_simple():
+    from py_simple import requirements_config as imported_function
+
+    assert callable(imported_function)

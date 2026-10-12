@@ -4,13 +4,19 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import pytest
 
-from py_simple_package.src.py_simple import plot_box_plot as public_plot_box_plot
-from py_simple_package.src.py_simple import plot_line_chart as public_plot_line_chart
+from py_simple_package.src.py_simple import (
+    plot_box_plot as public_plot_box_plot,
+    plot_heatmap as public_plot_heatmap,
+    plot_line_chart as public_plot_line_chart,
+    plot_pie_chart as public_plot_pie_chart,
+)
 from py_simple_package.src.py_simple.easy_data_visualization import (
     _infer_type,
     plot_box_plot,
     plot_data,
+    plot_heatmap,
     plot_line_chart,
+    plot_pie_chart,
 )
 
 # --- Tests for _infer_type ---
@@ -205,6 +211,40 @@ def test_plot_line_chart_without_title_or_labels_leaves_them_blank():
     assert ax.get_title() == ""
     assert ax.get_xlabel() == ""
     assert ax.get_ylabel() == ""
+    
+# --- Tests for plot_heatmap ---
+
+
+def test_plot_heatmap_draws_the_data():
+    data = [[1, 2, 3], [4, 5, 6]]
+
+    plot_heatmap(data)
+
+    image = plt.gcf().axes[0].images[0]
+    assert image.get_array().tolist() == data
+
+
+def test_plot_heatmap_sets_title_and_axis_labels():
+    plot_heatmap(
+        [[1, 2], [3, 4]],
+        title="Example Heatmap",
+        x_label="Columns",
+        y_label="Rows",
+    )
+
+    ax = plt.gcf().axes[0]
+    assert ax.get_title() == "Example Heatmap"
+    assert ax.get_xlabel() == "Columns"
+    assert ax.get_ylabel() == "Rows"
+
+
+def test_plot_heatmap_without_optional_labels_leaves_them_blank():
+    plot_heatmap([[1, 2], [3, 4]])
+
+    ax = plt.gcf().axes[0]
+    assert ax.get_title() == ""
+    assert ax.get_xlabel() == ""
+    assert ax.get_ylabel() == ""
 
 
 def test_plot_line_chart_uses_labels_on_x_axis():
@@ -247,3 +287,101 @@ def test_plot_line_chart_boolean_value_raises_value_error():
 
 def test_plot_line_chart_is_available_from_public_api():
     assert public_plot_line_chart is plot_line_chart
+
+def test_plot_heatmap_adds_a_colorbar():
+    plot_heatmap([[1, 2], [3, 4]])
+
+    assert len(plt.gcf().axes) == 2
+
+
+def test_plot_heatmap_accepts_integer_and_float_values():
+    data = [[1, 2.5], [3, 4.5]]
+
+    plot_heatmap(data)
+
+    image = plt.gcf().axes[0].images[0]
+    assert image.get_array().tolist() == data
+
+
+def test_plot_heatmap_rejects_a_one_dimensional_list():
+    with pytest.raises(ValueError, match="two-dimensional"):
+        plot_heatmap([1, 2, 3])
+
+
+def test_plot_heatmap_empty_data_raises_value_error():
+    with pytest.raises(ValueError, match="cannot be empty"):
+        plot_heatmap([])
+
+
+def test_plot_heatmap_empty_row_raises_value_error():
+    with pytest.raises(ValueError, match="non-empty rows"):
+        plot_heatmap([[1, 2], []])
+
+
+def test_plot_heatmap_ragged_data_raises_value_error():
+    with pytest.raises(ValueError, match="rectangular"):
+        plot_heatmap([[1, 2], [3]])
+
+
+def test_plot_heatmap_non_numeric_value_raises_value_error():
+    with pytest.raises(ValueError, match="must be numbers"):
+        plot_heatmap([[1, 2], [3, "four"]])
+
+
+def test_plot_heatmap_boolean_value_raises_value_error():
+    with pytest.raises(ValueError, match="must be numbers"):
+        plot_heatmap([[1, 2], [3, True]])
+
+
+def test_plot_heatmap_is_available_from_public_api():
+    assert public_plot_heatmap is plot_heatmap
+
+
+def test_plot_pie_chart_draws_one_slice_per_value():
+    plot_pie_chart(["Walk", "Bus", "Bike"], [12, 7, 5])
+    wedges = plt.gca().patches
+    assert len(wedges) == 3
+
+
+def test_plot_pie_chart_sets_title():
+    plot_pie_chart(["A", "B"], [1, 3], title="Split")
+    assert plt.gca().get_title() == "Split"
+
+
+def test_plot_pie_chart_without_title_leaves_it_blank():
+    plot_pie_chart(["A", "B"], [1, 1])
+    assert plt.gca().get_title() == ""
+
+
+def test_plot_pie_chart_empty_labels_raises():
+    with pytest.raises(ValueError, match="cannot be empty"):
+        plot_pie_chart([], [1])
+
+
+def test_plot_pie_chart_empty_values_raises():
+    with pytest.raises(ValueError, match="cannot be empty"):
+        plot_pie_chart(["A"], [])
+
+
+def test_plot_pie_chart_mismatched_lengths_raises():
+    with pytest.raises(ValueError, match="same length"):
+        plot_pie_chart(["A", "B"], [1])
+
+
+def test_plot_pie_chart_rejects_non_numbers():
+    with pytest.raises(ValueError, match="must be numbers"):
+        plot_pie_chart(["A", "B"], [1, "two"])
+
+
+def test_plot_pie_chart_rejects_booleans():
+    with pytest.raises(ValueError, match="must be numbers"):
+        plot_pie_chart(["A"], [True])
+
+
+def test_plot_pie_chart_rejects_negative_values():
+    with pytest.raises(ValueError, match="negative"):
+        plot_pie_chart(["A", "B"], [1, -2])
+
+
+def test_plot_pie_chart_is_available_from_public_api():
+    assert public_plot_pie_chart is plot_pie_chart

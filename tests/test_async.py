@@ -10,6 +10,7 @@ from py_simple_package.src.py_simple.easy_async import (
     run_concurrent_map,
     run_after_delay,
     run_with_retry,
+    run_periodically,
 )
 
 
@@ -147,3 +148,83 @@ def test_run_with_retry_fail():
 
     with pytest.raises(EasyAsyncError):
         asyncio.run(run_with_retry(num, 3, 0.01))
+
+
+def test_run_periodically_success(monkeypatch):
+    slept = []
+
+    async def fake_sleep(delay):
+        slept.append(delay)
+
+    monkeypatch.setattr(asyncio, "sleep", fake_sleep)
+
+    def add():
+        return 2 + 2
+
+    result = asyncio.run(run_periodically(add, 0.5, 3))
+
+    assert result == [4, 4, 4]
+    assert slept == [0.5, 0.5, 0.5]
+
+
+def test_run_periodically_passes_args_every_run(monkeypatch):
+    async def instant_sleep(delay):
+        pass
+
+    monkeypatch.setattr(asyncio, "sleep", instant_sleep)
+
+    def add(a, b):
+        return a + b
+
+    result = asyncio.run(run_periodically(add, 0.1, 2, 3, 4))
+
+    assert result == [7, 7]
+
+
+def test_run_periodically_single_run(monkeypatch):
+    async def instant_sleep(delay):
+        pass
+
+    monkeypatch.setattr(asyncio, "sleep", instant_sleep)
+
+    def greet():
+        return "hi"
+
+    result = asyncio.run(run_periodically(greet, 0.1, 1))
+
+    assert result == ["hi"]
+
+
+def test_run_periodically_error(monkeypatch):
+    async def instant_sleep(delay):
+        pass
+
+    monkeypatch.setattr(asyncio, "sleep", instant_sleep)
+
+    def fail():
+        raise ValueError("Something went wrong")
+
+    with pytest.raises(EasyAsyncError):
+        asyncio.run(run_periodically(fail, 0.1, 3))
+
+
+def test_run_periodically_invalid_interval():
+    def add():
+        return 2 + 2
+
+    with pytest.raises(EasyAsyncError, match="interval"):
+        asyncio.run(run_periodically(add, 0, 3))
+
+    with pytest.raises(EasyAsyncError, match="interval"):
+        asyncio.run(run_periodically(add, -1.0, 3))
+
+
+def test_run_periodically_invalid_times():
+    def add():
+        return 2 + 2
+
+    with pytest.raises(EasyAsyncError, match="times"):
+        asyncio.run(run_periodically(add, 0.5, 0))
+
+    with pytest.raises(EasyAsyncError, match="times"):
+        asyncio.run(run_periodically(add, 0.5, -2))
