@@ -19,7 +19,7 @@
 [![Contributors](https://img.shields.io/badge/contributors-76-orange?style=flat-square)](CONTRIBUTORS.md)
 [![PyPI Downloads](https://static.pepy.tech/personalized-badge/py-simple-wrap?period=total&units=NONE&left_color=BLACK&right_color=GREEN&left_text=downloads)](https://pepy.tech/projects/py-simple-wrap)
 [![License](https://img.shields.io/badge/license-MIT-yellow?style=flat-square)](LICENSE.md)
-[![Discord](https://img.shields.io/discord/1533803449895092245?style=flat-square&logo=discord&logoColor=white&label=discord&color=5865F2)](https://discord.gg/Ge5HnVw2p)
+[![Discord](https://img.shields.io/discord/1533803449895092245?style=flat-square&logo=discord&logoColor=white&label=discord&color=5865F2)](https://discord.gg/f9PUGNaVZ)
  
 </div>
 <br>
