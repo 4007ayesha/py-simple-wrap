@@ -220,6 +220,7 @@ from .easy_lists import (
 from .easy_money import (
     EasyMoneyError,
     add_tax,
+    calculate_discount,
     format_money,
     split_bill,
 )
