@@ -1014,6 +1014,12 @@ Every tile below is a real person who showed up for this project. 💛
         <sub><b>Yuvrajup</b></sub>
       </a>
     </td>
+    <td align="center" valign="top" width="8.6%">
+      <a href="https://github.com/Ymax27">
+        <img src="https://github.com/Ymax27.png" width="100px;" alt="Ymax27"/><br />
+        <sub><b>Ymax27</b></sub>
+      </a>
+    </td>
   </tr>
 </table>
 
