@@ -104,6 +104,53 @@ def add_tax(amount, rate: float) -> Decimal:
     total = price * (1 + tax_rate / Decimal(100))
     return _cents(total)
 
+def calculate_discount(amount, discount_rate: float) -> Decimal:
+    """
+    Calculate the price after applying a percentage discount.
+
+    Args:
+        amount: The original price before the discount.
+        discount_rate (float): Discount percentage, such as `15` for 15%.
+
+    Returns:
+        Decimal: The discounted price, rounded to two decimal places.
+
+    Raises:
+        EasyMoneyError: If the amount or discount rate is invalid, or if
+            the discount rate is outside the range of 0 to 100.
+
+    Example:
+        === "The Py_simple Way"
+            ```python
+            from py_simple import calculate_discount
+
+            discounted_price = calculate_discount(2000, 15)
+            ```
+
+        === "The Traditional Way"
+            ```python
+            from decimal import Decimal, ROUND_HALF_UP
+
+            amount = Decimal("2000")
+            discount_rate = Decimal("15")
+            discounted_price = (amount * (1 - discount_rate / 100)).quantize(
+                Decimal("0.01"), rounding=ROUND_HALF_UP
+            )
+            ```
+    """
+    price = _as_money(amount)
+    discount = _as_money(discount_rate)
+
+    if discount < 0 or discount > 100:
+        raise EasyMoneyError(
+            "\n\nERROR: discount rate must be between 0 and 100."
+        ) from None
+
+    discounted_price = price * (
+        1 - discount / Decimal(100)
+    )
+
+    return _cents(discounted_price)
 
 def split_bill(total, people: int) -> Decimal:
     """

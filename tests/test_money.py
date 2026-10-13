@@ -5,6 +5,7 @@ import pytest
 from py_simple_package.src.py_simple.easy_money import (
     EasyMoneyError,
     add_tax,
+    calculate_discount,
     format_money,
     split_bill,
 )
@@ -41,3 +42,31 @@ def test_split_bill_rejects_bad_people():
         split_bill(10, 0)
     with pytest.raises(EasyMoneyError):
         split_bill(10, True)
+
+def test_calculate_discount():
+    assert calculate_discount(2000, 15) == Decimal("1700.00")
+    assert calculate_discount(100, 10) == Decimal("90.00")
+
+
+def test_calculate_discount_with_zero_percent():
+    assert calculate_discount(100, 0) == Decimal("100.00")
+
+
+def test_calculate_discount_with_full_discount():
+    assert calculate_discount(100, 100) == Decimal("0.00")
+
+
+def test_calculate_discount_rejects_invalid_rate():
+    with pytest.raises(EasyMoneyError):
+        calculate_discount(100, -1)
+
+    with pytest.raises(EasyMoneyError):
+        calculate_discount(100, 101)
+
+
+def test_calculate_discount_rejects_invalid_amount():
+    with pytest.raises(EasyMoneyError):
+        calculate_discount("invalid", 10)
+
+    with pytest.raises(EasyMoneyError):
+        calculate_discount(True, 10)
