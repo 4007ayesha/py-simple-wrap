@@ -806,6 +806,12 @@ Every tile below is a real person who showed up for this project. 💛
         <sub><b>Samanvi V</b></sub>
       </a>
     </td>
+    <td align="center" valign="top" width="8.6%">
+      <a href="https://github.com/Pratham2511">
+        <img src="https://github.com/Pratham2511.png" width="100px;" alt="Pratham Pansare"/><br />
+        <sub><b>Pratham Pansare</b></sub>
+      </a>
+    </td>
   </tr>
 </table>
 
@@ -1208,6 +1214,9 @@ The Module Magicians. The Code Conjurers. The Test Sentinels. The Lore Keepers. 
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/mansi-singh4"><img src="https://github.com/mansi-singh4.png?s=80" width="80px;" alt="Mansi Singh"/><br /><sub><b>Mansi Singh</b></sub></a><br /><a href="https://github.com/sara-czasak/py_simple/commits?author=mansi-singh4" title="Code">💻</a> <a href="https://github.com/sara-czasak/py_simple/commits?author=mansi-singh4" title="Tests">🧪</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/Ymax27"><img src="https://github.com/Ymax27.png?s=80" width="80px;" alt="Ymax27"/><br /><sub><b>Ymax27</b></sub></a><br /><a href="https://github.com/sara-czasak/py_simple/commits?author=Ymax27" title="Code">💻</a> <a href="https://github.com/sara-czasak/py_simple/commits?author=Ymax27" title="Tests">🧪</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/veligetisamanvi"><img src="https://github.com/veligetisamanvi.png?s=80" width="80px;" alt="Samanvi V"/><br /><sub><b>Samanvi V</b></sub></a><br /><a href="https://github.com/sara-czasak/py_simple/commits?author=veligetisamanvi" title="Code">💻</a> <a href="https://github.com/sara-czasak/py_simple/commits?author=veligetisamanvi" title="Tests">🧪</a></td>
+    </tr>
+    <tr>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/Pratham2511"><img src="https://github.com/Pratham2511.png?s=80" width="80px;" alt="Pratham Pansare"/><br /><sub><b>Pratham Pansare</b></sub></a><br /><a href="https://github.com/sara-czasak/py_simple/commits?author=Pratham2511" title="Tests">🧪</a></td>
     </tr>
   </tbody>
 </table>
