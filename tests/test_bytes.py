@@ -64,6 +64,9 @@ def test_bytes_to_human_rejects_bad_input(num_bytes):
         ("0 TB", 0),
         ("  1.5 KB  ", 1536),
         ("\t1.5\t KB\n", 1536),
+        ("1267650600228229401496703205376 B", 2**100),
+        ("1267650600228229401496703205376 TB", 2**140),
+        (f"{2**1023} B", 2**1023),
     ],
 )
 def test_human_to_bytes(label, expected):
@@ -103,11 +106,46 @@ def test_human_to_bytes_rejects_malformed_number(label):
         human_to_bytes(label)
 
 
-@pytest.mark.parametrize("label", ["-1 B", "-0.5 KB"])
+@pytest.mark.parametrize(
+    "label", ["-1 B", "-0.5 KB", "-inf KB", "-Infinity TB", "-1e309 MB"]
+)
 def test_human_to_bytes_rejects_negative_size(label):
     """Reject negative sizes, including fractional ones."""
     with pytest.raises(EasyBytesError, match="size cannot be negative"):
         human_to_bytes(label)
+
+
+@pytest.mark.parametrize(
+    "label",
+    [
+        "nan KB",
+        "NaN B",
+        "+nan MB",
+        "-NaN GB",
+        "inf KB",
+        "+inf B",
+        "Infinity MB",
+        "+INFINITY GB",
+        "1e309 KB",
+        "1e309 TB",
+        "  NaN\tKB\n",
+    ],
+)
+def test_human_to_bytes_rejects_nonfinite_size(label):
+    """Non-finite numeric labels must use the public conversion error."""
+    with pytest.raises(
+        EasyBytesError, match="size must convert to a finite byte count"
+    ):
+        human_to_bytes(label)
+
+
+@pytest.mark.parametrize("unit", ["KB", "MB", "GB", "TB"])
+def test_human_to_bytes_rejects_scaled_overflow(unit):
+    """A finite number can still overflow when scaled to bytes."""
+    with pytest.raises(
+        EasyBytesError, match="size must convert to a finite byte count"
+    ):
+        human_to_bytes(f"1e308 {unit}")
 
 
 @pytest.mark.parametrize(

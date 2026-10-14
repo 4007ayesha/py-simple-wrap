@@ -2,6 +2,8 @@
 easy_bytes turns byte counts into readable sizes and back.
 """
 
+import math
+
 
 class EasyBytesError(Exception):
     """
@@ -47,7 +49,9 @@ def bytes_to_human(num_bytes: int) -> str:
             ```
     """
     if isinstance(num_bytes, bool) or not isinstance(num_bytes, int) or num_bytes < 0:
-        raise EasyBytesError("\n\nERROR: num_bytes must be a non-negative integer.") from None
+        raise EasyBytesError(
+            "\n\nERROR: num_bytes must be a non-negative integer."
+        ) from None
 
     size = float(num_bytes)
     unit = _UNITS[0]
@@ -76,7 +80,8 @@ def human_to_bytes(label: str) -> int:
         int: The size in bytes.
 
     Raises:
-        EasyBytesError: If `label` is not a recognized size.
+        EasyBytesError: If `label` is not a recognized size or does not
+            convert to a finite byte count.
 
     Example:
         === "The Py_simple Way"
@@ -107,7 +112,12 @@ def human_to_bytes(label: str) -> int:
     if number < 0:
         raise EasyBytesError("\n\nERROR: size cannot be negative.") from None
     multiplier = 1024 ** _UNITS.index(unit)
-    return int(number * multiplier)
+    size_in_bytes = number * multiplier
+    if not math.isfinite(size_in_bytes):
+        raise EasyBytesError(
+            "\n\nERROR: size must convert to a finite byte count."
+        ) from None
+    return int(size_in_bytes)
 
 
 def percent_used(used: int, total: int) -> float:
@@ -140,7 +150,9 @@ def percent_used(used: int, total: int) -> float:
     """
     for value in (used, total):
         if isinstance(value, bool) or not isinstance(value, int) or value < 0:
-            raise EasyBytesError("\n\nERROR: used and total must be non-negative integers.") from None
+            raise EasyBytesError(
+                "\n\nERROR: used and total must be non-negative integers."
+            ) from None
     if total < 1:
         raise EasyBytesError("\n\nERROR: total must be at least 1.") from None
     return round(used / total * 100, 1)
