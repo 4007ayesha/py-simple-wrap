@@ -319,6 +319,7 @@ def sort_csv_by_column(
 
     Raises:
         ValueError: If the file is empty, contains no data rows, or the column is not found.
+    """
 def append_row_to_csv(
     filepath: str,
     row: dict[str, Any] | list[Any],
