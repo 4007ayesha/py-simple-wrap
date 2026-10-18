@@ -1032,6 +1032,18 @@ Every tile below is a real person who showed up for this project. 💛
         <sub><b>Ymax27</b></sub>
       </a>
     </td>
+    <td align="center" valign="top" width="8.6%">
+      <a href="https://github.com/Pratham2511">
+        <img src="https://github.com/Pratham2511.png" width="100px;" alt="Pratham Pansare"/><br />
+        <sub><b>Pratham Pansare</b></sub>
+      </a>
+    </td>
+    <td align="center" valign="top" width="8.6%">
+      <a href="https://github.com/rajshadow">
+        <img src="https://github.com/rajshadow.png" width="100px;" alt="Rajeev Atmakuri"/><br />
+        <sub><b>Rajeev Atmakuri</b></sub>
+      </a>
+    </td>
   </tr>
 </table>
 
