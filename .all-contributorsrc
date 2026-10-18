@@ -846,7 +846,18 @@
       "avatar_url": "https://github.com/AugustoDaimon.png",
       "profile": "https://github.com/AugustoDaimon",
       "contributions": [
-        "test"
+        "test",
+        "code"
+      ]
+    },
+    {
+      "login": "rajshadow",
+      "name": "Rajeev Atmakuri",
+      "avatar_url": "https://github.com/rajshadow.png",
+      "profile": "https://github.com/rajshadow",
+      "contributions": [
+        "test",
+        "code"
       ]
     }
   ]

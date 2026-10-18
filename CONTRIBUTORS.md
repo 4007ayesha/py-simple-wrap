@@ -450,6 +450,12 @@ Every tile below is a real person who showed up for this project. 💛
         <sub><b>AugustoDaimon</b></sub>
       </a>
     </td>
+    <td align="center" valign="top" width="8.6%">
+      <a href="https://github.com/rajshadow">
+        <img src="https://github.com/rajshadow.png" width="100px;" alt="Rajeev Atmakuri"/><br />
+        <sub><b>Rajeev Atmakuri</b></sub>
+      </a>
+    </td>
   </tr>
 </table>
 
@@ -844,6 +850,12 @@ Every tile below is a real person who showed up for this project. 💛
       <a href="https://github.com/AugustoDaimon">
         <img src="https://github.com/AugustoDaimon.png" width="100px;" alt="AugustoDaimon"/><br />
         <sub><b>AugustoDaimon</b></sub>
+      </a>
+    </td>
+    <td align="center" valign="top" width="8.6%">
+      <a href="https://github.com/rajshadow">
+        <img src="https://github.com/rajshadow.png" width="100px;" alt="Rajeev Atmakuri"/><br />
+        <sub><b>Rajeev Atmakuri</b></sub>
       </a>
     </td>
   </tr>
@@ -1258,7 +1270,8 @@ The Module Magicians. The Code Conjurers. The Test Sentinels. The Lore Keepers. 
     <tr>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/Pratham2511"><img src="https://github.com/Pratham2511.png?s=80" width="80px;" alt="Pratham Pansare"/><br /><sub><b>Pratham Pansare</b></sub></a><br /><a href="https://github.com/sara-czasak/py_simple/commits?author=Pratham2511" title="Tests">🧪</a> <a href="https://github.com/sara-czasak/py_simple/commits?author=Pratham2511" title="Code">💻</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/aviraj09"><img src="https://github.com/aviraj09.png?s=80" width="80px;" alt="Aviraj Singh"/><br /><sub><b>Aviraj Singh</b></sub></a><br /><a href="https://github.com/sara-czasak/py_simple/commits?author=aviraj09" title="Tests">🧪</a></td>
-      <td align="center" valign="top" width="14.28%"><a href="https://github.com/AugustoDaimon"><img src="https://github.com/AugustoDaimon.png?s=80" width="80px;" alt="AugustoDaimon"/><br /><sub><b>AugustoDaimon</b></sub></a><br /><a href="https://github.com/sara-czasak/py_simple/commits?author=AugustoDaimon" title="Tests">🧪</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/AugustoDaimon"><img src="https://github.com/AugustoDaimon.png?s=80" width="80px;" alt="AugustoDaimon"/><br /><sub><b>AugustoDaimon</b></sub></a><br /><a href="https://github.com/sara-czasak/py_simple/commits?author=AugustoDaimon" title="Tests">🧪</a> <a href="https://github.com/sara-czasak/py_simple/commits?author=AugustoDaimon" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/rajshadow"><img src="https://github.com/rajshadow.png?s=80" width="80px;" alt="Rajeev Atmakuri"/><br /><sub><b>Rajeev Atmakuri</b></sub></a><br /><a href="https://github.com/sara-czasak/py_simple/commits?author=rajshadow" title="Tests">🧪</a> <a href="https://github.com/sara-czasak/py_simple/commits?author=rajshadow" title="Code">💻</a></td>
     </tr>
   </tbody>
 </table>
