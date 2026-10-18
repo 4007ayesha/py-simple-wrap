@@ -92,6 +92,7 @@ from .easy_csv import (
     read_csv_column,
     read_csv_to_list,
     write_csv_from_list,
+    sort_csv_by_column,
     append_row_to_csv,
     delete_csv_rows,
 )

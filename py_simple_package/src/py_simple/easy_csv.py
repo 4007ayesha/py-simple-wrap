@@ -299,6 +299,52 @@ def filter_csv_rows(
     headers = list(all_rows[0].keys())
     return [[row[h] for h in headers] for row in filtered]
 
+
+def sort_csv_by_column(
+    filepath: str,
+    column: str,
+    reverse: bool = False,
+    output_filepath: str | None = None,
+    delimiter: str = ",",
+) -> None:
+    """
+    Sort a CSV file based on a specific column.
+
+    Args:
+        filepath (str): Path to the CSV file.
+        column (str): Column name to sort by. For mixed data, values are
+            sorted numerically first, followed by non-numeric strings
+            and empty cells.
+        reverse (bool): If True, sorts in descending order.
+            For mixed data, this reverses the grouping.
+        output_filepath (str | None): Output path. If None, overwrites
+            the source file.
+        delimiter (str): Field delimiter (default is comma).
+
+    Raises:
+        ValueError: If the file is empty, contains no data rows,
+            or the column is not found.
+    """
+    data = read_csv_to_list(filepath, return_dict=True, delimiter=delimiter)
+
+    if not data:
+        raise ValueError(f"No data rows to sort in file: {filepath}")
+
+    if column not in data[0]:
+        raise ValueError(f"Column not found: {column}")
+
+    def sort_key(row: dict[str, Any]) -> Any:
+        val = row.get(column, "") or ""
+        try:
+            return (0, float(val), "")
+        except ValueError:
+            return (1, 0.0, val)
+
+    sorted_data = sorted(data, key=sort_key, reverse=reverse)
+
+    save_path = output_filepath if output_filepath else filepath
+    write_csv_from_list(save_path, data=sorted_data, delimiter=delimiter)
+
 def append_row_to_csv(
     filepath: str,
     row: dict[str, Any] | list[Any],
@@ -356,6 +402,87 @@ def read_csv_column(
     Raises:
         FileNotFoundError: If filepath doesn't exist.
         ValueError: If the file is empty or if the column is not found.
+    Example:
+        === "The Py_simple Way"
+            ```python
+            from py_simple import sort_csv_by_column
+
+            sort_csv_by_column(filepath="people.csv", column="Age", reverse=True)
+
+            from py_simple import read_csv_column
+
+            names = read_csv_column(filepath="people.csv", column="Name")
+            print(names)  # ['Alice', 'Bob', 'Carol']
+            ```
+
+        === "The Traditional Way"
+            ```python
+            import csv
+
+            with open("people.csv", "r", newline="", encoding="utf-8") as f:
+
+                data = list(csv.DictReader(f))
+
+            def parse_val(val):
+                val = val or ""
+                try:
+                    return (0, float(val), "")
+                except ValueError:
+                    return (1, 0.0, val)
+
+            sorted_data = sorted(data, key=lambda row: parse_val(row["Age"]), reverse=True)
+
+            with open("people.csv", "w", newline="", encoding="utf-8") as f:
+                writer = csv.DictWriter(f, fieldnames=data[0].keys())
+                writer.writeheader()
+                writer.writerows(sorted_data)
+            ```
+    """
+    data = read_csv_to_list(filepath, return_dict=True, delimiter=delimiter)
+
+    if not data:
+        raise ValueError(f"No data rows to sort in file: {filepath}")
+
+    if column not in data[0]:
+        raise ValueError(f"Column not found: {column}")
+
+    def sort_key(row: dict[str, Any]) -> Any:
+        val = row.get(column, "") or ""
+        try:
+            return (0, float(val), "")
+        except ValueError:
+            return (1, 0.0, val)
+
+    sorted_data = sorted(data, key=sort_key, reverse=reverse)
+
+    save_path = output_filepath if output_filepath else filepath
+    write_csv_from_list(save_path, data=sorted_data, delimiter=delimiter)
+
+
+def read_csv_column(
+    filepath: str | None = None,
+    column: str | None = None,
+    delimiter: str = ",",
+    *,
+    file_path: str | None = None,
+    column_name: str | None = None,
+) -> list[str]:
+    """
+    Read all values from a specific column in a CSV file.
+
+    Args:
+        filepath (str): Path to the CSV file. Also accepts file_path as alias.
+        column (str): Column name to extract. Also accepts column_name as alias.
+        delimiter (str): Field delimiter (default is comma).
+        file_path (str, optional): Keyword alias for filepath.
+        column_name (str, optional): Keyword alias for column.
+
+    Returns:
+        list: Values from the specified column.
+
+    Raises:
+        FileNotFoundError: If filepath doesn't exist.
+        ValueError: If the file is empty or if the column is not found.
 
     Example:
         === "The Py_simple Way"
@@ -370,7 +497,7 @@ def read_csv_column(
             ```python
             import csv
 
-            with open("people.csv", "r", newline="", encoding="utf-8") as f:
+            with open("people.csv", newline="", encoding="utf-8") as f:
                 reader = csv.DictReader(f)
                 names = [row["Name"] for row in reader]
             print(names)  # ['Alice', 'Bob', 'Carol']
@@ -389,7 +516,7 @@ def read_csv_column(
 
     with open(path, "r", newline="", encoding="utf-8") as f:
         reader = csv.reader(f, delimiter=delimiter)
-        
+
         try:
             headers = next(reader)
         except StopIteration:
@@ -461,7 +588,7 @@ def drop_empty_csv_rows(filepath: str, delimiter: str = ",") -> int:
 
     return removed
 
- 
+
 def delete_csv_rows(
     filepath: str,
     column: str,
@@ -550,3 +677,4 @@ def delete_csv_rows(
         raise ValueError(f"No rows found with {column}={value} in {filepath}")
 
     os.replace(temp_filepath, filepath)
+
