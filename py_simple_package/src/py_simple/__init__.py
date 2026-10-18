@@ -189,6 +189,7 @@ from .easy_hash import (
 )
 from .easy_images import (
     convert_image,
+    convert_to_greyscale,
     create_thumbnail,
     flip_image,
     get_image_info,
