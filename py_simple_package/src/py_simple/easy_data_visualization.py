@@ -73,7 +73,10 @@ def plot_data(X: list, Y: list | None = None):
     charts = CHART_SUGGESTIONS[(type_X, type_Y)]
     chart_index = 0  # tracks which subplot slot to draw into next
 
-    _fig, axes = plt.subplots(1, 2, figsize=(10, 5))
+    # One subplot per suggested chart, so a single chart fills the figure
+    _fig, axes = plt.subplots(
+        1, len(charts), figsize=(5 * len(charts), 5), squeeze=False
+    )
 
     if "histogram" in charts:
         ax = axes.flat[chart_index]
@@ -127,6 +130,100 @@ def plot_data(X: list, Y: list | None = None):
         ax.remove()
 
     print("Plotting data...")
+    plt.show()
+
+
+def plot_heatmap(
+    data: list[list[int | float]],
+    title: str | None = None,
+    x_label: str | None = None,
+    y_label: str | None = None,
+) -> None:
+    """
+    Displays a heatmap for a two-dimensional numeric data series.
+
+    A heatmap represents values in a grid using color intensity, making it
+    useful for quickly spotting patterns, differences, and high or low values
+    across a two-dimensional dataset.
+
+    Args:
+        data (list[list[int | float]]): A rectangular two-dimensional list
+            containing numeric values.
+        title (str, optional): Text shown above the heatmap. Defaults to
+            `None` (no title).
+        x_label (str, optional): Text shown under the x-axis. Defaults to
+            `None` (no label).
+        y_label (str, optional): Text shown beside the y-axis. Defaults to
+            `None` (no label).
+
+    Returns:
+        None: The heatmap is rendered directly via `plt.show()`.
+
+    Raises:
+        ValueError: If `data` is empty, is not two-dimensional, is not
+            rectangular, or contains non-numeric values.
+
+    Example:
+        === "The Py_simple Way"
+            ```python
+            from py_simple import plot_heatmap
+
+            plot_heatmap(
+                [[1, 2, 3], [4, 5, 6], [7, 8, 9]],
+                title="Example Heatmap",
+                x_label="Columns",
+                y_label="Rows",
+            )
+            ```
+
+        === "The Traditional Way"
+            ```python
+            import matplotlib.pyplot as plt
+
+            data = [[1, 2, 3], [4, 5, 6], [7, 8, 9]]
+            fig, ax = plt.subplots()
+            image = ax.imshow(data)
+            fig.colorbar(image, ax=ax)
+            ax.set_title("Example Heatmap")
+            ax.set_xlabel("Columns")
+            ax.set_ylabel("Rows")
+            plt.show()
+            ```
+    """
+    import matplotlib.pyplot as plt
+
+    if not data:
+        raise ValueError("The data cannot be empty.")
+
+    if not all(isinstance(row, list) for row in data):
+        raise ValueError("The data must be two-dimensional.")
+
+    if any(not row for row in data):
+        raise ValueError("The data must contain non-empty rows.")
+
+    row_length = len(data[0])
+    if any(len(row) != row_length for row in data):
+        raise ValueError("The data must be rectangular.")
+
+    if not all(
+        isinstance(value, (int, float)) and not isinstance(value, bool)
+        for row in data
+        for value in row
+    ):
+        raise ValueError("All values must be numbers.")
+
+    fig, ax = plt.subplots()
+    image = ax.imshow(data)
+    fig.colorbar(image, ax=ax)
+
+    if title:
+        ax.set_title(title)
+    if x_label:
+        ax.set_xlabel(x_label)
+    if y_label:
+        ax.set_ylabel(y_label)
+
+    ax.spines[["top", "right"]].set_visible(False)
     plt.show()
 
 
@@ -267,3 +364,245 @@ def get_data_range(data: list[int | float]) -> tuple[int | float, int | float]:
         raise ValueError("All elements in the data series must be numbers.")
 
     return (min(data), max(data))
+
+
+def plot_bar_chart(
+    labels: list[str],
+    values: list[int | float],
+    title: str | None = None,
+    x_label: str | None = None,
+    y_label: str | None = None,
+) -> None:
+    """
+    Displays a bar chart with an optional title and axis labels.
+
+    Unlike `plot_data`, which picks a chart type for you, this function
+    always draws a bar chart and lets you name the chart and its axes, so
+    the result is ready to share or screenshot.
+
+    Args:
+        labels (list[str]): The name of each bar (shown on the x-axis).
+        values (list[int | float]): The height of each bar.
+        title (str, optional): Text shown above the chart. Defaults to
+            `None` (no title).
+        x_label (str, optional): Text shown under the x-axis. Defaults to
+            `None` (no label).
+        y_label (str, optional): Text shown beside the y-axis. Defaults to
+            `None` (no label).
+
+    Returns:
+        None: The bar chart is rendered directly via `plt.show()`.
+
+    Raises:
+        ValueError: If `labels` or `values` is empty, if they have
+            different lengths, or if any value is not a number.
+
+    Example:
+        === "The Py_simple Way"
+            ```python
+            from py_simple import plot_bar_chart
+
+            plot_bar_chart(
+                ["Mon", "Tue", "Wed"],
+                [3.5, 2.0, 4.5],
+                title="My Screen Time",
+                x_label="Day",
+                y_label="Hours",
+            )
+            ```
+
+        === "The Traditional Way"
+            ```python
+            import matplotlib.pyplot as plt
+
+            labels = ["Mon", "Tue", "Wed"]
+            values = [3.5, 2.0, 4.5]
+            fig, ax = plt.subplots()
+            ax.bar(labels, values)
+            ax.set_title("My Screen Time")
+            ax.set_xlabel("Day")
+            ax.set_ylabel("Hours")
+            ax.spines[["top", "right"]].set_visible(False)
+            plt.show()
+            ```
+    """
+    import matplotlib.pyplot as plt
+
+    if not labels or not values:
+        raise ValueError("Labels and values cannot be empty.")
+
+    if len(labels) != len(values):
+        raise ValueError("Labels and values must have the same length.")
+
+    if not all(isinstance(v, (int, float)) and not isinstance(v, bool) for v in values):
+        raise ValueError("All values must be numbers.")
+
+    _, ax = plt.subplots()
+    ax.bar([str(label) for label in labels], values)
+
+    if title:
+        ax.set_title(title)
+    if x_label:
+        ax.set_xlabel(x_label)
+    if y_label:
+        ax.set_ylabel(y_label)
+
+    ax.spines[["top", "right"]].set_visible(False)
+    plt.show()
+
+
+
+def plot_line_chart(
+    labels: list[str],
+    values: list[int | float],
+    title: str | None = None,
+    x_label: str | None = None,
+    y_label: str | None = None,
+) -> None:
+    """
+    Displays a line chart with an optional title and axis labels.
+
+    Unlike `plot_data`, which picks a chart type for you, this function
+    always draws a line chart and lets you name the chart and its axes, so
+    the result is ready to share or screenshot. Line charts are best for
+    showing how values change over time.
+
+    Args:
+        labels (list[str]): The name of each point (shown on the x-axis).
+        values (list[int | float]): The value of each point.
+        title (str, optional): Text shown above the chart. Defaults to
+            `None` (no title).
+        x_label (str, optional): Text shown under the x-axis. Defaults to
+            `None` (no label).
+        y_label (str, optional): Text shown beside the y-axis. Defaults to
+            `None` (no label).
+
+    Returns:
+        None: The line chart is rendered directly via `plt.show()`.
+
+    Raises:
+        ValueError: If `labels` or `values` is empty, if they have
+            different lengths, or if any value is not a number.
+
+    Example:
+        === "The Py_simple Way"
+            ```python
+            from py_simple import plot_line_chart
+
+            plot_line_chart(
+                ["Mon", "Tue", "Wed"],
+                [3.5, 2.0, 4.5],
+                title="My Screen Time",
+                x_label="Day",
+                y_label="Hours",
+            )
+            ```
+
+        === "The Traditional Way"
+            ```python
+            import matplotlib.pyplot as plt
+
+            labels = ["Mon", "Tue", "Wed"]
+            values = [3.5, 2.0, 4.5]
+            fig, ax = plt.subplots()
+            ax.plot(labels, values, marker="o")
+            ax.set_title("My Screen Time")
+            ax.set_xlabel("Day")
+            ax.set_ylabel("Hours")
+            ax.spines[["top", "right"]].set_visible(False)
+            plt.show()
+            ```
+    """
+    import matplotlib.pyplot as plt
+
+    if not labels or not values:
+        raise ValueError("Labels and values cannot be empty.")
+
+    if len(labels) != len(values):
+        raise ValueError("Labels and values must have the same length.")
+
+    if not all(isinstance(v, (int, float)) and not isinstance(v, bool) for v in values):
+        raise ValueError("All values must be numbers.")
+
+    _, ax = plt.subplots()
+    ax.plot([str(label) for label in labels], values, marker="o")
+
+    if title:
+        ax.set_title(title)
+    if x_label:
+        ax.set_xlabel(x_label)
+    if y_label:
+        ax.set_ylabel(y_label)
+
+    ax.spines[["top", "right"]].set_visible(False)
+    plt.show()
+
+
+def plot_pie_chart(
+    labels: list[str],
+    values: list[int | float],
+    title: str | None = None,
+) -> None:
+    """
+    Displays a pie chart that shows how a whole splits into parts.
+
+    Each value becomes one slice. Labels name the slices, and an
+    optional title sits above the chart.
+
+    Args:
+        labels (list[str]): The name of each slice.
+        values (list[int | float]): The size of each slice. Values must
+            be numbers and cannot be negative.
+        title (str, optional): Text shown above the chart. Defaults to
+            `None` (no title).
+
+    Returns:
+        None: The pie chart is rendered directly via `plt.show()`.
+
+    Raises:
+        ValueError: If `labels` or `values` is empty, if they have
+            different lengths, if any value is not a number, or if any
+            value is negative.
+
+    Example:
+        === "The Py_simple Way"
+            ```python
+            from py_simple import plot_pie_chart
+
+            plot_pie_chart(
+                ["Walk", "Bus", "Bike"],
+                [12, 7, 5],
+                title="How we get to school",
+            )
+            ```
+
+        === "The Traditional Way"
+            ```python
+            import matplotlib.pyplot as plt
+
+            fig, ax = plt.subplots()
+            ax.pie([12, 7, 5], labels=["Walk", "Bus", "Bike"])
+            ax.set_title("How we get to school")
+            plt.show()
+            ```
+    """
+    import matplotlib.pyplot as plt
+
+    if not labels or not values:
+        raise ValueError("Labels and values cannot be empty.")
+
+    if len(labels) != len(values):
+        raise ValueError("Labels and values must have the same length.")
+
+    if not all(isinstance(v, (int, float)) and not isinstance(v, bool) for v in values):
+        raise ValueError("All values must be numbers.")
+
+    if any(v < 0 for v in values):
+        raise ValueError("Pie chart values cannot be negative.")
+
+    _, ax = plt.subplots()
+    ax.pie(values, labels=[str(label) for label in labels])
+    if title:
+        ax.set_title(title)
+    plt.show()
+

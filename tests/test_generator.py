@@ -4,9 +4,13 @@ import uuid
 
 import pytest
 
+from py_simple_package.src.py_simple import (
+    generate_coupon_code as public_generate_coupon_code,
+)
 from py_simple_package.src.py_simple.easy_generator import (
     EasyGeneratorError,
     generate_api_key,
+    generate_coupon_code,
     generate_otp,
     generate_password,
     generate_pin,
@@ -14,6 +18,7 @@ from py_simple_package.src.py_simple.easy_generator import (
     generate_slug,
     generate_username,
     generate_uuid,
+    generate_passphrase,
 )
 
 
@@ -314,3 +319,99 @@ def test_generate_username_respects_custom_separator(monkeypatch):
     )
 
     assert generate_username(separator="_") == "bright_dev_99"
+
+
+def test_generate_passphrase_default_shape():
+    parts = generate_passphrase().split("-")
+
+    assert len(parts) == 5
+    assert all(part.isalpha() for part in parts[:4])
+    assert parts[4].isdigit()
+    assert 10 <= int(parts[4]) <= 99
+
+
+@pytest.mark.parametrize("words", [1, 3, 6])
+def test_generate_passphrase_word_count(words):
+    parts = generate_passphrase(words).split("-")
+
+    assert len(parts) == words + 1
+
+
+def test_generate_passphrase_capitalizes_and_adds_number(monkeypatch):
+    choices = iter(["brave", "river", "calm", "lamp"])
+    coin_flips_then_number = iter([1, 0, 1, 0, 37])
+
+    monkeypatch.setattr(
+        "py_simple_package.src.py_simple.easy_generator.secrets.choice",
+        lambda options: next(choices),
+    )
+    monkeypatch.setattr(
+        "py_simple_package.src.py_simple.easy_generator.secrets.randbelow",
+        lambda upper_bound: next(coin_flips_then_number),
+    )
+
+    assert generate_passphrase() == "Brave-river-Calm-lamp-47"
+
+
+def test_generate_passphrase_alternates_adjectives_and_nouns(monkeypatch):
+    pools = []
+
+    def fake_choice(options):
+        pools.append(options)
+        return options[0]
+
+    monkeypatch.setattr(
+        "py_simple_package.src.py_simple.easy_generator.secrets.choice",
+        fake_choice,
+    )
+
+    generate_passphrase(4)
+
+    assert pools[0] == pools[2]
+    assert pools[1] == pools[3]
+    assert pools[0] != pools[1]
+
+
+def test_generate_passphrase_respects_custom_separator(monkeypatch):
+    choices = iter(["bold", "comet"])
+    coin_flips_then_number = iter([0, 0, 89])
+
+    monkeypatch.setattr(
+        "py_simple_package.src.py_simple.easy_generator.secrets.choice",
+        lambda options: next(choices),
+    )
+    monkeypatch.setattr(
+        "py_simple_package.src.py_simple.easy_generator.secrets.randbelow",
+        lambda upper_bound: next(coin_flips_then_number),
+    )
+
+    assert generate_passphrase(2, separator="_") == "bold_comet_99"
+
+
+@pytest.mark.parametrize("words", [0, -1])
+def test_generate_passphrase_rejects_invalid_word_count(words):
+    with pytest.raises(EasyGeneratorError, match="at least 1"):
+        generate_passphrase(words)
+
+
+def test_generate_coupon_code_uses_readable_alphabet():
+    alphabet = set("ABCDEFGHJKLMNPQRSTUVWXYZ23456789")
+    code = generate_coupon_code(12)
+    assert len(code) == 12
+    assert set(code) <= alphabet
+
+
+def test_generate_coupon_code_adds_prefix():
+    code = generate_coupon_code(4, prefix="SAVE")
+    prefix, random_part = code.split("-", maxsplit=1)
+    assert prefix == "SAVE"
+    assert len(random_part) == 4
+
+
+def test_generate_coupon_code_rejects_short_length():
+    with pytest.raises(EasyGeneratorError, match="at least 1"):
+        generate_coupon_code(0)
+
+
+def test_generate_coupon_code_public_import():
+    assert public_generate_coupon_code is generate_coupon_code

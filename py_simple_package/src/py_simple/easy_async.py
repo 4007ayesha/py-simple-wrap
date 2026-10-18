@@ -271,6 +271,59 @@ async def run_concurrent_map(func, items: list) -> list:
     return results
 
 
+async def run_after_delay(func, delay: float, *args) -> tuple:
+    """
+    Waits asynchronously before running a function.
+
+    Raises EasyAsyncError if the function raises an exception after the
+    delay finishes.
+
+    Args:
+        func (callable): The function to execute.
+        delay (float): Number of seconds to wait before running the function.
+        *args: Positional arguments to pass to the function.
+
+    Returns:
+        tuple: A tuple containing `(func.__name__, result)`.
+
+    Example:
+        === "The Py_simple Way"
+            ```python
+            import asyncio
+            from py_simple import run_after_delay
+
+            def greet(name):
+                return f"Hello, {name}!"
+
+            async def main():
+                return await run_after_delay(greet, 1.0, "Sam")
+
+            asyncio.run(main())  # -> ("greet", "Hello, Sam!")
+            ```
+
+        === "The Traditional Way"
+            ```python
+            import asyncio
+
+            def greet(name):
+                return f"Hello, {name}!"
+
+            async def main():
+                await asyncio.sleep(1.0)
+                loop = asyncio.get_running_loop()
+                result = await loop.run_in_executor(None, greet, "Sam")
+                return ("greet", result)
+            ```
+    """
+    try:
+        await asyncio.sleep(delay)
+        loop = asyncio.get_running_loop()
+        result = await loop.run_in_executor(None, func, *args)
+        return (func.__name__, result)
+    except Exception as e:
+        raise EasyAsyncError(f"\n\n\nERROR: {e}") from None
+
+
 async def run_with_retry(func, attempts: int, delay: float, *args) -> tuple:
     """
     Runs a function repeatedly until it succeeds or all attempts are
@@ -333,3 +386,81 @@ async def run_with_retry(func, attempts: int, delay: float, *args) -> tuple:
             if attempt == attempts - 1:
                 raise EasyAsyncError(f"\n\n\nERROR: {e}") from None
             await asyncio.sleep(delay)
+
+
+async def run_periodically(func, interval: float, times: int, *args) -> list:
+    """
+    Runs the same function repeatedly on a fixed schedule and returns
+    the results in order.
+
+    Waits `interval` seconds before each run (including the first),
+    runs `func` in a thread pool so it never blocks the event loop, and
+    collects one result per run. Raises EasyAsyncError if any run raises
+    an exception while running.
+
+    Args:
+        func (callable): The function to run, each time with the same
+            positional arguments.
+        interval (float): Seconds to wait before each run, including
+            the first one. Must be greater than 0.
+        times (int): How many times to run the function. Must be at
+            least 1.
+        *args: Positional arguments to pass to func on every run.
+
+    Returns:
+        list: One result per run, in the order the runs finished,
+            e.g. [4, 4, 4] for a function that returns 2 + 2.
+
+    Raises:
+        EasyAsyncError: If a run raises an exception, or if interval or
+            times are out of range.
+
+    Example:
+        === "The Py_simple Way"
+            ```python
+            import asyncio
+            from py_simple import run_periodically
+
+            def add():
+                return 2 + 2
+
+            async def main():
+                return await run_periodically(add, 1.0, 3)
+
+            asyncio.run(main())  # -> [4, 4, 4]
+            ```
+
+        === "The Traditional Way"
+            ```python
+            import asyncio
+
+            def add():
+                return 2 + 2
+
+            async def main():
+                loop = asyncio.get_running_loop()
+                results = []
+                for _ in range(3):
+                    await asyncio.sleep(1.0)
+                    results.append(await loop.run_in_executor(None, add))
+                return results
+
+            asyncio.run(main())  # -> [4, 4, 4]
+            ```
+    """
+    if not isinstance(interval, (int, float)) or interval <= 0:
+        raise EasyAsyncError(
+            f"interval must be a number greater than 0, got {interval!r}"
+        )
+    if not isinstance(times, int) or times < 1:
+        raise EasyAsyncError(f"times must be an integer of at least 1, got {times!r}")
+
+    loop = asyncio.get_running_loop()
+    results = []
+    for _ in range(times):
+        await asyncio.sleep(interval)
+        try:
+            results.append(await loop.run_in_executor(None, func, *args))
+        except Exception as e:
+            raise EasyAsyncError(f"\n\n\nERROR: {e}") from None
+    return results

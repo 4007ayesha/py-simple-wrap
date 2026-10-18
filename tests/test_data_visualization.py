@@ -4,11 +4,19 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import pytest
 
-from py_simple_package.src.py_simple import plot_box_plot as public_plot_box_plot
+from py_simple_package.src.py_simple import (
+    plot_box_plot as public_plot_box_plot,
+    plot_heatmap as public_plot_heatmap,
+    plot_line_chart as public_plot_line_chart,
+    plot_pie_chart as public_plot_pie_chart,
+)
 from py_simple_package.src.py_simple.easy_data_visualization import (
     _infer_type,
     plot_box_plot,
     plot_data,
+    plot_heatmap,
+    plot_line_chart,
+    plot_pie_chart,
 )
 
 # --- Tests for _infer_type ---
@@ -125,3 +133,255 @@ def test_get_data_range_empty_error():
 def test_get_data_range_invalid_type_error():
     with pytest.raises(ValueError):
         get_data_range([1, 2, "three"])
+
+
+# --- Tests for plot_data figure layout ---
+
+
+@pytest.mark.parametrize(
+    "X, Y, expected_charts",
+    [
+        ([1, 2, 3, 4, 5], None, 2),
+        (["cat", "dog", "cat"], None, 2),
+        ([1, 2, 3], [10, 20, 30], 1),
+        ([10, 20, 30], ["A", "B", "C"], 1),
+        (["A", "B", "C"], [10, 20, 30], 1),
+    ],
+)
+def test_plot_data_creates_one_subplot_per_chart(X, Y, expected_charts):
+    plot_data(X, Y)
+    fig = plt.gcf()
+    assert len(fig.axes) == expected_charts
+    plt.close(fig)
+
+
+def test_plot_data_single_chart_fills_figure_width():
+    plot_data(["Mon", "Tue", "Wed"], [3.5, 2.0, 4.5])
+    fig = plt.gcf()
+    assert fig.get_size_inches()[0] == 5
+    assert fig.axes[0].get_position().width > 0.5
+    plt.close(fig)
+
+
+def test_plot_data_removes_unused_subplot_slots(monkeypatch):
+    original_subplots = plt.subplots
+
+    def subplots_with_extra_axis(*args, **kwargs):
+        return original_subplots(1, 2, squeeze=False)
+
+    monkeypatch.setattr(plt, "subplots", subplots_with_extra_axis)
+
+    plot_data([1, 2, 3], [4, 5, 6])
+
+    fig = plt.gcf()
+    assert len(fig.axes) == 1
+    assert fig.axes[0].get_title() == "Scatter plot"
+    plt.close(fig)
+
+
+def test_plot_line_chart_draws_one_line():
+    plot_line_chart(["Mon", "Tue", "Wed"], [3.5, 2.0, 4.5])
+    ax = plt.gca()
+    assert len(ax.lines) == 1
+
+
+def test_plot_line_chart_points_match_values():
+    plot_line_chart(["A", "B", "C"], [1, 5, 3])
+    line = plt.gca().lines[0]
+    assert list(line.get_ydata()) == [1, 5, 3]
+
+
+def test_plot_line_chart_sets_title_and_axis_labels():
+    plot_line_chart(
+        ["Mon", "Tue"],
+        [3.5, 2.0],
+        title="My Screen Time",
+        x_label="Day",
+        y_label="Hours",
+    )
+    ax = plt.gca()
+    assert ax.get_title() == "My Screen Time"
+    assert ax.get_xlabel() == "Day"
+    assert ax.get_ylabel() == "Hours"
+
+
+def test_plot_line_chart_without_title_or_labels_leaves_them_blank():
+    plot_line_chart(["A", "B"], [1, 2])
+    ax = plt.gca()
+    assert ax.get_title() == ""
+    assert ax.get_xlabel() == ""
+    assert ax.get_ylabel() == ""
+    
+# --- Tests for plot_heatmap ---
+
+
+def test_plot_heatmap_draws_the_data():
+    data = [[1, 2, 3], [4, 5, 6]]
+
+    plot_heatmap(data)
+
+    image = plt.gcf().axes[0].images[0]
+    assert image.get_array().tolist() == data
+
+
+def test_plot_heatmap_sets_title_and_axis_labels():
+    plot_heatmap(
+        [[1, 2], [3, 4]],
+        title="Example Heatmap",
+        x_label="Columns",
+        y_label="Rows",
+    )
+
+    ax = plt.gcf().axes[0]
+    assert ax.get_title() == "Example Heatmap"
+    assert ax.get_xlabel() == "Columns"
+    assert ax.get_ylabel() == "Rows"
+
+
+def test_plot_heatmap_without_optional_labels_leaves_them_blank():
+    plot_heatmap([[1, 2], [3, 4]])
+
+    ax = plt.gcf().axes[0]
+    assert ax.get_title() == ""
+    assert ax.get_xlabel() == ""
+    assert ax.get_ylabel() == ""
+
+
+def test_plot_line_chart_uses_labels_on_x_axis():
+    plot_line_chart(["Mon", "Tue", "Wed"], [1, 2, 3])
+    fig = plt.gcf()
+    fig.canvas.draw()
+    tick_text = [t.get_text() for t in plt.gca().get_xticklabels()]
+    assert tick_text == ["Mon", "Tue", "Wed"]
+
+
+def test_plot_line_chart_accepts_numeric_labels():
+    plot_line_chart([2024, 2025, 2026], [10, 20, 30])
+    assert len(plt.gca().lines) == 1
+
+
+def test_plot_line_chart_empty_labels_raises_value_error():
+    with pytest.raises(ValueError, match="cannot be empty"):
+        plot_line_chart([], [1, 2])
+
+
+def test_plot_line_chart_empty_values_raises_value_error():
+    with pytest.raises(ValueError, match="cannot be empty"):
+        plot_line_chart(["A", "B"], [])
+
+
+def test_plot_line_chart_mismatched_lengths_raises_value_error():
+    with pytest.raises(ValueError, match="same length"):
+        plot_line_chart(["A", "B", "C"], [1, 2])
+
+
+def test_plot_line_chart_non_numeric_value_raises_value_error():
+    with pytest.raises(ValueError, match="must be numbers"):
+        plot_line_chart(["A", "B"], [1, "two"])
+
+
+def test_plot_line_chart_boolean_value_raises_value_error():
+    with pytest.raises(ValueError, match="must be numbers"):
+        plot_line_chart(["A", "B"], [1, True])
+
+
+def test_plot_line_chart_is_available_from_public_api():
+    assert public_plot_line_chart is plot_line_chart
+
+def test_plot_heatmap_adds_a_colorbar():
+    plot_heatmap([[1, 2], [3, 4]])
+
+    assert len(plt.gcf().axes) == 2
+
+
+def test_plot_heatmap_accepts_integer_and_float_values():
+    data = [[1, 2.5], [3, 4.5]]
+
+    plot_heatmap(data)
+
+    image = plt.gcf().axes[0].images[0]
+    assert image.get_array().tolist() == data
+
+
+def test_plot_heatmap_rejects_a_one_dimensional_list():
+    with pytest.raises(ValueError, match="two-dimensional"):
+        plot_heatmap([1, 2, 3])
+
+
+def test_plot_heatmap_empty_data_raises_value_error():
+    with pytest.raises(ValueError, match="cannot be empty"):
+        plot_heatmap([])
+
+
+def test_plot_heatmap_empty_row_raises_value_error():
+    with pytest.raises(ValueError, match="non-empty rows"):
+        plot_heatmap([[1, 2], []])
+
+
+def test_plot_heatmap_ragged_data_raises_value_error():
+    with pytest.raises(ValueError, match="rectangular"):
+        plot_heatmap([[1, 2], [3]])
+
+
+def test_plot_heatmap_non_numeric_value_raises_value_error():
+    with pytest.raises(ValueError, match="must be numbers"):
+        plot_heatmap([[1, 2], [3, "four"]])
+
+
+def test_plot_heatmap_boolean_value_raises_value_error():
+    with pytest.raises(ValueError, match="must be numbers"):
+        plot_heatmap([[1, 2], [3, True]])
+
+
+def test_plot_heatmap_is_available_from_public_api():
+    assert public_plot_heatmap is plot_heatmap
+
+
+def test_plot_pie_chart_draws_one_slice_per_value():
+    plot_pie_chart(["Walk", "Bus", "Bike"], [12, 7, 5])
+    wedges = plt.gca().patches
+    assert len(wedges) == 3
+
+
+def test_plot_pie_chart_sets_title():
+    plot_pie_chart(["A", "B"], [1, 3], title="Split")
+    assert plt.gca().get_title() == "Split"
+
+
+def test_plot_pie_chart_without_title_leaves_it_blank():
+    plot_pie_chart(["A", "B"], [1, 1])
+    assert plt.gca().get_title() == ""
+
+
+def test_plot_pie_chart_empty_labels_raises():
+    with pytest.raises(ValueError, match="cannot be empty"):
+        plot_pie_chart([], [1])
+
+
+def test_plot_pie_chart_empty_values_raises():
+    with pytest.raises(ValueError, match="cannot be empty"):
+        plot_pie_chart(["A"], [])
+
+
+def test_plot_pie_chart_mismatched_lengths_raises():
+    with pytest.raises(ValueError, match="same length"):
+        plot_pie_chart(["A", "B"], [1])
+
+
+def test_plot_pie_chart_rejects_non_numbers():
+    with pytest.raises(ValueError, match="must be numbers"):
+        plot_pie_chart(["A", "B"], [1, "two"])
+
+
+def test_plot_pie_chart_rejects_booleans():
+    with pytest.raises(ValueError, match="must be numbers"):
+        plot_pie_chart(["A"], [True])
+
+
+def test_plot_pie_chart_rejects_negative_values():
+    with pytest.raises(ValueError, match="negative"):
+        plot_pie_chart(["A", "B"], [1, -2])
+
+
+def test_plot_pie_chart_is_available_from_public_api():
+    assert public_plot_pie_chart is plot_pie_chart

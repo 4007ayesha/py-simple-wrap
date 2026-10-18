@@ -93,6 +93,47 @@ def to_kebab_case(text: str) -> str:
     return cleaned_text.lower().replace(" ", "-")
 
 
+def to_camel_case(text: str) -> str:
+    """
+    Converts text to camelCase.
+
+    Args:
+        text (str): Text to convert.
+
+    Returns:
+        str: Text converted to camelCase.
+
+    Example:
+        === "The Py_simple Way"
+            ```python
+            from py_simple import to_camel_case
+
+            result = to_camel_case("Hello World")  # -> "helloWorld"
+            ```
+
+        === "The Traditional Way"
+            ```python
+            import re
+
+            text = "Hello World"
+            cleaned = re.sub(r"[^\\w\\s]", " ", text)
+            words = cleaned.split()
+            result = (
+                words[0].lower() + "".join(w.capitalize() for w in words[1:])
+                if words
+                else ""
+            )
+            ```
+    """
+    cleaned_text = _separate_words(text)
+    if not cleaned_text:
+        return ""
+    words = cleaned_text.split()
+    if not words:
+        return ""
+    return words[0].lower() + "".join(_capitalize_word(w) for w in words[1:])
+
+
 def to_title_case(text: str) -> str:
     """
         Converts text to Title Case, where the first letter of each word

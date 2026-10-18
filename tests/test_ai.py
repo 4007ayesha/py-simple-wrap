@@ -12,38 +12,11 @@ from py_simple_package.src.py_simple.easy_ai import (
     ask_ai,
     get_model,
     summarize_text,
-    analyze_sentiment,
     translate_text,
     rewrite_text,
     analyze_sentiment,
 )
 
-
-
-def test_analyze_sentiment_success():
-    """Test that analyze_sentiment correctly returns model response content."""
-    mock_model = MagicMock()
-    mock_response = MagicMock()
-    mock_response.content = "Positive"
-    mock_model.invoke.return_value = mock_response
-
-    result = analyze_sentiment(mock_model, "I absolutely love this new tool!")
-
-    assert result == "Positive"
-    mock_model.invoke.assert_called_once()
-    call_args = mock_model.invoke.call_args[0][0]
-    assert "Analyze the sentiment" in call_args
-    assert "I absolutely love this new tool!" in call_args
-
-def test_analyze_sentiment_error():
-    """Test that analyze_sentiment wraps execution errors in EasyAIError."""
-    mock_model = MagicMock()
-    mock_model.invoke.side_effect = Exception("Model timeout")
-
-    with pytest.raises(EasyAIError) as exc_info:
-        analyze_sentiment(mock_model, "Some text")
-
-    assert "Model timeout" in str(exc_info.value)
 
 def test_summarize_text_success():
     """Test that summarize_text correctly returns model response content."""
@@ -388,6 +361,42 @@ def test_detect_language_empty_text():
 
     with pytest.raises(Exception):
         detect_language("")
+
+
+def test_chunk_text_keeps_words_whole():
+    from py_simple_package.src.py_simple.easy_ai import chunk_text
+
+    pieces = chunk_text("Pack a lunch and a notebook", max_chars=16)
+    assert pieces == ["Pack a lunch and", "a notebook"]
+    assert all(len(piece) <= 16 for piece in pieces)
+
+
+def test_chunk_text_splits_a_word_longer_than_the_limit():
+    from py_simple_package.src.py_simple.easy_ai import chunk_text
+
+    assert chunk_text("abcdefghij", max_chars=4) == ["abcd", "efgh", "ij"]
+
+
+def test_chunk_text_empty_string():
+    from py_simple_package.src.py_simple.easy_ai import chunk_text
+
+    assert chunk_text("") == []
+
+
+def test_chunk_text_rejects_bad_input():
+    from py_simple_package.src.py_simple.easy_ai import EasyAIError, chunk_text
+
+    with pytest.raises(EasyAIError):
+        chunk_text(12)
+    with pytest.raises(EasyAIError):
+        chunk_text("hello", max_chars=0)
+
+
+def test_chunk_text_public_import():
+    from py_simple_package.src.py_simple import chunk_text as public_chunk_text
+    from py_simple_package.src.py_simple.easy_ai import chunk_text
+
+    assert public_chunk_text is chunk_text
 
 
 def test_detect_language_invalid_type():

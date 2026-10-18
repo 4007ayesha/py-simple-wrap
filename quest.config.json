@@ -217,7 +217,7 @@
       {
         "title": "🧙 Beyond the Five Charts",
         "description": "plot_data() is the whole module — one spell that conjures histograms, bar charts, pies, lines, and scatters depending on what data you feed it. That's a solid foundation, but a lone spell doesn't make a spellbook. This quest is open-ended: expand the module however calls to you — new chart types, new options on plot_data() (saving to a file, custom titles/colors), sharper tests around its type-inference logic, or a deeper tutorial page showing off what it can already do. Any of it moves the needle; all of it makes this guild's chapter feel less like a single page.",
-        "active": true,
+        "active": false,
         "files": [
           {
             "path": "py_simple_package/src/py_simple/easy_data_visualization.py",
@@ -237,6 +237,31 @@
           }
         ],
         "issueBonuses": []
+      },
+      {
+        "title": "🔮 The Oracle Awakens",
+        "description": "easy_ai already speaks in many tongues — it summarizes, translates, rewrites, and reads the mood of a message. But an oracle who only answers when asked isn't much of an oracle. This quest is open-ended: give it a new power (keyword extraction, text classification, question generation — anything that fits the 'wrap an AI call in a friendly function' pattern), sharpen detect_language()'s heuristics (more languages, smarter scoring beyond simple keyword counts), or shore up test coverage around the trickier edge cases.",
+        "active": true,
+        "files": [
+          {
+            "path": "py_simple_package/src/py_simple/easy_ai.py",
+            "weight": 10
+          },
+          {
+            "path": "tests/test_ai.py",
+            "weight": 8
+          },
+          {
+            "path": "docs/tutorial/easy_ai.md",
+            "weight": 5
+          }
+        ],
+        "issueBonuses": [
+          {
+            "issueNumber": 369,
+            "points": 5
+          }
+        ]
       }
     ]
   }

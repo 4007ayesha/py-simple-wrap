@@ -5,6 +5,7 @@ from py_simple_package.src.py_simple.easy_strings import (
     is_alphanumeric,
     is_palindrome,
     remove_extra_spaces,
+    to_camel_case,
     to_kebab_case,
     to_snake_case,
     to_title_case,
@@ -58,6 +59,24 @@ def test_to_snake_case(text, expected):
 )
 def test_to_kebab_case(text, expected):
     assert to_kebab_case(text) == expected
+
+
+@pytest.mark.parametrize(
+    "text, expected",
+    [
+        ("Hello World", "helloWorld"),
+        ("hello_world", "helloWorld"),
+        ("hello-world", "helloWorld"),
+        ("helloWorld", "helloWorld"),
+        ("  Multiple   Spaces  ", "multipleSpaces"),
+        ("Python 3 Basics", "python3Basics"),
+        ("", ""),
+        ("   ", ""),
+        ("HELLO WORLD", "helloWorld"),
+    ],
+)
+def test_to_camel_case(text, expected):
+    assert to_camel_case(text) == expected
 
 
 @pytest.mark.parametrize(

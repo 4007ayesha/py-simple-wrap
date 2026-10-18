@@ -11,6 +11,7 @@ from py_simple_package.src.py_simple.easy_archive import (
     list_zip_contents,
     unzip_file,
     zip_files,
+    zip_contains_file,
     zip_folder,
 )
 
@@ -214,6 +215,35 @@ def test_list_zip_contents_invalid_zip_raises(tmp_path):
         list_zip_contents(str(fake_zip))
 
 
+def test_zip_contains_file_returns_true_for_existing_member(tmp_path):
+    project = make_folder_with_files(tmp_path)
+    zip_name = str(tmp_path / "project.zip")
+    zip_folder(str(project), zip_name)
+
+    assert zip_contains_file(zip_name, "sub/b.txt") is True
+
+
+def test_zip_contains_file_returns_false_for_missing_member(tmp_path):
+    project = make_folder_with_files(tmp_path)
+    zip_name = str(tmp_path / "project.zip")
+    zip_folder(str(project), zip_name)
+
+    assert zip_contains_file(zip_name, "missing.txt") is False
+
+
+def test_zip_contains_file_missing_zip_raises(tmp_path):
+    with pytest.raises(EasyArchiveError):
+        zip_contains_file(str(tmp_path / "nope.zip"), "notes.txt")
+
+
+def test_zip_contains_file_invalid_zip_raises(tmp_path):
+    fake_zip = tmp_path / "fake.zip"
+    fake_zip.write_text("plain text", encoding="utf-8")
+
+    with pytest.raises(EasyArchiveError):
+        zip_contains_file(str(fake_zip), "notes.txt")
+
+
 def test_add_to_zip_appends_file(tmp_path):
     file1 = tmp_path / "one.txt"
     file1.write_text("1", encoding="utf-8")
@@ -392,4 +422,3 @@ def test_get_zip_file_count_invalid_zip(tmp_path):
 
     with pytest.raises(EasyArchiveError, match="not a valid zip file"):
         get_zip_file_count(str(invalid_zip))
-        

@@ -402,3 +402,132 @@ def generate_username(separator: str = "-") -> str:
     num = secrets.randbelow(90) + 10  # 2-digit number between 10 and 99
 
     return f"{adj}{separator}{noun}{separator}{num}"
+
+
+def generate_passphrase(words: int = 4, separator: str = "-") -> str:
+    """
+    Generates a random, easy-to-remember passphrase in one call, like
+    "Brave-river-Calm-lamp-47". It is the readable counterpart to
+    `generate_password`: words alternate between adjectives and nouns,
+    each one is randomly capitalized, and a 2-digit number is added at
+    the end, all picked with the `secrets` module.
+
+    For high-security needs, prefer `generate_password`, or ask for more
+    words: each extra word makes the passphrase stronger.
+
+    Args:
+        words (int, optional): Number of words in the passphrase, not
+            counting the number at the end. Defaults to `4`.
+        separator (str, optional): The character placed between words.
+            Defaults to `-`.
+
+    Returns:
+        str: The generated passphrase (e.g., "Brave-river-Calm-lamp-47").
+
+    Raises:
+        EasyGeneratorError: If `words` is less than 1.
+
+    Example:
+        === "The Py_simple Way"
+```python
+            from py_simple import generate_passphrase
+
+            passphrase = generate_passphrase(separator="_")
+```
+
+        === "The Traditional Way"
+```python
+            import secrets
+
+            adjectives = ["brave", "calm", "bright", "quick"]
+            nouns = ["river", "lamp", "cloud", "stone"]
+
+            words = []
+            for i in range(4):
+                word = secrets.choice(adjectives if i % 2 == 0 else nouns)
+                if secrets.randbelow(2):
+                    word = word.capitalize()
+                words.append(word)
+            words.append(str(secrets.randbelow(90) + 10))
+            passphrase = "_".join(words)
+```
+    """
+    if words < 1:
+        raise EasyGeneratorError(
+            "\n\n\nERROR: Passphrase must have at least 1 word"
+        ) from None
+
+    adjectives = [
+        "brave", "calm", "bright", "quick", "gentle",
+        "happy", "clever", "silent", "wild", "bold",
+        "lucky", "sunny", "swift", "proud", "fresh",
+        "cozy", "jolly", "eager", "humble", "noble",
+    ]
+    nouns = [
+        "river", "lamp", "cloud", "stone", "tiger",
+        "maple", "ocean", "forest", "rocket", "garden",
+        "falcon", "harbor", "island", "comet", "willow",
+        "pebble", "lantern", "meadow", "panda", "candle",
+    ]
+
+    passphrase_words = []
+    for i in range(words):
+        word = secrets.choice(adjectives if i % 2 == 0 else nouns)
+        if secrets.randbelow(2):
+            word = word.capitalize()
+        passphrase_words.append(word)
+
+    number = secrets.randbelow(90) + 10  # 2-digit number between 10 and 99
+    passphrase_words.append(str(number))
+
+    return separator.join(passphrase_words)
+
+
+def generate_coupon_code(length: int = 8, prefix: str = "") -> str:
+    """
+    Generates a short coupon code made of uppercase letters and digits.
+
+    Characters that are easy to mix up (0, O, 1, and I) are left out, so
+    a code is easier to read aloud or type from a receipt.
+
+    Args:
+        length (int, optional): How many random characters to add after
+            the prefix. Defaults to `8`.
+        prefix (str, optional): Text placed at the start of the code,
+            such as `"SAVE"`. Defaults to an empty string.
+
+    Returns:
+        str: The coupon code, for example `"SAVE-K7MNP2QX"`. A hyphen is
+            added between the prefix and the random part when a prefix
+            is given.
+
+    Raises:
+        EasyGeneratorError: If `length` is less than 1.
+
+    Example:
+        === "The Py_simple Way"
+            ```python
+            from py_simple import generate_coupon_code
+
+            code = generate_coupon_code(prefix="SAVE")
+            ```
+
+        === "The Traditional Way"
+            ```python
+            import secrets
+
+            alphabet = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"
+            random_part = "".join(secrets.choice(alphabet) for _ in range(8))
+            code = f"SAVE-{random_part}"
+            ```
+    """
+    if length < 1:
+        raise EasyGeneratorError(
+            "\n\n\nERROR: Coupon code length must be at least 1"
+        ) from None
+
+    alphabet = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"
+    random_part = "".join(secrets.choice(alphabet) for _ in range(length))
+    if prefix:
+        return f"{prefix}-{random_part}"
+    return random_part

@@ -37,6 +37,8 @@ nav:
         - Easy AI: tutorial/easy_ai.md
         - Easy Async: tutorial/easy_async.md
         - Easy Archive: tutorial/easy_archive.md
+        - Easy Base64: tutorial/easy_base64.md
+        - Easy Bytes: tutorial/easy_bytes.md
         - Easy Colors: tutorial/easy_colors.md
         - Easy Config: tutorial/easy_config.md
         - Easy Converter: tutorial/easy_converter.md
@@ -48,12 +50,14 @@ nav:
         - Easy File Manager: tutorial/easy_file_manager.md
         - Easy Game: tutorial/easy_game.md
         - Easy Generator: tutorial/easy_generator.md
+        - Easy Hash: tutorial/easy_hash.md
         - Easy Images: tutorial/easy_images.md
         - Easy Json:
             - Tutorial 1: tutorial/easy_json.md
             - Tutorial 2: tutorial/easy_json2.md
         - Easy Lists: tutorial/easy_lists.md
         - Easy Logging: tutorial/easy_logging.md
+        - Easy Money: tutorial/easy_money.md
         - Easy Math:
             - Tutorial 1: tutorial/easy_math.md
             - Tutorial 2: tutorial/easy_math2.md
@@ -66,12 +70,18 @@ nav:
         - Easy Stats: tutorial/easy_stats.md
         - Easy Strings: tutorial/easy_strings.md
         - Easy Text: tutorial/easy_text.md
+        - Easy Terminal: tutorial/easy_terminal.md
+        - Easy URL: tutorial/easy_url.md
         - Easy Validator: tutorial/easy_validator.md
         - Easy Web: tutorial/easy_web.md
       - Project-Based Tutorials:
           - Mystery Number Quest: tutorial/easy_random_game_project.md
           - Signup Validation Check: tutorial/signup-validation-project.md
           - Dice Roll Arena: tutorial/dice-roll-arena-project.md
+          - Screen Time Detective: tutorial/screen-time-detective-project.md
+          - Lunch Picker: tutorial/lunch-picker-project.md
+          - Palette Journal: tutorial/palette-journal-project.md
+          - Homework Log: tutorial/homework-log-project.md
   - How To:
       - Contributing: how-to/contributing.md
   - Contributor Hub:
@@ -79,9 +89,12 @@ nav:
       - Docstring Template: contributor-hub/docstring_template.md
       - Tutorial Template: contributor-hub/tutorial_template.md
       - Custom Exception Template: contributor-hub/error_template.md
+      - Module Tests Template: contributor-hub/tests_template.md
   - Reference:
       - Easy AI: reference/easy_ai.md
       - Easy Archive: reference/easy_archive.md
+      - Easy Base64: reference/easy_base64.md
+      - Easy Bytes: reference/easy_bytes.md
       - Easy Async: reference/easy_async.md
       - Easy Colors: reference/easy_colors.md
       - Easy Config: reference/easy_config.md
@@ -94,17 +107,21 @@ nav:
       - Easy Flow: reference/easy_flow.md
       - Easy Game: reference/easy_game
       - Easy Generator: reference/easy_generator.md
+      - Easy Hash: reference/easy_hash.md
       - Easy Images: reference/easy_images.md
       - Easy Json: reference/easy_json.md
       - Easy Lists: reference/easy_lists.md
       - Easy Logging: reference/easy_logging.md
       - Easy Math: reference/easy_math.md
+      - Easy Money: reference/easy_money.md
       - Easy Numbers: reference/easy_numbers.md
       - Easy Random: reference/easy_random.md
       - Easy Regex: reference/easy_regex.md
       - Easy Stats: reference/easy_stats.md
       - Easy Strings: reference/easy_strings.md
       - Easy Text: reference/easy_text.md
+      - Easy Terminal: reference/easy_terminal.md
+      - Easy URL: reference/easy_url.md
       - Easy Validator: reference/easy_validator.md
       - Easy Web: reference/easy_web.md
       - Easy SQL: reference/easy_sql.md

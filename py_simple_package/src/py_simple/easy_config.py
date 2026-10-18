@@ -158,3 +158,184 @@ def create_env_file(
                 f.write(f"{key}={value}\n")
     except Exception as e:
         raise EasyConfigError(f"\n\n\nERROR: {e}") from None
+
+
+def requirements_config(
+    packages: list[str],
+    file_path: str = "requirements.txt",
+    overwrite: bool = False,
+) -> None:
+    """
+    Creates a requirements.txt file with the provided package names.
+
+    Writes one package name per line. If the file already exists
+    and overwrite is False, the file is left alone. Any missing parent
+    directories are created automatically.
+
+    Args:
+        packages (list[str]): List of package names to write to the file.
+        file_path (str, optional): Destination path for the requirements
+            file. Defaults to "requirements.txt".
+        overwrite (bool, optional): Whether to overwrite an existing file.
+            Defaults to False.
+
+    Returns:
+        None
+
+    Raises:
+        EasyConfigError: If the file or parent directory cannot be written.
+
+    Example:
+        === "The Py_simple Way"
+            ```python
+            from py_simple import requirements_config
+
+            requirements_config(["numpy", "pandas", "scikit-learn"])
+            ```
+
+        === "The Traditional Way"
+            ```python
+            packages = ["numpy", "pandas", "scikit-learn"]
+
+            with open("requirements.txt", "w", encoding="utf-8") as f:
+                for package in packages:
+                    f.write(f"{package}\\n")
+            ```
+    """
+    if os.path.exists(file_path) and not overwrite:
+        return
+
+    try:
+        parent_dir = os.path.dirname(file_path)
+        if parent_dir:
+            os.makedirs(parent_dir, exist_ok=True)
+
+        with open(file_path, "w", encoding="utf-8") as f:
+            for package in packages:
+                f.write(f"{package}\n")
+    except Exception as e:
+        raise EasyConfigError(f"\n\n\nERROR: {e}") from None
+
+
+def read_env_file(file_path: str = ".env") -> dict[str, str]:
+    """
+    Reads a .env configuration file into a dictionary.
+
+    Ignores blank lines and comments. Lines are split on the first '='
+    so values may contain additional '=' characters.
+
+    Args:
+        file_path (str, optional): Path to the .env file to read.
+            Defaults to ".env".
+
+    Returns:
+        dict[str, str]: Dictionary of configuration keys and values.
+
+    Raises:
+        EasyConfigError: If the file cannot be read.
+
+    Example:
+        === "The Py_simple Way"
+            ```python
+            from py_simple import read_env_file
+
+            config = read_env_file(".env")
+            ```
+
+        === "The Traditional Way"
+            ```python
+            config = {}
+            with open(".env", encoding="utf-8") as f:
+                for line in f:
+                    if "=" in line and not line.startswith("#"):
+                        key, value = line.strip().split("=", 1)
+                        config[key] = value
+            ```
+    """
+    try:
+        variables = {}
+        with open(file_path, encoding="utf-8") as f:
+            for line in f:
+                stripped_line = line.strip()
+                if not stripped_line or stripped_line.startswith("#"):
+                    continue
+                if "=" not in stripped_line:
+                    continue
+                key, value = stripped_line.split("=", 1)
+                key = key.strip()
+                value = value.strip()
+                variables[key] = value
+        return variables
+    except Exception as e:
+        raise EasyConfigError(f"\n\n\nERROR: {e}") from None
+
+
+def gitignore_config(at_root: bool = True) -> None:
+    """
+    Creates a starter .gitignore file for Python projects from a template.
+
+    The .gitignore is written to '.gitignore'. If the file already exists,
+    it is left alone. Any missing parent directories are created
+    automatically.
+
+    Args:
+        at_root (bool, optional): When True, the path is relative to the
+            current working directory. When False, the git repository
+            root is looked up and the .gitignore is placed there.
+            Defaults to True.
+
+    Returns:
+        None
+
+    Raises:
+        EasyConfigError: If the template cannot be read, the git repository
+            cannot be found, or the file cannot be written.
+
+    Example:
+        === "The Py_simple Way"
+            ```python
+            from py_simple import gitignore_config
+
+            gitignore_config()
+            ```
+
+        === "The Traditional Way"
+            ```python
+            template = \"\"\"# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+
+# Virtual environments
+venv/
+.venv/
+
+# Environment variables
+.env
+\"\"\"
+            with open(".gitignore", "w", encoding="utf-8") as f:
+                f.write(template)
+            ```
+    """
+    try:
+        if at_root:
+            gitignore_path = ".gitignore"
+        else:
+            import git
+
+            git_repo = git.Repo(os.getcwd(), search_parent_directories=True)
+            git_root = git_repo.git.rev_parse("--show-toplevel")
+            gitignore_path = f"{git_root}/.gitignore"
+
+        if not os.path.exists(gitignore_path):
+            template_path = (
+                files("py_simple") / "config_templates" / "gitignore-template.txt"
+            )
+            with template_path.open(encoding="utf-8") as f:
+                template = f.read()
+            parent_dir = os.path.dirname(gitignore_path)
+            if parent_dir:
+                os.makedirs(parent_dir, exist_ok=True)
+            with open(gitignore_path, "w", encoding="utf-8") as f:
+                f.write(template)
+    except Exception as e:
+        raise EasyConfigError(f"\n\n\nERROR: {e}") from None

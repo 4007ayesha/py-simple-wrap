@@ -2,15 +2,18 @@ import sqlite3
 
 import pytest
 
+from py_simple_package.src.py_simple import list_tables as public_list_tables
 from py_simple_package.src.py_simple.easy_sql import (
     EasySqlError,
     conditional_run_select,
     delete_all_from_table,
+    list_tables,
     open_db,
     run_delete,
     run_insert,
     run_select,
     run_update,
+    table_exists,
 )
 
 
@@ -138,6 +141,43 @@ class TestRunSelect:
                 "users",
                 "name UNION SELECT sql FROM sqlite_master",
             )
+
+class TestTableExists:
+    """Tests for table_exists function."""
+
+    def setup_method(self):
+        """Create a fresh in-memory database before each test."""
+        self.conn, self.cursor = open_db(":memory:")
+        self.cursor.execute(
+            "CREATE TABLE users (id INTEGER PRIMARY KEY, name TEXT)"
+        )
+        self.conn.commit()
+
+    def teardown_method(self):
+        """Close the connection after each test."""
+        self.conn.close()
+
+    def test_table_exists_when_table_exists(self):
+        """Test that table_exists returns True for an existing table."""
+        assert table_exists(self.conn, self.cursor, "users") is True
+
+    def test_table_exists_when_table_does_not_exist(self):
+        """Test that table_exists returns False for a missing table."""
+        assert table_exists(self.conn, self.cursor, "products") is False
+
+    def test_table_exists_invalid_table_name(self):
+        """Test that an invalid table name raises EasySqlError."""
+        with pytest.raises(EasySqlError):
+            table_exists(
+                self.conn,
+                self.cursor,
+                "users; DROP TABLE users;--",
+            )
+
+    def test_table_exists_non_string_table_name(self):
+        """Test that a non-string table name raises EasySqlError."""
+        with pytest.raises(EasySqlError):
+            table_exists(self.conn, self.cursor, 123)
 
 
 class TestConditionalRunSelect:
@@ -812,3 +852,32 @@ class TestIntegration:
         self.cursor.execute("SELECT * FROM users")
         rows = self.cursor.fetchall()
         assert len(rows) == 0
+
+
+class TestListTables:
+    """Tests for list_tables."""
+
+    def test_returns_user_tables_in_name_order(self):
+        connection, cursor = open_db(":memory:")
+        cursor.execute("CREATE TABLE zebra (id INTEGER)")
+        cursor.execute("CREATE TABLE apples (id INTEGER)")
+        connection.commit()
+
+        assert list_tables(connection, cursor) == ["apples", "zebra"]
+        connection.close()
+
+    def test_empty_database_returns_empty_list(self):
+        connection, cursor = open_db(":memory:")
+        assert list_tables(connection, cursor) == []
+        connection.close()
+
+    def test_mismatched_cursor_raises(self):
+        connection, _cursor = open_db(":memory:")
+        other, other_cursor = open_db(":memory:")
+        with pytest.raises(EasySqlError):
+            list_tables(connection, other_cursor)
+        connection.close()
+        other.close()
+
+    def test_public_import(self):
+        assert public_list_tables is list_tables
