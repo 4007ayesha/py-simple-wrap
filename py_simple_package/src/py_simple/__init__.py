@@ -184,6 +184,7 @@ from .easy_generator import (
 )
 from .easy_hash import (
     EasyHashError,
+    hash_bytes,
     hash_file,
     hash_text,
     hashes_match,
