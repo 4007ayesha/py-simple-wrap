@@ -861,6 +861,15 @@
         "code",
         "documentation"
       ]
+    },
+    {
+      "login": "montionugera",
+      "name": "Pasit Nusso",
+      "avatar_url": "https://github.com/montionugera.png",
+      "profile": "https://github.com/montionugera",
+      "contributions": [
+        "test"
+      ]
     }
   ]
 }

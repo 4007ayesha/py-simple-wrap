@@ -858,6 +858,12 @@ Every tile below is a real person who showed up for this project. 💛
         <sub><b>Rajeev Atmakuri</b></sub>
       </a>
     </td>
+    <td align="center" valign="top" width="8.6%">
+      <a href="https://github.com/montionugera">
+        <img src="https://github.com/montionugera.png" width="100px;" alt="Pasit Nusso"/><br />
+        <sub><b>Pasit Nusso</b></sub>
+      </a>
+    </td>
   </tr>
 </table>
 
