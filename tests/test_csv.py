@@ -535,6 +535,28 @@ class TestAppendRowToCsv:
         with pytest.raises(ValueError, match="File is empty"):
             append_row_to_csv(str(empty_file), {"Name": "Charlie", "Age": "29"})
 
+    def test_append_newline_only_file_raises_value_error(self, tmp_path):
+        newline_file = tmp_path / "newline_only.csv"
+        newline_file.write_text("\n", encoding="utf-8")
+
+        with pytest.raises(ValueError, match="File is empty"):
+            append_row_to_csv(str(newline_file), {"Name": "Charlie", "Age": "29"})
+
+    def test_append_dict_custom_delimiter(self, tmp_path):
+        tsv_file = tmp_path / "people.tsv"
+        tsv_file.write_text("Name\tAge\nAlice\t24\n", encoding="utf-8")
+
+        append_row_to_csv(str(tsv_file), {"Name": "David", "Age": "35"}, delimiter="\t")
+        rows = read_csv_to_list(str(tsv_file), delimiter="\t")
+        assert rows[-1] == {"Name": "David", "Age": "35"}
+
+    def test_append_list_custom_delimiter(self, tmp_path):
+        tsv_file = tmp_path / "people.tsv"
+        tsv_file.write_text("Name\tAge\nAlice\t24\n", encoding="utf-8")
+
+        append_row_to_csv(str(tsv_file), ["David", "35"], delimiter="\t")
+        rows = read_csv_to_list(str(tsv_file), return_dict=False, delimiter="\t")
+        assert rows[-1] == ["David", "35"]
     def test_append_blank_header_line_raises_value_error(self, tmp_path):
         blank_header = tmp_path / "blank.csv"
         blank_header.write_text("\n", encoding="utf-8")
