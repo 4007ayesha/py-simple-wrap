@@ -78,6 +78,44 @@ Example output:
 
 `run_at_the_same_time_with_params()` allows every function to receive its own arguments while still running all tasks together.
 
+## Limit concurrent map jobs
+
+Use `run_concurrent_map_limited()` when you want to process a list without
+submitting every item at once. It runs ordinary synchronous callbacks in
+the event loop's executor and returns results in input order.
+
+```python
+import asyncio
+from py_simple import run_concurrent_map_limited
+
+
+def square(number):
+    return number * number
+
+
+async def main():
+    return await run_concurrent_map_limited(square, [1, 2, 3, 4], 2)
+
+
+print(asyncio.run(main()))  # [1, 4, 9, 16]
+```
+
+The final argument is the maximum number of submitted jobs at once. It
+must be a positive integer, excluding booleans. A limit of one processes
+items one at a time; a larger limit still uses only as many workers as
+there are items. The executor may run fewer jobs than the chosen limit.
+Empty input returns `[]`. Async callbacks are not supported.
+
+An invalid limit or an ordinary callback failure raises `EasyAsyncError`.
+If a callback fails, the other items are still attempted and all workers
+are awaited; the first error in input order is then reported. Side effects
+from successful calls are not rolled back.
+
+Cancelling the await propagates `asyncio.CancelledError` and stops the
+internal workers from submitting more items. It cannot forcibly terminate
+an already running Python thread; those callbacks may finish later. When
+using `asyncio.run()`, its executor shutdown can wait for those threads.
+
 ## Why use these helpers?
 
 Instead of manually creating thread pools and handling results every time, you can simply write:
