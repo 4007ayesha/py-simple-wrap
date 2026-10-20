@@ -80,7 +80,7 @@ jobs:
             base=$(basename "$file" .py)
             [ "$base" = "__init__" ] && continue
 
-            count=$(grep -cE '^(async )?def ' "$file")
+            count=$(grep -cE '^(async )?def ' "$file" || true)
             echo "$base: $count functions"
 
             if [ "$count" -lt 10 ]; then
