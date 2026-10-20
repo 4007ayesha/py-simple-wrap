@@ -7,11 +7,44 @@ import pytest
 
 from py_simple_package.src.py_simple.easy_hash import (
     EasyHashError,
+    hash_bytes,
     hash_file,
     hash_text,
     hashes_match,
     verify_file_hash,
 )
+
+
+@pytest.mark.parametrize(
+    "algorithm, expected",
+    [
+        ("sha256", "2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824"),
+        ("sha1", "aaf4c61ddcc5e8a2dabede0f3b482cd9aea9434d"),
+        ("md5", "5d41402abc4b2a76b9719d911017c592"),
+    ],
+)
+def test_hash_bytes_supported_algorithms(algorithm, expected):
+    assert hash_bytes(b"hello", algorithm) == expected
+
+
+@pytest.mark.parametrize("data", [b"", b"\x00\xffbinary data"])
+def test_hash_bytes_handles_empty_and_binary_data(data):
+    assert hash_bytes(data) == hashlib.sha256(data).hexdigest()
+
+
+@pytest.mark.parametrize(
+    "data", [None, "hello", bytearray(b"hello"), memoryview(b"hello")]
+)
+def test_hash_bytes_rejects_non_bytes(data):
+    with pytest.raises(EasyHashError, match="data must be bytes"):
+        hash_bytes(data)
+
+
+def test_hash_bytes_rejects_unsupported_algorithm():
+    with pytest.raises(
+        EasyHashError, match="algorithm must be 'sha256', 'sha1', or 'md5'"
+    ):
+        hash_bytes(b"hello", "sha512")
 
 
 def test_hash_text_sha256_of_hello():
@@ -229,3 +262,11 @@ def test_verify_file_hash_public_imports(tmp_path):
     assert public_verify is module_verify
     assert public_verify(note, expected) is True
     assert module_verify(note, "0" * 64) is False
+
+
+def test_hash_bytes_public_imports():
+    from py_simple import hash_bytes as public_hash
+    from py_simple.easy_hash import hash_bytes as module_hash
+
+    assert public_hash is module_hash
+    assert public_hash(b"hello") == module_hash(b"hello")

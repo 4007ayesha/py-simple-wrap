@@ -1,5 +1,5 @@
 """
-easy_hash creates checksums for text and files without the hashlib boilerplate.
+easy_hash creates checksums for text, bytes, and files without the hashlib boilerplate.
 """
 
 import hashlib
@@ -26,6 +26,46 @@ def _new_hasher(algorithm: str):
     if algorithm not in _ALGORITHMS:
         raise EasyHashError("\n\nERROR: algorithm must be 'sha256', 'sha1', or 'md5'.")
     return hashlib.new(algorithm)
+
+
+def hash_bytes(data: bytes, algorithm: str = "sha256") -> str:
+    """
+    Create a checksum for bytes that are already in memory.
+
+    Args:
+        data (bytes): The binary data to hash.
+        algorithm (str, optional): One of `"sha256"`, `"sha1"`, or
+            `"md5"`. Defaults to `"sha256"`.
+
+    Returns:
+        str: The checksum as lowercase hex.
+
+    Raises:
+        EasyHashError: If `data` is not bytes or the algorithm is not
+            supported.
+
+    Example:
+        === "The Py_simple Way"
+            ```python
+            from py_simple import hash_bytes
+
+            digest = hash_bytes(b"hello")
+            print(digest)
+            ```
+
+        === "The Traditional Way"
+            ```python
+            import hashlib
+
+            digest = hashlib.sha256(b"hello").hexdigest()
+            print(digest)
+            ```
+    """
+    if not isinstance(data, bytes):
+        raise EasyHashError("\n\nERROR: data must be bytes.")
+    hasher = _new_hasher(algorithm)
+    hasher.update(data)
+    return hasher.hexdigest()
 
 
 def hash_text(text: str, algorithm: str = "sha256") -> str:
