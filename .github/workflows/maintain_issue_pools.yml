@@ -8,6 +8,7 @@ on:
 jobs:
   top-up-new-module-issues:
     runs-on: ubuntu-latest
+    if: false  # paused — new-module issue pool on hold; remove this line to re-enable
     permissions:
       issues: write
     steps:
@@ -92,4 +93,3 @@ jobs:
               fi
             fi
           done
-
