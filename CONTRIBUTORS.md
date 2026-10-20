@@ -462,6 +462,12 @@ Every tile below is a real person who showed up for this project. 💛
         <sub><b>xhwm41319-a11y</b></sub>
       </a>
     </td>
+    <td align="center" valign="top" width="8.6%">
+      <a href="https://github.com/hmmlavi">
+        <img src="https://github.com/hmmlavi.png" width="100px;" alt="lakshit"/><br />
+        <sub><b>lakshit</b></sub>
+      </a>
+    </td>
   </tr>
 </table>
 
@@ -874,6 +880,12 @@ Every tile below is a real person who showed up for this project. 💛
       <a href="https://github.com/xhwm41319-a11y">
         <img src="https://github.com/xhwm41319-a11y.png" width="100px;" alt="xhwm41319-a11y"/><br />
         <sub><b>xhwm41319-a11y</b></sub>
+      </a>
+    </td>
+    <td align="center" valign="top" width="8.6%">
+      <a href="https://github.com/hmmlavi">
+        <img src="https://github.com/hmmlavi.png" width="100px;" alt="lakshit"/><br />
+        <sub><b>lakshit</b></sub>
       </a>
     </td>
   </tr>

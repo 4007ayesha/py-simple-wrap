@@ -879,6 +879,16 @@
       "contributions": [
         "test"
       ]
+    },
+    {
+      "login": "hmmlavi",
+      "name": "lakshit",
+      "avatar_url": "https://github.com/hmmlavi.png",
+      "profile": "https://github.com/hmmlavi",
+      "contributions": [
+        "test",
+        "code"
+      ]
     }
   ]
 }
