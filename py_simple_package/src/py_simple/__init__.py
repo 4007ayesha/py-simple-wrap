@@ -181,6 +181,7 @@ from .easy_generator import (
     generate_uuid,
     generate_passphrase,
     generate_coupon_code,
+    generate_random_hex,
 )
 from .easy_hash import (
     EasyHashError,
