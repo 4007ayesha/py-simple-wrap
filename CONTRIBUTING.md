@@ -160,7 +160,6 @@ not sure how to format a docstring or write a tutorial page, check the
 on the docs site — it has copy-paste templates for both, built from this
 project's actual conventions.
 
-
 8. **Commit Your Changes**: Save your progress with a helpful message:
 
    ```bash
