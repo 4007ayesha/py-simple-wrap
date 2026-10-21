@@ -3,6 +3,7 @@ easy_base64 turns text into Base64 and back without the encoding boilerplate.
 """
 
 import base64
+import binascii
 
 
 class EasyBase64Error(Exception):
@@ -42,6 +43,7 @@ def encode_text(text: str) -> str:
         === "The Traditional Way"
             ```python
             import base64
+import binascii
 
             secret = base64.b64encode("hello".encode("utf-8")).decode("ascii")
             ```
@@ -75,6 +77,7 @@ def decode_text(encoded: str) -> str:
         === "The Traditional Way"
             ```python
             import base64
+import binascii
 
             message = base64.b64decode("aGVsbG8=").decode("utf-8")
             ```
@@ -108,6 +111,7 @@ def is_base64(value: str) -> bool:
         === "The Traditional Way"
             ```python
             import base64
+import binascii
 
             try:
                 base64.b64decode("aGVsbG8=", validate=True)
@@ -152,6 +156,7 @@ def encode_bytes(data: bytes) -> str:
         === "The Traditional Way"
             ```python
             import base64
+import binascii
 
             encoded = base64.b64encode(b"\\x00\\x01\\x02").decode("ascii")
             ```
@@ -189,6 +194,7 @@ def decode_to_bytes(encoded: str) -> bytes:
         === "The Traditional Way"
             ```python
             import base64
+import binascii
 
             raw = base64.b64decode("AAEC")
             ```
@@ -197,5 +203,5 @@ def decode_to_bytes(encoded: str) -> bytes:
         raise EasyBase64Error("\n\nERROR: encoded text must be a string.")
     try:
         return base64.b64decode(encoded, validate=True)
-    except (ValueError, UnicodeDecodeError) as error:
+    except (binascii.Error, ValueError, UnicodeDecodeError) as error:
         raise EasyBase64Error(f"\n\nERROR: {error}") from None
