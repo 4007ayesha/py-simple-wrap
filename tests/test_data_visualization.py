@@ -61,6 +61,8 @@ def test_infer_type_empty_list_raises_value_error():
 def mock_plt_show(monkeypatch):
     """Prevent matplotlib from popping up windows during tests."""
     monkeypatch.setattr(plt, "show", lambda: None)
+    yield
+    plt.close("all")
 
 
 def test_plot_data_quantitative_single_series(capsys):
