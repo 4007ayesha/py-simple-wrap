@@ -43,7 +43,6 @@ def encode_text(text: str) -> str:
         === "The Traditional Way"
             ```python
             import base64
-import binascii
 
             secret = base64.b64encode("hello".encode("utf-8")).decode("ascii")
             ```
@@ -77,7 +76,6 @@ def decode_text(encoded: str) -> str:
         === "The Traditional Way"
             ```python
             import base64
-import binascii
 
             message = base64.b64decode("aGVsbG8=").decode("utf-8")
             ```
@@ -111,7 +109,6 @@ def is_base64(value: str) -> bool:
         === "The Traditional Way"
             ```python
             import base64
-import binascii
 
             try:
                 base64.b64decode("aGVsbG8=", validate=True)
@@ -156,7 +153,6 @@ def encode_bytes(data: bytes) -> str:
         === "The Traditional Way"
             ```python
             import base64
-import binascii
 
             encoded = base64.b64encode(b"\\x00\\x01\\x02").decode("ascii")
             ```
@@ -194,7 +190,6 @@ def decode_to_bytes(encoded: str) -> bytes:
         === "The Traditional Way"
             ```python
             import base64
-import binascii
 
             raw = base64.b64decode("AAEC")
             ```
