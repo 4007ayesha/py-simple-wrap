@@ -354,6 +354,7 @@ from .easy_url import (
     EasyUrlError,
     add_query_param,
     get_domain,
+    get_path,
     is_https,
 )
 from .easy_web import (
