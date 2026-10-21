@@ -86,6 +86,7 @@ from .easy_converter import (
     sq_meters_to_sq_feet,
 )
 from .easy_csv import (
+    merge_csv_files,
     count_csv_rows,
     drop_empty_csv_rows,
     filter_csv_rows,
