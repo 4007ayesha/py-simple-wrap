@@ -232,6 +232,7 @@ from .easy_money import (
     calculate_discount,
     format_money,
     split_bill,
+    split_bill_exact,
 )
 from .easy_logging import (
     clear_log_file,
