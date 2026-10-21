@@ -61,6 +61,24 @@ checksum, missing/unreadable files and unsupported algorithms raise
 Checksums help detect changed contents. Compare against a checksum from a
 trusted source; a matching checksum alone does not prove who made the file.
 
+## Compare two files by checksum
+
+Use `compare_file_hashes()` to check whether two files on disk have identical
+checksums without loading either file completely into memory. It reads both
+files in 64 KiB chunks:
+
+```python
+from py_simple import compare_file_hashes
+
+identical = compare_file_hashes("notes.txt", "backup.txt")
+print(identical)  # True or False
+```
+
+Like `verify_file_hash()`, you can pass string paths or `pathlib.Path` objects
+and specify `"sha256"`, `"sha1"`, or `"md5"` (defaults to `"sha256"`). If
+either file cannot be read or the algorithm is unsupported, an `EasyHashError`
+is raised.
+
 ## Why use these helpers?
 
 The usual version is a few steps every time:

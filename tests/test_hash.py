@@ -5,8 +5,12 @@ from pathlib import Path
 
 import pytest
 
+from py_simple_package.src.py_simple import (
+    compare_file_hashes as public_compare_file_hashes,
+)
 from py_simple_package.src.py_simple.easy_hash import (
     EasyHashError,
+    compare_file_hashes,
     hash_bytes,
     hash_file,
     hash_text,
@@ -270,3 +274,108 @@ def test_hash_bytes_public_imports():
 
     assert public_hash is module_hash
     assert public_hash(b"hello") == module_hash(b"hello")
+
+
+@pytest.mark.parametrize("algorithm", ["sha256", "sha1", "md5"])
+@pytest.mark.parametrize("as_path", [False, True])
+def test_compare_file_hashes_identical_files(tmp_path, algorithm, as_path):
+    file1 = tmp_path / "file1.txt"
+    file2 = tmp_path / "file2.txt"
+    content = b"identical content for comparison"
+    file1.write_bytes(content)
+    file2.write_bytes(content)
+
+    p1 = file1 if as_path else str(file1)
+    p2 = file2 if as_path else str(file2)
+
+    assert compare_file_hashes(p1, p2, algorithm=algorithm) is True
+
+
+def test_compare_file_hashes_different_files(tmp_path):
+    file1 = tmp_path / "file1.txt"
+    file2 = tmp_path / "file2.txt"
+    file1.write_text("content A", encoding="utf-8")
+    file2.write_text("content B", encoding="utf-8")
+
+    assert compare_file_hashes(str(file1), str(file2)) is False
+
+
+def test_compare_file_hashes_empty_files(tmp_path):
+    file1 = tmp_path / "empty1.txt"
+    file2 = tmp_path / "empty2.txt"
+    file1.write_bytes(b"")
+    file2.write_bytes(b"")
+
+    assert compare_file_hashes(file1, file2) is True
+
+
+def test_compare_file_hashes_mixed_path_types(tmp_path):
+    file1 = tmp_path / "file1.txt"
+    file2 = tmp_path / "file2.txt"
+    file1.write_bytes(b"same bytes")
+    file2.write_bytes(b"same bytes")
+
+    assert compare_file_hashes(str(file1), file2) is True
+    assert compare_file_hashes(file1, str(file2)) is True
+
+
+@pytest.mark.parametrize("size", [65536, 65537, 2 * 65536 + 17])
+def test_compare_file_hashes_large_chunked(tmp_path, size):
+    content = (bytes(range(256)) * (size // 256 + 1))[:size]
+    file1 = tmp_path / "large1.bin"
+    file2 = tmp_path / "large2.bin"
+    file3 = tmp_path / "large3.bin"
+
+    file1.write_bytes(content)
+    file2.write_bytes(content)
+    file3.write_bytes(content + b"extra_byte")
+
+    assert compare_file_hashes(file1, file2) is True
+    assert compare_file_hashes(file1, file3) is False
+
+
+def test_compare_file_hashes_missing_files(tmp_path):
+    existing = tmp_path / "exists.txt"
+    existing.write_text("hello", encoding="utf-8")
+    missing = tmp_path / "missing.txt"
+
+    with pytest.raises(EasyHashError, match="ERROR:"):
+        compare_file_hashes(missing, existing)
+
+    with pytest.raises(EasyHashError, match="ERROR:"):
+        compare_file_hashes(existing, missing)
+
+
+@pytest.mark.parametrize("algorithm", ["sha512", "SHA256", "", None, 123])
+def test_compare_file_hashes_unsupported_algorithm(tmp_path, algorithm):
+    file1 = tmp_path / "file1.txt"
+    file2 = tmp_path / "file2.txt"
+    file1.write_text("hello", encoding="utf-8")
+    file2.write_text("hello", encoding="utf-8")
+
+    with pytest.raises(
+        EasyHashError, match="algorithm must be 'sha256', 'sha1', or 'md5'"
+    ):
+        compare_file_hashes(file1, file2, algorithm=algorithm)
+
+
+@pytest.mark.parametrize("bad_path", [None, 1, True, 1.5, b"file.txt", []])
+def test_compare_file_hashes_invalid_path_types(tmp_path, bad_path):
+    valid = tmp_path / "valid.txt"
+    valid.write_text("hello", encoding="utf-8")
+
+    with pytest.raises(TypeError):
+        compare_file_hashes(bad_path, valid)
+
+    with pytest.raises(TypeError):
+        compare_file_hashes(valid, bad_path)
+
+
+def test_compare_file_hashes_public_imports(tmp_path):
+    file1 = tmp_path / "file1.txt"
+    file2 = tmp_path / "file2.txt"
+    file1.write_bytes(b"hello")
+    file2.write_bytes(b"hello")
+
+    assert public_compare_file_hashes is compare_file_hashes
+    assert public_compare_file_hashes(file1, file2) is True
