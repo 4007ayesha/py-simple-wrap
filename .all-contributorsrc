@@ -898,6 +898,15 @@
       "contributions": [
         "test"
       ]
+    },
+    {
+      "login": "javascp",
+      "name": "JavaSCP",
+      "avatar_url": "https://github.com/javascp.png",
+      "profile": "https://github.com/javascp",
+      "contributions": [
+        "test"
+      ]
     }
   ]
 }
