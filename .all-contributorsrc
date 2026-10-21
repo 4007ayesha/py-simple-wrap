@@ -828,7 +828,7 @@
       "profile": "https://github.com/Pratham2511",
       "contributions": [
         "test",
-        "code".
+        "code",
         "documentation"
       ]
     },
@@ -888,6 +888,15 @@
       "contributions": [
         "test",
         "code"
+      ]
+    },
+    {
+      "login": "Codexhack286",
+      "name": "Ryan Dave Fernandes",
+      "avatar_url": "https://github.com/Codexhack286.png",
+      "profile": "https://github.com/Codexhack286",
+      "contributions": [
+        "test"
       ]
     }
   ]
