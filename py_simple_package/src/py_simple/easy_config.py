@@ -270,6 +270,77 @@ def read_env_file(file_path: str = ".env") -> dict[str, str]:
         raise EasyConfigError(f"\n\n\nERROR: {e}") from None
 
 
+def dockerfile_config(at_root: bool = True) -> None:
+    """
+    Creates a starter Dockerfile for a Python project from a template.
+
+    The Dockerfile is written to 'Dockerfile'. If the file already exists,
+    it is left alone. Any missing parent directories are created
+    automatically.
+
+    Args:
+        at_root (bool, optional): When True, the path is relative to the
+            current working directory. When False, the git repository
+            root is looked up and the Dockerfile is placed there.
+            Defaults to True.
+
+    Returns:
+        None
+
+    Raises:
+        EasyConfigError: If the template cannot be read, the git repository
+            cannot be found, or the file cannot be written.
+
+    Example:
+        === "The Py_simple Way"
+            ```python
+            from py_simple import dockerfile_config
+
+            dockerfile_config()
+            ```
+
+        === "The Traditional Way"
+            ```python
+            template = \"\"\"FROM python:3.12-slim
+
+            WORKDIR /app
+
+            COPY requirements.txt .
+            RUN pip install --no-cache-dir -r requirements.txt
+
+            COPY . .
+
+            CMD [\"python\", \"main.py\"]
+            \"\"\"
+            with open("Dockerfile", "w", encoding="utf-8") as f:
+                f.write(template)
+            ```
+    """
+    try:
+        if at_root:
+            dockerfile_path = "Dockerfile"
+        else:
+            import git
+
+            git_repo = git.Repo(os.getcwd(), search_parent_directories=True)
+            git_root = git_repo.git.rev_parse("--show-toplevel")
+            dockerfile_path = f"{git_root}/Dockerfile"
+
+        if not os.path.exists(dockerfile_path):
+            template_path = (
+                files("py_simple") / "config_templates" / "dockerfile-template.txt"
+            )
+            with template_path.open(encoding="utf-8") as f:
+                template = f.read()
+            parent_dir = os.path.dirname(dockerfile_path)
+            if parent_dir:
+                os.makedirs(parent_dir, exist_ok=True)
+            with open(dockerfile_path, "w", encoding="utf-8") as f:
+                f.write(template)
+    except Exception as e:
+        raise EasyConfigError(f"\n\n\nERROR: {e}") from None
+
+
 def gitignore_config(at_root: bool = True) -> None:
     """
     Creates a starter .gitignore file for Python projects from a template.
