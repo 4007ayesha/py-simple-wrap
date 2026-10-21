@@ -126,7 +126,8 @@
         "test",
         "code",
         "documentation",
-        "module-author"
+        "module-author",
+        "collaborators"
       ]
     },
     {
@@ -235,7 +236,8 @@
       "contributions": [
         "code",
         "test",
-        "module-author"
+        "module-author",
+        "collaborators"
       ]
     },
     {
@@ -346,7 +348,9 @@
       "avatar_url": "https://github.com/VidyavathiGK.png",
       "profile": "https://github.com/VidyavathiGK",
       "contributions": [
-        "test"
+        "test",
+        "code",
+        "collaborators"
       ]
     },
     {
@@ -459,7 +463,8 @@
       "profile": "https://github.com/dave123981",
       "contributions": [
         "test",
-        "code"
+        "code",
+        "collaborators"
       ]
     },
     {
@@ -720,7 +725,8 @@
       "profile": "https://github.com/Cid-oe",
       "contributions": [
         "code",
-        "test"
+        "test",
+        "collaborators"
       ]
     },
     {
@@ -808,7 +814,8 @@
       "profile": "https://github.com/Ymax27",
       "contributions": [
         "code",
-        "test"
+        "test",
+        "collaborators"
       ]
     },
     {
@@ -829,7 +836,8 @@
       "contributions": [
         "test",
         "code",
-        "documentation"
+        "documentation",
+        "collaborators"
       ]
     },
     {

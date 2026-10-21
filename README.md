@@ -69,6 +69,12 @@ py-simple-wrap is a beginner-friendly Python toolbox — simple, intuitive funct
       </a>
     </td>
     <td align="center" valign="top" width="14.28%">
+      <a href="https://github.com/Cid-oe">
+        <img src="https://github.com/Cid-oe.png" width="100px;" alt="Cid-oe"/><br />
+        <sub><b>Cid-oe</b></sub>
+      </a>
+    </td>
+    <td align="center" valign="top" width="14.28%">
       <a href="https://github.com/SemTiOne">
         <img src="https://github.com/SemTiOne.png" width="100px;" alt="Dane Parin"/><br />
         <sub><b>Dane Parin</b></sub>
@@ -98,14 +104,14 @@ py-simple-wrap is a beginner-friendly Python toolbox — simple, intuitive funct
         <sub><b>jagjitkaur0000</b></sub>
       </a>
     </td>
+  </tr>
+  <tr>
     <td align="center" valign="top" width="14.28%">
       <a href="https://github.com/sara-czasak">
         <img src="https://github.com/sara-czasak.png" width="100px;" alt="Sara Czasak"/><br />
         <sub><b>Sara Czasak</b></sub>
       </a>
     </td>
-  </tr>
-  <tr>
     <td align="center" valign="top" width="8.6%">
       <a href="https://github.com/Pratham2511">
         <img src="https://github.com/Pratham2511.png" width="100px;" alt="Pratham Pansare"/><br />
@@ -124,7 +130,7 @@ py-simple-wrap is a beginner-friendly Python toolbox — simple, intuitive funct
         <sub><b>Yassin Azzouzi</b></sub>
       </a>
     </td>
-    <td align="center" valign="top" width="8.6%">
+    <td align="center" valign="top" width="14.28%">
       <a href="https://github.com/Ymax27">
         <img src="https://github.com/Ymax27.png" width="100px;" alt="Ymax27"/><br />
         <sub><b>Ymax27</b></sub>
@@ -132,6 +138,7 @@ py-simple-wrap is a beginner-friendly Python toolbox — simple, intuitive funct
     </td>
   </tr>
 </table>
+
 </div>
 <br>
 
