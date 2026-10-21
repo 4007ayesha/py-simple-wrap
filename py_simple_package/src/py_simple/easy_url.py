@@ -124,8 +124,41 @@ def add_query_param(url: str, key: str, value: str) -> str:
             ```
     """
     if not isinstance(key, str) or not isinstance(value, str) or key == "":
-        raise EasyUrlError("\n\nERROR: key and value must be strings, and key cannot be empty.") from None
+        raise EasyUrlError(
+            "\n\nERROR: key and value must be strings, and key cannot be empty."
+        ) from None
     parsed = _parsed(url)
     query = dict(parse_qsl(parsed.query, keep_blank_values=True))
     query[key] = value
     return urlunparse(parsed._replace(query=urlencode(query)))
+
+
+def get_path(url: str) -> str:
+    """
+    Return the path component from a link.
+
+    Args:
+        url (str): A full link, such as `"https://school.example/clubs/art"`.
+
+    Returns:
+        str: The path, such as `"/clubs/art"`. Returns `"/"` if no path is given.
+
+    Raises:
+        EasyUrlError: If `url` is not a full link.
+
+    Example:
+        === "The Py_simple Way"
+            ```python
+            from py_simple import get_path
+
+            print(get_path("https://school.example/clubs/art"))
+            ```
+
+        === "The Traditional Way"
+            ```python
+            from urllib.parse import urlparse
+
+            print(urlparse("https://school.example/clubs/art").path or "/")
+            ```
+    """
+    return _parsed(url).path or "/"

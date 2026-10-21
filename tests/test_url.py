@@ -1,9 +1,13 @@
 import pytest
 
+from py_simple_package.src.py_simple import (
+    get_path as public_get_path,
+)
 from py_simple_package.src.py_simple.easy_url import (
     EasyUrlError,
     add_query_param,
     get_domain,
+    get_path,
     is_https,
 )
 
@@ -24,8 +28,21 @@ def test_add_query_param_sets_and_replaces():
     assert add_query_param(with_page, "page", "3") == "https://school.example/clubs?page=3"
 
 
+def test_get_path():
+    assert get_path("https://school.example/clubs/art") == "/clubs/art"
+    assert get_path("https://school.example/") == "/"
+    assert get_path("https://school.example") == "/"
+    assert get_path("https://school.example/search?q=test") == "/search"
+
+
+def test_get_path_public_export():
+    assert public_get_path is get_path
+
+
 def test_rejects_incomplete_url():
     with pytest.raises(EasyUrlError):
         get_domain("school.example")
+    with pytest.raises(EasyUrlError):
+        get_path("school.example")
     with pytest.raises(EasyUrlError):
         add_query_param("https://school.example", "", "2")
