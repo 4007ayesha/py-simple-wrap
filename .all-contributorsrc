@@ -915,6 +915,16 @@
       "contributions": [
         "test"
       ]
+    },
+    {
+      "login": "Mr-Neutr0n",
+      "name": "hari",
+      "avatar_url": "https://github.com/Mr-Neutr0n.png",
+      "profile": "https://github.com/Mr-Neutr0n",
+      "contributions": [
+        "test",
+        "code"
+      ]
     }
   ]
 }
