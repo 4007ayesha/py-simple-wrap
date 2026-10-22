@@ -36,6 +36,36 @@ share to cents.
 `format_money()` prints the result with a dollar sign and two decimal places.
 Pass another symbol, such as `"€"`, when you need one.
 
+## Keep every cent when splitting a bill
+
+Use `split_bill_exact()` when you need all the shares to add up to the full
+bill, even when it cannot be divided evenly:
+
+```python
+from py_simple import split_bill_exact
+
+shares = split_bill_exact("10.00", 3)
+print(shares)  # [Decimal('3.34'), Decimal('3.33'), Decimal('3.33')]
+print(sum(shares))  # 10.00
+```
+
+It returns one `Decimal` per person, each with two decimal places. The total
+is rounded once to cents using `ROUND_HALF_UP`, then leftover cents go to
+the first shares. For example, `"0.015"` shared by two people becomes
+`[Decimal('0.01'), Decimal('0.01')]`. Refunds follow the same allocation:
+`split_bill_exact(-10, 3)` gives `-3.34`, `-3.33`, `-3.33`. Zero shares are
+`Decimal('0.00')`, including when a negative amount rounds to zero.
+
+The amount may be an integer, float, numeric string or `Decimal`. Floats are
+converted through their string representation; strings or `Decimal` values
+are useful when entering exact amounts. Non-finite amounts and invalid inputs
+raise `EasyMoneyError`. The number of people must be a positive integer,
+excluding booleans. Amounts must be representable to cents in the current
+Decimal context; precision or rounding-trap failures also raise `EasyMoneyError`.
+
+`split_bill()` keeps its existing behavior: it returns one rounded share,
+so `split_bill(10, 3)` is still `Decimal('3.33')`.
+
 ## Why use these helpers?
 
 Float math can print `17.359999999` when you only wanted `$17.36`. These
