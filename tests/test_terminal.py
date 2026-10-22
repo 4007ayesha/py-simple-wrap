@@ -1,4 +1,10 @@
-from py_simple_package.src.py_simple.easy_terminal import EasyTerminal
+from py_simple_package.src.py_simple import (
+    print_styled as public_print_styled,
+)
+from py_simple_package.src.py_simple.easy_terminal import (
+    EasyTerminal,
+    print_styled,
+)
 
 
 def test_init_default_color():
@@ -99,3 +105,91 @@ def test_show_with_styles_still_prints_text(capsys):
     terminal.show()
     captured = capsys.readouterr()
     assert captured.out == "Hello World\n"
+
+
+def test_print_styled_prints_text(capsys):
+    print_styled("Simple text")
+    captured = capsys.readouterr()
+    assert captured.out == "Simple text\n"
+
+
+def test_print_styled_with_styles(capsys):
+    print_styled("Styled", color="green", bg_color="yellow", bold=True)
+    captured = capsys.readouterr()
+    assert captured.out == "Styled\n"
+
+
+def test_print_styled_with_dim(capsys):
+    print_styled("Dimmed text", color="cyan", dim=True)
+    captured = capsys.readouterr()
+    assert captured.out == "Dimmed text\n"
+
+
+def test_print_styled_delegates_to_easy_terminal(monkeypatch):
+    calls = []
+
+    class DummyTerminal:
+        def __init__(self, text):
+            calls.append(("init", text))
+
+        def set_color(self, color):
+            calls.append(("set_color", color))
+            return self
+
+        def set_bg_color(self, bg_color):
+            calls.append(("set_bg_color", bg_color))
+            return self
+
+        def set_bold(self):
+            calls.append(("set_bold",))
+            return self
+
+        def set_light_weight(self):
+            calls.append(("set_light_weight",))
+            return self
+
+        def show(self):
+            calls.append(("show",))
+
+    monkeypatch.setattr(
+        "py_simple_package.src.py_simple.easy_terminal.EasyTerminal",
+        DummyTerminal,
+    )
+
+    print_styled("Test message", color="red", bg_color="blue", bold=True)
+    assert calls == [
+        ("init", "Test message"),
+        ("set_color", "red"),
+        ("set_bg_color", "blue"),
+        ("set_bold",),
+        ("show",),
+    ]
+
+    calls.clear()
+    print_styled("Test 2", color="green", dim=True)
+    assert calls == [
+        ("init", "Test 2"),
+        ("set_color", "green"),
+        ("set_light_weight",),
+        ("show",),
+    ]
+
+    calls.clear()
+    print_styled("Both weights", bold=True, dim=True)
+    assert calls == [
+        ("init", "Both weights"),
+        ("set_color", "#ffffff"),
+        ("set_bold",),
+        ("show",),
+    ]
+    assert ("set_light_weight",) not in calls
+
+
+def test_print_styled_both_bold_and_dim_output(capsys):
+    print_styled("Both bold and dim", bold=True, dim=True)
+    captured = capsys.readouterr()
+    assert captured.out == "Both bold and dim\n"
+
+
+def test_print_styled_public_import():
+    assert public_print_styled is print_styled

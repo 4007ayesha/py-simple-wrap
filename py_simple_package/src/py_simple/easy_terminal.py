@@ -217,3 +217,49 @@ class EasyTerminal:
         c = Console()
         c.print(self.text, style=self.style_chain)
 
+
+def print_styled(
+    text: str,
+    color: str = "#ffffff",
+    bg_color: str | None = None,
+    bold: bool = False,
+    dim: bool = False,
+) -> None:
+    """
+    Prints styled text to the terminal in a single function call.
+
+    Args:
+        text (str): The text to print.
+        color (str, optional): Text color name ("red"), hex code ("#ff0000"),
+            or rgb string ("rgb(255,0,0)"). Defaults to `"#ffffff"`.
+        bg_color (str, optional): Background color name ("blue"), hex code
+            ("#0000ff"), or rgb string. Defaults to `None`.
+        bold (bool, optional): Whether to make the text bold. Defaults to `False`.
+            If both `bold` and `dim` are True, `bold` takes precedence.
+        dim (bool, optional): Whether to make the text dim (light weight).
+            Defaults to `False`. Ignored if `bold` is also True.
+
+    Example:
+        === "The Py_simple Way"
+            ```python
+            from py_simple import print_styled
+
+            print_styled("Hello World", color="red", bg_color="white", bold=True)
+            ```
+
+        === "The Traditional Way"
+            ```python
+            from rich.console import Console
+
+            console = Console()
+            console.print("Hello World", style="bold red on white")
+            ```
+    """
+    terminal = EasyTerminal(str(text)).set_color(color)
+    if bg_color is not None:
+        terminal.set_bg_color(bg_color)
+    if bold:
+        terminal.set_bold()
+    elif dim:
+        terminal.set_light_weight()
+    terminal.show()
