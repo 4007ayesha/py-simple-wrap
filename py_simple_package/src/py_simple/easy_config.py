@@ -274,6 +274,12 @@ def dockerfile_config(at_root: bool = True) -> None:
     """
     Creates a starter Dockerfile for a Python project from a template.
 
+    The generated Dockerfile is a starting point, not a finished build. The
+    template assumes the project has a ``requirements.txt`` and a ``main.py``
+    (``COPY requirements.txt .``, ``CMD ["python", "main.py"]``), so expect to
+    adjust it for your own entry point, dependency manager, base image and
+    ignore rules before shipping.
+
     The Dockerfile is written to 'Dockerfile'. If the file already exists,
     it is left alone. Any missing parent directories are created
     automatically.
