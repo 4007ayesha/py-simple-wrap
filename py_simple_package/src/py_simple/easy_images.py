@@ -183,6 +183,57 @@ def rotate_image(input_path: str, output_path: str, angle: float):
         img.rotate(angle, expand=True).save(output_path)
 
 
+def convert_to_greyscale(
+    input_path: str | os.PathLike[str], output_path: str | os.PathLike[str]
+) -> None:
+    """
+    Convert an image to grayscale and save it.
+
+    Each pixel becomes a brightness value from 0 (black) to 255 (white),
+    giving 256 possible shades of gray. Pillow calls this 8-bit
+    grayscale. Mode `L` stores the gray value; mode `LA` also stores
+    opacity. Outputs ending in .jpg, .jpeg or .bmp use `L` because
+    Pillow's JPEG/BMP encoders cannot save `LA` and would raise
+    OSError. Other extensions use `LA`.
+    The original dimensions are kept.
+
+    PNG, TIFF and WebP output retain transparency. JPEG, BMP and GIF
+    output discard it without blending a background. Only the first
+    frame of animated or multi-frame images is converted.
+
+    Args:
+        input_path (str | os.PathLike[str]): Path of the source image.
+        output_path (str | os.PathLike[str]): Path to save the grayscale image to. The
+            file extension determines the output format.
+
+    Raises:
+        ImageProcessingError: If the input file is missing or its
+            image format is not recognized.
+        OSError: If the image cannot be read or written.
+        ValueError: If the output file extension is not recognized.
+
+    Example:
+        === "The Py_simple Way"
+            ```python
+            from py_simple import convert_to_greyscale
+
+            convert_to_greyscale("photo.jpg", "photo_gray.png")
+            ```
+
+        === "The Traditional Way"
+            ```python
+            from PIL import Image
+
+            with Image.open("photo.jpg") as img:
+                img.convert("LA").save("photo_gray.png")
+            ```
+    """
+    output_path = os.fspath(output_path)
+    with _open_image(os.fspath(input_path)) as img:
+        mode = "L" if output_path.lower().endswith((".jpg", ".jpeg", ".bmp")) else "LA"
+        img.convert(mode).save(output_path)
+
+
 def get_image_info(input_path: str) -> dict:
     """
     Get basic information about an image.
@@ -222,3 +273,49 @@ def get_image_info(input_path: str) -> dict:
             "format": img.format,
             "mode": img.mode,
         }
+
+
+def flip_image(input_path: str, output_path: str, direction: str = "horizontal"):
+    """
+    Flip an image horizontally or vertically and save the result.
+
+    Args:
+        input_path (str): Path of the image to flip.
+        output_path (str): Path to save the flipped image to.
+        direction (str): Either "horizontal" (left-right) or "vertical"
+            (top-bottom). Defaults to "horizontal".
+
+    Raises:
+        ValueError: If `direction` is not "horizontal" or "vertical".
+        ImageProcessingError: If the input file is missing or not a
+            supported image.
+
+    Example:
+        === "The Py_simple Way"
+            ```python
+            from py_simple import flip_image
+
+            flip_image("photo.jpg", "photo_flipped.jpg", "horizontal")
+            ```
+
+        === "The Traditional Way"
+            ```python
+            from PIL import Image
+
+            with Image.open("photo.jpg") as img:
+                img.transpose(Image.Transpose.FLIP_LEFT_RIGHT).save(
+                    "photo_flipped.jpg"
+                )
+            ```
+    """
+    from PIL import Image
+
+    flips = {
+        "horizontal": Image.Transpose.FLIP_LEFT_RIGHT,
+        "vertical": Image.Transpose.FLIP_TOP_BOTTOM,
+    }
+    if direction not in flips:
+        raise ValueError('direction must be "horizontal" or "vertical".')
+
+    with _open_image(input_path) as img:
+        img.transpose(flips[direction]).save(output_path)

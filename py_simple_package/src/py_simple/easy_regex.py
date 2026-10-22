@@ -356,3 +356,53 @@ def clean_extra_whitespace(text: str) -> str:
             ```
     """
     return re.sub(r'\s+', ' ', text).strip()
+
+
+def extract_phone_numbers(text: str) -> list[str]:
+    r"""
+    Returns a list of US/Canadian-style phone numbers found in the text.
+
+    Supports standard North American Numbering Plan (NANP) formats including
+    optional country code (+1 or 1), parentheses around the area code, and
+    separators such as hyphens, dots, or spaces. This function is tailored
+    for US and Canadian phone numbers rather than general international formats.
+
+    Args:
+        text (str): Text to search for phone numbers.
+
+    Returns:
+        list[str]: All phone numbers found in the text. Empty list if none found.
+
+    Example:
+        === "The Py_simple Way"
+            ```python
+            from py_simple import extract_phone_numbers
+
+            result = extract_phone_numbers("Call us at (555) 123-4567 or 555-987-6543")
+            # -> ['(555) 123-4567', '555-987-6543']
+            ```
+
+        === "The Traditional Way"
+            ```python
+            import re
+
+            pattern = (
+                r"(?<!\w)(?<!\d[-.\s])"
+                r"(?:(?:\+?1[\s.-]?)?\(\d{3}\)[\s.-]?\d{3}[\s.-]?\d{4}"
+                r"|(?<!\()(?:\+?1[\s.-]?)?(?<!\()\d{3}[\s.-]?\d{3}[\s.-]?\d{4})"
+                r"(?!\w)(?![-.\s]?\d)"
+            )
+            result = re.findall(pattern, "Call us at (555) 123-4567 or 555-987-6543")
+            # -> ['(555) 123-4567', '555-987-6543']
+            ```
+    """
+    pattern = (
+        r"(?<!\w)(?<!\d[-.\s])"
+        r"(?:"
+        r"(?:\+?1[\s.-]?)?\(\d{3}\)[\s.-]?\d{3}[\s.-]?\d{4}"
+        r"|"
+        r"(?<!\()(?:\+?1[\s.-]?)?(?<!\()\d{3}[\s.-]?\d{3}[\s.-]?\d{4}"
+        r")"
+        r"(?!\w)(?![-.\s]?\d)"
+    )
+    return re.findall(pattern, text)

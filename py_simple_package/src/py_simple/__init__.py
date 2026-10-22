@@ -12,6 +12,15 @@ from .easy_ai import (
     translate_text,
     rewrite_text,
     analyze_sentiment,
+    chunk_text,
+)
+from .easy_base64 import (
+    EasyBase64Error,
+    decode_text,
+    encode_text,
+    is_base64,
+    encode_bytes,
+    decode_to_bytes,
 )
 from .easy_archive import (
     add_to_zip,
@@ -31,6 +40,14 @@ from .easy_async import (
     run_with_retry,
     run_with_timeout,
     run_concurrent_map,
+    run_concurrent_map_limited,
+    run_periodically,
+)
+from .easy_bytes import (
+    EasyBytesError,
+    bytes_to_human,
+    human_to_bytes,
+    percent_used,
 )
 from .easy_colors import (
     contrast_ratio,
@@ -48,6 +65,7 @@ from .easy_config import (
     create_env_file,
     read_env_file,
     gitignore_config,
+    requirements_config,
 )
 from .easy_converter import (
     celsius_to_fahrenheit,
@@ -71,18 +89,25 @@ from .easy_converter import (
 )
 from .easy_csv import (
     iter_csv_rows,
+    merge_csv_files,
     count_csv_rows,
+    drop_empty_csv_rows,
     filter_csv_rows,
     get_csv_columns,
     read_csv_column,
     read_csv_to_list,
     write_csv_from_list,
+    sort_csv_by_column,
     append_row_to_csv,
+    delete_csv_rows,
 )
 from .easy_data_visualization import (
     plot_data,
+    plot_heatmap,
     plot_box_plot,
     plot_bar_chart,
+    plot_line_chart,
+    plot_pie_chart,
 )
 from .easy_date_formatter import (
     dd_mm_yyyy,
@@ -159,10 +184,22 @@ from .easy_generator import (
     generate_slug,
     generate_uuid,
     generate_passphrase,
+    generate_coupon_code,
+    generate_random_hex,
+)
+from .easy_hash import (
+    EasyHashError,
+    hash_bytes,
+    hash_file,
+    hash_text,
+    hashes_match,
+    verify_file_hash,
 )
 from .easy_images import (
     convert_image,
+    convert_to_greyscale,
     create_thumbnail,
+    flip_image,
     get_image_info,
     resize_image,
     rotate_image,
@@ -190,6 +227,13 @@ from .easy_lists import (
     sum_all,
     unique_items,
 )
+from .easy_money import (
+    EasyMoneyError,
+    add_tax,
+    calculate_discount,
+    format_money,
+    split_bill,
+)
 from .easy_logging import (
     clear_log_file,
     find_log_lines,
@@ -197,6 +241,8 @@ from .easy_logging import (
     log_step,
     log_to_file,
     read_recent_log_lines,
+    count_log_levels,
+    setup_file_logger,
 )
 from .easy_math import (
     calculate_simple_interest,
@@ -253,17 +299,20 @@ from .easy_regex import (
     extract_mentions,
     extract_number_sequences,
     extract_numbers,
+    extract_phone_numbers,
     extract_urls,
 )
 from .easy_sql import (
     EasySqlError,
     conditional_run_select,
     delete_all_from_table,
+    list_tables,
     open_db,
     run_delete,
     run_insert,
     run_select,
     run_update,
+    table_exists,
 )
 from .easy_stats import (
     correlation_coefficient,
@@ -306,6 +355,13 @@ from .easy_validator import (
     is_valid_url,
     is_valid_username,
     is_valid_zipcode,
+)
+from .easy_url import (
+    EasyUrlError,
+    add_query_param,
+    get_domain,
+    get_path,
+    is_https,
 )
 from .easy_web import (
     count_links,
