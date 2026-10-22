@@ -188,6 +188,7 @@ from .easy_generator import (
 )
 from .easy_hash import (
     EasyHashError,
+    compare_file_hashes,
     hash_bytes,
     hash_file,
     hash_text,

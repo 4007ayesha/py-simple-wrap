@@ -148,6 +148,18 @@ def hash_file(filepath: str, algorithm: str = "sha256") -> str:
     return hasher.hexdigest()
 
 
+def _hash_file_chunks(filepath: str | Path, algorithm: str) -> str:
+    """Helper to compute hex digest for a file using chunked reads."""
+    hasher = _new_hasher(algorithm)
+    try:
+        with Path(filepath).open("rb") as file:
+            while chunk := file.read(64 * 1024):
+                hasher.update(chunk)
+    except OSError as error:
+        raise EasyHashError(f"\n\nERROR: {error}") from None
+    return hasher.hexdigest()
+
+
 def verify_file_hash(
     filepath: str | Path, expected: str, algorithm: str = "sha256"
 ) -> bool:
@@ -201,14 +213,60 @@ def verify_file_hash(
     """
     if not isinstance(expected, str):
         return False
-    hasher = _new_hasher(algorithm)
-    try:
-        with Path(filepath).open("rb") as file:
-            while chunk := file.read(64 * 1024):
-                hasher.update(chunk)
-    except OSError as error:
-        raise EasyHashError(f"\n\nERROR: {error}") from None
-    return hasher.hexdigest() == expected.lower()
+    _new_hasher(algorithm)
+    return _hash_file_chunks(filepath, algorithm) == expected.lower()
+
+
+def compare_file_hashes(
+    filepath1: str | Path,
+    filepath2: str | Path,
+    algorithm: str = "sha256",
+) -> bool:
+    """
+    Checks whether two files produce the same checksum using chunked reads.
+
+    Args:
+        filepath1 (str | Path): Path to the first file.
+        filepath2 (str | Path): Path to the second file.
+        algorithm (str, optional): One of `"sha256"`, `"sha1"`, or
+            `"md5"`. Defaults to `"sha256"`.
+
+    Returns:
+        bool: True when both files have matching checksums, False otherwise.
+
+    Raises:
+        EasyHashError: If either file cannot be read or the algorithm is
+            not supported.
+        TypeError: If either path is not a string or path-like object.
+
+    Example:
+        === "The Py_simple Way"
+            ```python
+            from py_simple import compare_file_hashes
+
+            identical = compare_file_hashes("file1.txt", "file2.txt")
+            print(identical)
+            ```
+
+        === "The Traditional Way"
+            ```python
+            import hashlib
+
+            def get_checksum(filepath):
+                hasher = hashlib.sha256()
+                with open(filepath, "rb") as f:
+                    while chunk := f.read(64 * 1024):
+                        hasher.update(chunk)
+                return hasher.hexdigest()
+
+            identical = get_checksum("file1.txt") == get_checksum("file2.txt")
+            print(identical)
+            ```
+    """
+    _new_hasher(algorithm)
+    p1 = Path(filepath1)
+    p2 = Path(filepath2)
+    return _hash_file_chunks(p1, algorithm) == _hash_file_chunks(p2, algorithm)
 
 
 def hashes_match(text: str, expected: str, algorithm: str = "sha256") -> bool:
@@ -229,7 +287,8 @@ def hashes_match(text: str, expected: str, algorithm: str = "sha256") -> bool:
             ```python
             from py_simple import hashes_match
 
-            hashes_match("hello", "2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824")
+            expected = "2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824"
+            hashes_match("hello", expected)
             ```
 
         === "The Traditional Way"
