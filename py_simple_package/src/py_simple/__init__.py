@@ -64,6 +64,7 @@ from .easy_config import (
     gh_workflow_config,
     create_env_file,
     read_env_file,
+    dockerfile_config,
     gitignore_config,
     requirements_config,
 )
