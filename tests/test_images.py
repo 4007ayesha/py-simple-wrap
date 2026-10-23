@@ -9,7 +9,8 @@ from PIL import Image
 from py_simple_package.src.py_simple import create_thumbnail as public_create_thumbnail
 from py_simple_package.src.py_simple import flip_image as public_flip_image
 from py_simple_package.src.py_simple import (
-    convert_to_greyscale as public_convert_to_greyscale,
+    adjust_brightness as public_adjust_brightness,
+    convert_to_greyscale as public_convert_to_greyscale
 )
 from py_simple_package.src.py_simple.easy_images import (
     ImageProcessingError,
@@ -468,3 +469,6 @@ class TestAdjustBrightness:
 
         with Image.open("bright.jpg") as img:
             assert img.mode == "RGB"
+            
+    def test_public_import(self):
+        assert public_adjust_brightness is adjust_brightness
