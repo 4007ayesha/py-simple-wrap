@@ -322,33 +322,33 @@ def flip_image(input_path: str, output_path: str, direction: str = "horizontal")
 
 def adjust_brightness(input_path: str, output_path: str, value: float):
     """
-    Adjust the brightness of an image by darkening or brightening it.
+    Adjusts the brightness of an image by darkening or brightening it.
 
     Args:
         input_path (str): Path of the image to adjust.
         output_path (str): Path to save the adjusted image to.
-        value (float): A value of 0 gives a complete black image, 1 leaves it untouched and above 1 brightens it.
+        value (float): A value of 0 gives a completely black image, 1 leaves
+            it untouched, and anything above 1 brightens it.
 
     Raises:
-        ValueError: if not isinstance(value, (int, float))
-                or isinstance(value, bool)
-                or not math.isfinite(value)
-                or value < 0
+        ValueError: If ``value`` is not a finite number (``bool`` is also
+            rejected) or is less than 0.
+
     Example:
         === "The Py_simple Way"
-        ```python
-                    from py_simple import adjust_brightness
+            ```python
+            from py_simple import adjust_brightness
 
-                    adjust_brightness("photo.jpg", "photo_bright.jpg", 1.5)
-        ```
+            adjust_brightness("photo.jpg", "photo_bright.jpg", 1.5)
+            ```
 
         === "The Traditional Way"
-        ```python
+            ```python
             from PIL import Image, ImageEnhance
 
             with Image.open("photo.jpg") as img:
                 ImageEnhance.Brightness(img).enhance(1.5).save("photo_bright.jpg")
-        ```
+            ```
     """
     from PIL import ImageEnhance
     import math

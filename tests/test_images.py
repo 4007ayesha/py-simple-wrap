@@ -451,3 +451,20 @@ class TestAdjustBrightness:
 
         with pytest.raises(ValueError):
             adjust_brightness("image.png", "output.png", value)
+    def test_palette_image_is_converted_and_brightened(self, tmp_workdir):
+        img = Image.new("P", (10, 10), 0)
+        img.putpalette([100, 100, 100] + [0] * 765)  # color slot 0 = gray 100
+        img.save("palette.png")
+
+        adjust_brightness("palette.png", "bright.png", 1.5)
+
+        with Image.open("bright.png") as img:
+            assert img.getpixel((0, 0)) == (150, 150, 150)
+
+    def test_rgba_image_can_be_saved_as_jpeg(self, tmp_workdir):
+        Image.new("RGBA", (10, 10), (100, 100, 100, 255)).save("rgba.png")
+
+        adjust_brightness("rgba.png", "bright.jpg", 1.5)
+
+        with Image.open("bright.jpg") as img:
+            assert img.mode == "RGB"
