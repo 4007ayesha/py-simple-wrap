@@ -6,12 +6,13 @@ import tempfile
 import pytest
 from PIL import Image
 
-from py_simple_package.src.py_simple import create_thumbnail as public_create_thumbnail
-from py_simple_package.src.py_simple import flip_image as public_flip_image
 from py_simple_package.src.py_simple import (
     adjust_brightness as public_adjust_brightness,
-    convert_to_greyscale as public_convert_to_greyscale
+    convert_to_greyscale as public_convert_to_greyscale,
+    create_thumbnail as public_create_thumbnail,
+    flip_image as public_flip_image,
 )
+
 from py_simple_package.src.py_simple.easy_images import (
     ImageProcessingError,
     adjust_brightness,
@@ -21,7 +22,7 @@ from py_simple_package.src.py_simple.easy_images import (
     flip_image,
     get_image_info,
     resize_image,
-    rotate_image
+    rotate_image,
 )
 
 
