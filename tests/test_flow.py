@@ -357,3 +357,35 @@ def test_wait_until_checks_condition_after_timeout(monkeypatch):
 
     assert wait_until(condition, timeout=0.5, interval=0.1) is True
     assert len(calls) == 1
+
+
+@pytest.mark.parametrize("runner", [run_py_file, run_py_file_safe])
+def test_script_runner_executes_main_guard(runner, tmp_path, capsys):
+    script = tmp_path / "guarded.py"
+    script.write_text(
+        "if __name__ == '__main__':\n"
+        "    print('main entry point ran')\n",
+        encoding="utf-8",
+    )
+
+    result = runner(str(script))
+
+    assert "main entry point ran" in capsys.readouterr().out
+    if runner is run_py_file_safe:
+        assert result == (True, None)
+
+
+@pytest.mark.parametrize("runner", [run_py_file, run_py_file_safe])
+def test_script_runner_handles_errors_in_main_guard(runner, tmp_path):
+    script = tmp_path / "broken_main.py"
+    script.write_text(
+        "if __name__ == '__main__':\n"
+        "    raise ValueError('main entry point failed')\n",
+        encoding="utf-8",
+    )
+
+    if runner is run_py_file:
+        with pytest.raises(EasyFlowError, match="main entry point failed"):
+            runner(str(script))
+    else:
+        assert runner(str(script)) == (False, "main entry point failed")
