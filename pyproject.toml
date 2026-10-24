@@ -57,7 +57,8 @@ viz = [
     "matplotlib>=3.0.0",
 ]
 images = [
-    "Pillow>=13.0.0",
+    "Pillow>=12.3.0,<13; python_version < '3.11'",
+    "Pillow>=13.0.0; python_version >= '3.11'",
     "qrcode>=7.4.0",
 ]
 web = [
