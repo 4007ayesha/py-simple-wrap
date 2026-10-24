@@ -55,10 +55,10 @@ plot_line_chart(
 )
 ```
 
-Run the script to see your formatted habit summary in the terminal and a clean line chart showing your daily progress:
+Run the script to see your formatted habit summary in the terminal (note that the exact date in the header will depend on the day you run the script) and a clean line chart showing your daily progress:
 
 ```text
-=== Study Habit Report (October 24, 2026) ===
+=== Study Habit Report (Saturday, October 24, 2026) ===
 Total time studied: 7.8 hours (470 mins)
 Daily average:      67.1 mins/day
 Median session:     60.0 mins
@@ -67,7 +67,7 @@ Session spread:     90.0 mins (difference between shortest and longest)
 
 ## What happened?
 
-1. `get_pretty_date()` generates a human-friendly date string (such as "October 24, 2026") for your report without needing complex `strftime` directives.
+1. `get_pretty_date()` generates a human-friendly date string including the weekday (such as "Saturday, October 24, 2026") for your report without needing complex `strftime` directives (the exact date and weekday will reflect when the script runs).
 2. `mean(minutes)` computes your average daily study time, while `median(minutes)` gives the middle session length, showing your true typical study effort even when a weekend study marathon spikes the average.
 3. `data_range(minutes)` calculates the difference between your highest (120 mins) and lowest (30 mins) days to show habit variance.
 4. `plot_line_chart(days, minutes, ...)` draws a clean line chart with marked data points and labels the axes without raw Matplotlib boilerplate.

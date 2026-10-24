@@ -6,13 +6,16 @@ import tempfile
 import pytest
 from PIL import Image
 
-from py_simple_package.src.py_simple import create_thumbnail as public_create_thumbnail
-from py_simple_package.src.py_simple import flip_image as public_flip_image
 from py_simple_package.src.py_simple import (
+    adjust_brightness as public_adjust_brightness,
     convert_to_greyscale as public_convert_to_greyscale,
+    create_thumbnail as public_create_thumbnail,
+    flip_image as public_flip_image,
 )
+
 from py_simple_package.src.py_simple.easy_images import (
     ImageProcessingError,
+    adjust_brightness,
     convert_image,
     convert_to_greyscale,
     create_thumbnail,
@@ -408,3 +411,65 @@ class TestConvertToGreyscale:
 
     def test_public_import(self):
         assert public_convert_to_greyscale is convert_to_greyscale
+
+class TestAdjustBrightness:
+    """Tests for adjust_brightness function."""
+
+    def test_brightens_image(self, tmp_workdir):
+        Image.new("RGB", (10, 10), (100, 100, 100)).save("gray.png")
+
+        adjust_brightness("gray.png", "bright.png", 1.5)
+
+        with Image.open("bright.png") as img:
+            assert img.getpixel((0, 0)) == (150, 150, 150)
+
+    def test_darkens_image(self, tmp_workdir):
+        Image.new("RGB", (10, 10), (100, 100, 100)).save("gray.png")
+
+        adjust_brightness("gray.png", "dark.png", 0.5)
+
+        with Image.open("dark.png") as img:
+            assert img.getpixel((0, 0)) == (50, 50, 50)
+
+    def test_zero_produces_black_image(self, tmp_workdir):
+        Image.new("RGB", (10, 10), (100, 150, 200)).save("image.png")
+
+        adjust_brightness("image.png", "black.png", 0)
+
+        with Image.open("black.png") as img:
+            assert img.getpixel((0, 0)) == (0, 0, 0)
+
+    def test_one_preserves_brightness(self, tmp_workdir):
+        Image.new("RGB", (10, 10), (100, 150, 200)).save("image.png")
+
+        adjust_brightness("image.png", "same.png", 1)
+
+        with Image.open("same.png") as img:
+            assert img.getpixel((0, 0)) == (100, 150, 200)
+
+    @pytest.mark.parametrize("value", [-1, float("nan"), float("inf"), -float("inf"), True, "1.5", None])
+    def test_invalid_value_raises_value_error(self, tmp_workdir, value):
+        Image.new("RGB", (10, 10)).save("image.png")
+
+        with pytest.raises(ValueError):
+            adjust_brightness("image.png", "output.png", value)
+    def test_palette_image_is_converted_and_brightened(self, tmp_workdir):
+        img = Image.new("P", (10, 10), 0)
+        img.putpalette([100, 100, 100] + [0] * 765)  # color slot 0 = gray 100
+        img.save("palette.png")
+
+        adjust_brightness("palette.png", "bright.png", 1.5)
+
+        with Image.open("bright.png") as img:
+            assert img.getpixel((0, 0)) == (150, 150, 150)
+
+    def test_rgba_image_can_be_saved_as_jpeg(self, tmp_workdir):
+        Image.new("RGBA", (10, 10), (100, 100, 100, 255)).save("rgba.png")
+
+        adjust_brightness("rgba.png", "bright.jpg", 1.5)
+
+        with Image.open("bright.jpg") as img:
+            assert img.mode == "RGB"
+            
+    def test_public_import(self):
+        assert public_adjust_brightness is adjust_brightness

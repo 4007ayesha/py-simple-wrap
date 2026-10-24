@@ -935,6 +935,27 @@
         "test",
         "code"
       ]
+    },
+    {
+      "login": "supergioo0",
+      "name": "Giorgio Ciafardoni",
+      "avatar_url": "https://github.com/supergioo0.png",
+      "profile": "https://github.com/supergioo0",
+      "contributions": [
+        "test",
+        "code"
+      ]
+    },
+    {
+      "login": "anisayakmitra-in",
+      "name": "Anisayak Mitra",
+      "avatar_url": "https://github.com/anisayakmitra-in.png",
+      "profile": "https://github.com/anisayakmitra-in",
+      "contributions": [
+        "test",
+        "code",
+        "documentation"
+      ]
     }
   ]
 }

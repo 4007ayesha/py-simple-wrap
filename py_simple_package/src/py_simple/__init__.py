@@ -110,6 +110,7 @@ from .easy_data_visualization import (
     plot_bar_chart,
     plot_line_chart,
     plot_pie_chart,
+    plot_scatter_chart,
 )
 from .easy_date_formatter import (
     dd_mm_yyyy,
@@ -199,6 +200,7 @@ from .easy_hash import (
     verify_file_hash,
 )
 from .easy_images import (
+    adjust_brightness,
     convert_image,
     convert_to_greyscale,
     create_thumbnail,
@@ -247,6 +249,7 @@ from .easy_logging import (
     read_recent_log_lines,
     count_log_levels,
     setup_file_logger,
+    temporary_log_level,
 )
 from .easy_math import (
     calculate_simple_interest,
