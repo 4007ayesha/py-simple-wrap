@@ -40,6 +40,21 @@ def level_logger():
         logging.Logger.manager.loggerDict.pop(logger.name)
 
 
+def test_temporary_log_level_top_level_public_import(level_logger):
+    from py_simple import temporary_log_level as public_temporary_log_level
+    from py_simple.easy_logging import temporary_log_level as module_temporary_log_level
+
+    assert public_temporary_log_level is module_temporary_log_level
+    stream = level_logger.handlers[0].stream
+    level_logger.debug("hidden before public context")
+    with public_temporary_log_level(level_logger, "debug"):
+        assert level_logger.level == logging.DEBUG
+        level_logger.debug("visible through public import")
+    assert level_logger.level == logging.WARNING
+    level_logger.debug("hidden after public context")
+    assert stream.getvalue() == "DEBUG: visible through public import\n"
+
+
 @pytest.mark.parametrize(
     "level,expected",
     [
