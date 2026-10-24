@@ -319,3 +319,51 @@ def flip_image(input_path: str, output_path: str, direction: str = "horizontal")
 
     with _open_image(input_path) as img:
         img.transpose(flips[direction]).save(output_path)
+
+def adjust_brightness(input_path: str, output_path: str, value: float):
+    """
+    Adjusts the brightness of an image by darkening or brightening it.
+
+    Args:
+        input_path (str): Path of the image to adjust.
+        output_path (str): Path to save the adjusted image to.
+        value (float): A value of 0 gives a completely black image, 1 leaves
+            it untouched, and anything above 1 brightens it.
+
+    Raises:
+        ValueError: If ``value`` is not a finite number (``bool`` is also
+            rejected) or is less than 0.
+
+    Example:
+        === "The Py_simple Way"
+            ```python
+            from py_simple import adjust_brightness
+
+            adjust_brightness("photo.jpg", "photo_bright.jpg", 1.5)
+            ```
+
+        === "The Traditional Way"
+            ```python
+            from PIL import Image, ImageEnhance
+
+            with Image.open("photo.jpg") as img:
+                ImageEnhance.Brightness(img).enhance(1.5).save("photo_bright.jpg")
+            ```
+    """
+    from PIL import ImageEnhance
+    import math
+    if (
+        not isinstance(value, (int, float))
+        or isinstance(value, bool)
+        or not math.isfinite(value)
+        or value < 0
+    ):
+        raise ValueError("value must be a finite number that is 0 or greater.")
+
+    with _open_image(input_path) as img:
+        if img.mode == "P":
+            img = img.convert("RGBA" if "transparency" in img.info else "RGB")
+        if img.mode == "RGBA" and output_path.lower().endswith((".jpg", ".jpeg")):
+            img = img.convert("RGB")
+        adj_img = ImageEnhance.Brightness(img).enhance(value)
+        adj_img.save(output_path)
