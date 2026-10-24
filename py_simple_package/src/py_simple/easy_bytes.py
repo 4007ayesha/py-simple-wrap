@@ -156,3 +156,45 @@ def percent_used(used: int, total: int) -> float:
     if total < 1:
         raise EasyBytesError("\n\nERROR: total must be at least 1.") from None
     return round(used / total * 100, 1)
+
+
+def remaining_bytes(used: int, total: int) -> int:
+    """
+    Calculates how many bytes remain in a storage total.
+
+    Args:
+        used (int): Bytes already used. Must be a non-negative integer
+            no greater than `total`.
+        total (int): Total capacity in bytes. Must be a non-negative integer.
+
+    Returns:
+        int: Unused bytes, such as 750 for 250 used out of 1000.
+            A zero-capacity or full storage total has zero remaining bytes.
+
+    Raises:
+        EasyBytesError: If either count is negative, is not an integer,
+            is a boolean, or if `used` exceeds `total`.
+
+    Example:
+        === "The Py_simple Way"
+            ```python
+            from py_simple import remaining_bytes
+
+            print(remaining_bytes(250, 1000))
+            ```
+
+        === "The Traditional Way"
+            ```python
+            used = 250
+            total = 1000
+            print(total - used)
+            ```
+    """
+    for value in (used, total):
+        if isinstance(value, bool) or not isinstance(value, int) or value < 0:
+            raise EasyBytesError(
+                "\n\nERROR: used and total must be non-negative integers."
+            ) from None
+    if used > total:
+        raise EasyBytesError("\n\nERROR: used cannot exceed total.") from None
+    return total - used

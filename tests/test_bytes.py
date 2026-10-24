@@ -5,6 +5,7 @@ from py_simple_package.src.py_simple.easy_bytes import (
     bytes_to_human,
     human_to_bytes,
     percent_used,
+    remaining_bytes,
 )
 
 
@@ -186,3 +187,51 @@ def test_percent_used_rejects_zero_total(used):
     """Even zero used bytes require a positive total."""
     with pytest.raises(EasyBytesError, match="total must be at least 1"):
         percent_used(used, 0)
+
+
+@pytest.mark.parametrize(
+    "used, total, expected",
+    [
+        (250, 1000, 750),
+        (0, 1000, 1000),
+        (1000, 1000, 0),
+        (0, 0, 0),
+        (1, 2, 1),
+        (2**100, 2**100 + 1, 1),
+    ],
+)
+def test_remaining_bytes(used, total, expected):
+    """Return an exact integer, including empty, full, and large capacities."""
+    result = remaining_bytes(used, total)
+    assert result == expected
+    assert type(result) is int
+
+
+@pytest.mark.parametrize(
+    "invalid", [-1, True, False, 1.0, "1", None, [], {}, float("nan"), float("inf")]
+)
+@pytest.mark.parametrize("argument", ["used", "total"])
+def test_remaining_bytes_rejects_bad_input(invalid, argument):
+    """Validate both arguments before performing arithmetic."""
+    counts = {"used": 0, "total": 100}
+    counts[argument] = invalid
+    with pytest.raises(
+        EasyBytesError, match="used and total must be non-negative integers"
+    ):
+        remaining_bytes(**counts)
+
+
+@pytest.mark.parametrize("used, total", [(1, 0), (1001, 1000)])
+def test_remaining_bytes_rejects_usage_above_capacity(used, total):
+    """An inconsistent storage report must not produce a negative remainder."""
+    with pytest.raises(EasyBytesError, match="used cannot exceed total"):
+        remaining_bytes(used, total)
+
+
+def test_remaining_bytes_public_imports():
+    """Both documented import paths expose the same helper."""
+    from py_simple import remaining_bytes as public_helper
+    from py_simple.easy_bytes import remaining_bytes as module_helper
+
+    assert public_helper is module_helper
+    assert public_helper(250, 1000) == 750
