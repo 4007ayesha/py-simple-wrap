@@ -3,7 +3,7 @@
 File sizes arrive as large numbers of bytes. `1536` is harder to read than
 `1.5 KB`, and the other direction matters when a form asks you to type a
 size. `easy_bytes` converts both ways and can tell you what percent of a
-drive is full.
+drive is full or how many bytes remain.
 
 ## A small real-world example
 
@@ -11,13 +11,14 @@ Imagine a homework folder that can hold 10 MB, and the files inside already
 use 2.5 MB.
 
 ```python
-from py_simple import bytes_to_human, human_to_bytes, percent_used
+from py_simple import bytes_to_human, human_to_bytes, percent_used, remaining_bytes
 
 used = human_to_bytes("2.5 MB")
 total = human_to_bytes("10 MB")
 
 print(bytes_to_human(used))
 print(percent_used(used, total))
+print(bytes_to_human(remaining_bytes(used, total)))
 ```
 
 Example output:
@@ -25,6 +26,7 @@ Example output:
 ```text
 2.5 MB
 25.0
+7.5 MB
 ```
 
 ## What happened?
@@ -36,6 +38,11 @@ drop the decimal, so `2048` bytes becomes `"2 KB"`.
 
 `percent_used()` compares the two counts and returns the filled share rounded
 to one decimal place.
+
+`remaining_bytes()` subtracts used bytes from the total. It accepts whole,
+non-negative byte counts, including a total of zero when usage is also zero.
+Booleans and usage greater than the total raise `EasyBytesError` instead of
+returning a misleading count. A full storage total returns zero.
 
 ## Why use these helpers?
 
