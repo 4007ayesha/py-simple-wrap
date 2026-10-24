@@ -956,6 +956,17 @@
         "code",
         "documentation"
       ]
+    },
+    {
+      "login": "Ash1-gif",
+      "name": "Ash",
+      "avatar_url": "https://github.com/Ash1-gif.png",
+      "profile": "https://github.com/Ash1-gif",
+      "contributions": [
+        "test",
+        "code",
+        "documentation"
+      ]
     }
   ]
 }

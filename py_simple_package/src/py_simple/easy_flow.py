@@ -46,14 +46,14 @@ def run_py_file(filename: str):
 
             print("RUNNING: script.py")
             try:
-                runpy.run_path("script.py")
+                runpy.run_path("script.py", run_name="__main__")
             except Exception as e:
                 print(f"Couldn't run the file: {e}")
             ```
     """
     print(f"RUNNING: {filename}")
     try:
-        runpy.run_path(filename)
+        runpy.run_path(filename, run_name="__main__")
     except Exception as e:
         raise EasyFlowError(f"\n\n\nERROR: {e}") from None
 
@@ -88,14 +88,14 @@ def run_py_file_safe(filename: str):
 
             print("RUNNING: script.py")
             try:
-                runpy.run_path("script.py")
+                runpy.run_path("script.py", run_name="__main__")
             except Exception as e:
                 print(f"Couldn't run the file: {e}")
             ```
     """
     print(f"RUNNING: {filename}")
     try:
-        runpy.run_path(filename)
+        runpy.run_path(filename, run_name="__main__")
         return True, None
     except Exception as e:
         return False, str(e)
