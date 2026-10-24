@@ -199,6 +199,7 @@ from .easy_hash import (
     verify_file_hash,
 )
 from .easy_images import (
+    adjust_brightness,
     convert_image,
     convert_to_greyscale,
     create_thumbnail,

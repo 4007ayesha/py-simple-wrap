@@ -83,6 +83,7 @@ nav:
           - Palette Journal: tutorial/palette-journal-project.md
           - Homework Log: tutorial/homework-log-project.md
           - Word Detective: tutorial/word-frequency-project.md
+          - Backup Checker: tutorial/backup-check-project.md
   - How To:
       - Contributing: how-to/contributing.md
   - Contributor Hub:
@@ -91,6 +92,7 @@ nav:
       - Tutorial Template: contributor-hub/tutorial_template.md
       - Custom Exception Template: contributor-hub/error_template.md
       - Module Tests Template: contributor-hub/tests_template.md
+      - Public API Export Template: contributor-hub/public_api_template.md
   - Reference:
       - Easy AI: reference/easy_ai.md
       - Easy Archive: reference/easy_archive.md
