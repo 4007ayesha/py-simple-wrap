@@ -85,6 +85,7 @@ nav:
           - Word Detective: tutorial/word-frequency-project.md
           - Backup Checker: tutorial/backup-check-project.md
           - Pizza Party Bill Splitter: tutorial/pizza-party-project.md
+          - Study Habit Tracker: tutorial/study-habit-tracker-project.md
   - How To:
       - Contributing: how-to/contributing.md
   - Contributor Hub:
@@ -94,6 +95,7 @@ nav:
       - Custom Exception Template: contributor-hub/error_template.md
       - Module Tests Template: contributor-hub/tests_template.md
       - Public API Export Template: contributor-hub/public_api_template.md
+      - Pre-commit Guide: contributor-hub/pre_commit_template.md
   - Reference:
       - Easy AI: reference/easy_ai.md
       - Easy Archive: reference/easy_archive.md

@@ -18,6 +18,9 @@ The [Custom Exception Template](error_template.md) has a fill-in-the-blanks clas
 **📦 "My helper works in its module, but I cannot import it from py_simple."**
 The [Public API Export Template](public_api_template.md) shows where to expose a helper, how to check both import paths, and how to avoid name collisions.
 
+**🧹 "A pre-commit check failed, or changed my files. What do I do next?"**
+The [Pre-commit Guide](pre_commit_template.md) shows how to run the repository's hooks, review their fixes, and stage and check your files again.
+
 ## Still stuck, or something's not covered here?
 
 That's okay too. Open an issue, or mention it in your pull request, and it'll get sorted out together — see [CONTRIBUTING.md](https://github.com/sara-czasak/py-simple-wrap/blob/main/CONTRIBUTING.md) for how to reach out. Nobody's expected to figure this out alone.
