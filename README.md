@@ -17,7 +17,7 @@
 [![PyPI](https://img.shields.io/pypi/v/py-simple-wrap?style=flat-square&logo=pypi&logoColor=white&color=3775A9)](https://pypi.org/project/py-simple-wrap/)
 [![Tests](https://img.shields.io/github/actions/workflow/status/sara-czasak/py-simple-wrap/tests.yml?style=flat-square&logo=github&label=tests)](https://github.com/sara-czasak/py-simple-wrap/actions/workflows/tests.yml)
 [![Security: SkillsLLM](https://skillsllm.com/security-check/badge.svg?owner=sara-czasak&repo=py-simple-wrap)](https://skillsllm.com/security-check/ClrqG49aEoiZ)
-[![Contributors](https://img.shields.io/badge/contributors-83-orange?style=flat-square)](CONTRIBUTORS.md)
+[![Contributors](https://img.shields.io/badge/contributors-90-orange?style=flat-square)](CONTRIBUTORS.md)
 [![PyPI Downloads](https://static.pepy.tech/personalized-badge/py-simple-wrap?period=total&units=NONE&left_color=BLACK&right_color=GREEN&left_text=downloads)](https://pepy.tech/projects/py-simple-wrap)
 [![License](https://img.shields.io/badge/license-MIT-yellow?style=flat-square)](LICENSE.md)
 [![Discord](https://img.shields.io/discord/1533803449895092245?style=flat-square&logo=discord&logoColor=white&label=discord&color=5865F2)](https://discord.gg/f9PUGNaVZ)
@@ -69,6 +69,12 @@ py-simple-wrap is a beginner-friendly Python toolbox — simple, intuitive funct
       </a>
     </td>
     <td align="center" valign="top" width="14.28%">
+      <a href="https://github.com/Cid-oe">
+        <img src="https://github.com/Cid-oe.png" width="100px;" alt="Cid-oe"/><br />
+        <sub><b>Cid-oe</b></sub>
+      </a>
+    </td>
+    <td align="center" valign="top" width="14.28%">
       <a href="https://github.com/SemTiOne">
         <img src="https://github.com/SemTiOne.png" width="100px;" alt="Dane Parin"/><br />
         <sub><b>Dane Parin</b></sub>
@@ -98,14 +104,14 @@ py-simple-wrap is a beginner-friendly Python toolbox — simple, intuitive funct
         <sub><b>jagjitkaur0000</b></sub>
       </a>
     </td>
+  </tr>
+  <tr>
     <td align="center" valign="top" width="14.28%">
       <a href="https://github.com/sara-czasak">
         <img src="https://github.com/sara-czasak.png" width="100px;" alt="Sara Czasak"/><br />
         <sub><b>Sara Czasak</b></sub>
       </a>
     </td>
-  </tr>
-  <tr>
     <td align="center" valign="top" width="8.6%">
       <a href="https://github.com/Pratham2511">
         <img src="https://github.com/Pratham2511.png" width="100px;" alt="Pratham Pansare"/><br />
@@ -124,7 +130,7 @@ py-simple-wrap is a beginner-friendly Python toolbox — simple, intuitive funct
         <sub><b>Yassin Azzouzi</b></sub>
       </a>
     </td>
-    <td align="center" valign="top" width="8.6%">
+    <td align="center" valign="top" width="14.28%">
       <a href="https://github.com/Ymax27">
         <img src="https://github.com/Ymax27.png" width="100px;" alt="Ymax27"/><br />
         <sub><b>Ymax27</b></sub>
@@ -132,6 +138,7 @@ py-simple-wrap is a beginner-friendly Python toolbox — simple, intuitive funct
     </td>
   </tr>
 </table>
+
 </div>
 <br>
 

@@ -62,7 +62,8 @@
 | 🎨 Easy Colors             | hex/RGB/HSL color conversions without memorizing the formulas                 |             [Docs](https://sara-czasak.github.io/py-simple-wrap/docs/reference/easy_colors/) · [Tutorial](https://sara-czasak.github.io/py-simple-wrap/docs/tutorial/easy_colors/)             |
 | 🖼️ Easy Images            | resize, convert, rotate, and inspect images without wrangling Pillow directly |             [Docs](https://sara-czasak.github.io/py-simple-wrap/docs/reference/easy_images/) · [Tutorial](https://sara-czasak.github.io/py-simple-wrap/docs/tutorial/easy_images/)             |
 | 📈 Easy Data Visualization | auto-picks the right chart type for your data, no matplotlib boilerplate      | [Docs](https://sara-czasak.github.io/py-simple-wrap/docs/reference/easy_data_visualization/) · [Tutorial](https://sara-czasak.github.io/py-simple-wrap/docs/tutorial/easy_data_visualization/) |
-| 🖥️ Easy Terminal          | styled terminal output without memorizing Rich markup strings                 |                                                [Docs](https://sara-czasak.github.io/py-simple-wrap/docs/reference/easy_terminal/) · COMING SOON                                                |
+| 🖥️ Easy Terminal          | styled terminal output without memorizing Rich markup strings                 |           [Docs](https://sara-czasak.github.io/py-simple-wrap/docs/reference/easy_terminal/) · [Tutorial](https://sara-czasak.github.io/py-simple-wrap/docs/tutorial/easy_terminal/)           |
+|
 
 ## Fun & generators
 

@@ -6,8 +6,14 @@ from py_simple_package.src.py_simple.easy_bytes import (
     bytes_to_human,
     human_to_bytes,
     percent_used,
+    remaining_bytes,
     add_bytes,
 )
+
+BOTH = [False, True]
+
+
+# --- bytes_to_human -------------------------------------------------------
 
 
 @pytest.mark.parametrize(
@@ -15,26 +21,26 @@ from py_simple_package.src.py_simple.easy_bytes import (
     [
         (0, "0 B"),
         (1, "1 B"),
-        (999, "999 B"),
-        (1000, "1 KB"),
-        (1001, "1 KB"),
-        (1500, "1.5 KB"),
-        (1549, "1.5 KB"),
-        (1551, "1.6 KB"),
-        (1999, "2 KB"),
-        (2000, "2 KB"),
-        (999 * 1000, "999 KB"),
-        (10**6, "1 MB"),
-        (999 * 10**6, "999 MB"),
-        (10**9, "1 GB"),
-        (999 * 10**9, "999 GB"),
-        (10**12, "1 TB"),
-        (1500 * 10**9, "1.5 TB"),
-        (10**15, "1000 TB"),
+        (1023, "1023 B"),
+        (1024, "1 KB"),
+        (1025, "1 KB"),
+        (1536, "1.5 KB"),
+        (1587, "1.5 KB"),
+        (1588, "1.6 KB"),
+        (2047, "2 KB"),
+        (2048, "2 KB"),
+        (1023 * 1024, "1023 KB"),
+        (1024**2, "1 MB"),
+        (1023 * 1024**2, "1023 MB"),
+        (1024**3, "1 GB"),
+        (1023 * 1024**3, "1023 GB"),
+        (1024**4, "1 TB"),
+        (1536 * 1024**3, "1.5 TB"),
+        (1024**5, "1024 TB"),
     ],
 )
 def test_bytes_to_human(num_bytes, expected):
-    """Use decimal units by default, one decimal place, and no useless zero."""
+    """The default is unchanged: KB-style labels with factors of 1024."""
     assert bytes_to_human(num_bytes) == expected
 
 
@@ -63,30 +69,82 @@ def test_bytes_to_human(num_bytes, expected):
     ],
 )
 def test_bytes_to_human_binary(num_bytes, expected):
-    """With binary=True, use IEC units where each step is 1024."""
+    """With binary=True, use KiB-style labels (still factors of 1024)."""
     assert bytes_to_human(num_bytes, binary=True) == expected
 
 
-def test_bytes_to_human_binary_false_matches_default():
-    """Passing binary=False explicitly is the same as the default."""
-    assert bytes_to_human(1500, binary=False) == bytes_to_human(1500) == "1.5 KB"
+@pytest.mark.parametrize(
+    "num_bytes, expected",
+    [
+        (0, "0 B"),
+        (1, "1 B"),
+        (999, "999 B"),
+        (1000, "1 KB"),
+        (1001, "1 KB"),
+        (1500, "1.5 KB"),
+        (1549, "1.5 KB"),
+        (1551, "1.6 KB"),
+        (1999, "2 KB"),
+        (2000, "2 KB"),
+        (999 * 1000, "999 KB"),
+        (10**6, "1 MB"),
+        (999 * 10**6, "999 MB"),
+        (10**9, "1 GB"),
+        (999 * 10**9, "999 GB"),
+        (10**12, "1 TB"),
+        (1500 * 10**9, "1.5 TB"),
+        (10**15, "1000 TB"),
+    ],
+)
+def test_bytes_to_human_decimal(num_bytes, expected):
+    """With decimal=True, use KB-style labels with factors of 1000."""
+    assert bytes_to_human(num_bytes, decimal=True) == expected
+
+
+@pytest.mark.parametrize(
+    "num_bytes", [0, 1023, 1024, 1536, 1588, 1024**2, 1536 * 1024**3, 1024**5]
+)
+def test_bytes_to_human_binary_is_default_with_kib_spelling(num_bytes):
+    """binary=True gives the default numbers, spelled with KiB, MiB, ..."""
+    assert bytes_to_human(num_bytes, binary=True).replace("iB", "B") == (
+        bytes_to_human(num_bytes)
+    )
+
+
+def test_bytes_to_human_explicit_false_flags_match_default():
+    """Passing both flags as False is the same as passing neither."""
+    assert (
+        bytes_to_human(1536, binary=False, decimal=False) == bytes_to_human(1536)
+    ) and bytes_to_human(1536) == "1.5 KB"
 
 
 @pytest.mark.parametrize("num_bytes", [-1, True, False, 1.0, 1.5, "1024", None, [], {}])
-@pytest.mark.parametrize("binary", [False, True])
-def test_bytes_to_human_rejects_bad_input(num_bytes, binary):
+@pytest.mark.parametrize("flags", [{}, {"binary": True}, {"decimal": True}])
+def test_bytes_to_human_rejects_bad_input(num_bytes, flags):
     """Byte counts must be non-negative integers, excluding booleans."""
     with pytest.raises(
         EasyBytesError, match="num_bytes must be a non-negative integer"
     ):
-        bytes_to_human(num_bytes, binary=binary)
+        bytes_to_human(num_bytes, **flags)
 
 
-@pytest.mark.parametrize("binary", [0, 1, "yes", None, [], 1.0])
-def test_bytes_to_human_rejects_bad_binary_flag(binary):
-    """The binary flag must be a real boolean."""
-    with pytest.raises(EasyBytesError, match=re.escape("binary must be a boolean (True or False).")):
-        bytes_to_human(1024, binary=binary)
+@pytest.mark.parametrize("flag", ["binary", "decimal"])
+@pytest.mark.parametrize("value", [0, 1, "yes", None, [], 1.0])
+def test_bytes_to_human_rejects_bad_flags(flag, value):
+    """Each flag must be a real boolean."""
+    with pytest.raises(
+        EasyBytesError, match=re.escape(f"{flag} must be a boolean (True or False).")
+    ):
+        bytes_to_human(1024, **{flag: value})
+
+
+def test_bytes_to_human_rejects_both_flags():
+    """KiB labels and 1000-based units cannot be combined."""
+    with pytest.raises(EasyBytesError, match="binary and decimal cannot both be True"):
+        bytes_to_human(1024, binary=True, decimal=True)
+
+
+# --- human_to_bytes -------------------------------------------------------
 
 
 @pytest.mark.parametrize(
@@ -96,21 +154,22 @@ def test_bytes_to_human_rejects_bad_binary_flag(binary):
         ("1 B", 1),
         ("512 B", 512),
         ("1.5 B", 1),
-
-        # decimal units: factors of 1000.
-        ("1 KB", 1000),
-        ("0.1 KB", 100),
-        ("1.5 KB", 1500),
-        ("2 KB", 2000),
-        ("1 MB", 10**6),
-        ("1.5 MB", 1_500_000),
-        ("1 GB", 10**9),
-        ("1.5 GB", 1_500_000_000),
-        ("1 TB", 10**12),
-        ("1.5 TB", 1_500_000_000_000),
+        ("0.1 KB", 102),
+        ("1.5 KB", 1536),
+        ("2 KB", 2048),
+        ("1 MB", 1048576),
+        ("1.5 MB", 1572864),
+        ("1 GB", 1073741824),
+        ("1.5 GB", 1610612736),
+        ("1 TB", 1099511627776),
+        ("1.5 TB", 1649267441664),
         ("0 TB", 0),
-
-        # binary units: factors of 1024.
+        ("  1.5 KB  ", 1536),
+        ("\t1.5\t KB\n", 1536),
+        ("1267650600228229401496703205376 B", 2**100),
+        ("1267650600228229401496703205376 TB", 2**140),
+        (f"{2**1023} B", 2**1023),
+        # KiB-style units mean exactly the same thing.
         ("1 KiB", 1024),
         ("0.1 KiB", 102),
         ("1.5 KiB", 1536),
@@ -122,78 +181,143 @@ def test_bytes_to_human_rejects_bad_binary_flag(binary):
         ("1 TiB", 1099511627776),
         ("1.5 TiB", 1649267441664),
         ("0 TiB", 0),
-
-        # whitespace handling.
-        ("  1.5 KB  ", 1500),
         ("  1.5 KiB  ", 1536),
-        ("\t1.5\t KB\n", 1500),
         ("\t1.5\t KiB\n", 1536),
-
-        # very large values.
-        ("1267650600228229401496703205376 B", 2**100),
         ("1267650600228229401496703205376 TiB", 2**140),
-        (f"{2**1023} B", 2**1023),
+        # Exact scaling.
+        ("1.001 KB", 1025),
+        ("1e3 B", 1000),
+        ("1e-999999999 KB", 0),
     ],
 )
 def test_human_to_bytes(label, expected):
-    """Read supported units and whitespace, returning a whole byte count."""
+    """The default is unchanged: KB-style units use factors of 1024."""
     result = human_to_bytes(label)
     assert result == expected
     assert isinstance(result, int)
 
 
-def test_human_to_bytes_decimal_and_binary_differ():
-    """KB and KiB (and so on) must not be mixed up."""
-    units  = [("KB", "KiB"), ("MB", "MiB"), ("GB", "GiB"), ("TB", "TiB")]
-    for decimal, binary in units:
-        assert human_to_bytes(f"1 {decimal}") < human_to_bytes(f"1 {binary}")
+@pytest.mark.parametrize(
+    "label, expected",
+    [
+        ("0 B", 0),
+        ("1.5 B", 1),
+        ("1 KB", 1000),
+        ("0.1 KB", 100),
+        ("1.5 KB", 1500),
+        ("2 KB", 2000),
+        ("1 MB", 10**6),
+        ("1.5 MB", 1_500_000),
+        ("1 GB", 10**9),
+        ("1.5 GB", 1_500_000_000),
+        ("1 TB", 10**12),
+        ("1.5 TB", 1_500_000_000_000),
+        ("0 TB", 0),
+        ("  1.5 KB  ", 1500),
+        ("\t1.5\t KB\n", 1500),
+        # KiB-style units do not change.
+        ("1 KiB", 1024),
+        ("1.5 KiB", 1536),
+        ("1 MiB", 1048576),
+        ("1 TiB", 1099511627776),
+        # Exact scaling: all of these lose a byte with binary floats
+        # (e.g. 1.001 * 1000 == 1000.9999999999999).
+        ("1.001 KB", 1001),
+        ("1.001 MB", 1_001_000),
+        ("2.01 KB", 2010),
+        ("2.03 KB", 2030),
+        ("4.1 MB", 4_100_000),
+        ("8.2 MB", 8_200_000),
+        ("16.4 MB", 16_400_000),
+        ("0.0005 KB", 0),
+        ("0.9999 KB", 999),
+        ("1.001e3 B", 1001),
+        ("1e-999999999 KB", 0),
+    ],
+)
+def test_human_to_bytes_decimal(label, expected):
+    """With decimal=True, KB-style units use factors of 1000, exactly."""
+    result = human_to_bytes(label, decimal=True)
+    assert result == expected
+    assert isinstance(result, int)
 
 
+def test_human_to_bytes_pre_kib_behavior_is_preserved():
+    """Calls that worked before KiB existed return the same numbers."""
+    assert human_to_bytes("1 MB") == 1048576
+    assert human_to_bytes("1.5 KB") == 1536
+    assert bytes_to_human(1023) == "1023 B"
+    assert bytes_to_human(10 * 1024 * 1024) == "10 MB"
+
+
+def test_human_to_bytes_decimal_differs_from_default_only_for_kb_units():
+    """decimal=True changes KB, MB, GB, TB and nothing else."""
+    for unit in ["B", "KiB", "MiB", "GiB", "TiB"]:
+        assert human_to_bytes(f"1 {unit}") == human_to_bytes(f"1 {unit}", decimal=True)
+    for unit in ["KB", "MB", "GB", "TB"]:
+        assert human_to_bytes(f"1 {unit}", decimal=True) < human_to_bytes(f"1 {unit}")
+
+
+@pytest.mark.parametrize("value", [0, 1, "yes", None, [], 1.0])
+def test_human_to_bytes_rejects_bad_decimal_flag(value):
+    """The decimal flag must be a real boolean."""
+    with pytest.raises(
+        EasyBytesError, match=re.escape("decimal must be a boolean (True or False).")
+    ):
+        human_to_bytes("1 KB", decimal=value)
+
+
+@pytest.mark.parametrize("decimal", BOTH)
 @pytest.mark.parametrize("label", [None, 1024, 1.5, True, False, [], {}])
-def test_human_to_bytes_rejects_non_string(label):
+def test_human_to_bytes_rejects_non_string(label, decimal):
     """Reject non-string labels with the module's exception."""
     with pytest.raises(EasyBytesError, match="label must be a string"):
-        human_to_bytes(label)
+        human_to_bytes(label, decimal=decimal)
 
 
+@pytest.mark.parametrize("decimal", BOTH)
 @pytest.mark.parametrize(
     "label", ["", "  ", "lots", "1.5", "KB", "1.5KB", "1.5KiB", "1 KB extra"]
 )
-def test_human_to_bytes_rejects_bad_label(label):
+def test_human_to_bytes_rejects_bad_label(label, decimal):
     """A label must contain a number and a separate unit."""
     with pytest.raises(EasyBytesError, match="use a form like '1.5 KB'"):
-        human_to_bytes(label)
+        human_to_bytes(label, decimal=decimal)
 
 
+@pytest.mark.parametrize("decimal", BOTH)
 @pytest.mark.parametrize(
     "label", ["5 XB", "1 kb", "1 mb", "1 kib", "1 KIB", "1 Kib", "1 KiKB", "1 PiB"]
 )
-def test_human_to_bytes_rejects_unknown_unit(label):
+def test_human_to_bytes_rejects_unknown_unit(label, decimal):
     """Only the documented units, with exact capitalization, are supported."""
     with pytest.raises(
         EasyBytesError,
         match="unit must be B, KB, MB, GB, TB, KiB, MiB, GiB, or TiB",
     ):
-        human_to_bytes(label)
+        human_to_bytes(label, decimal=decimal)
 
 
+@pytest.mark.parametrize("decimal", BOTH)
 @pytest.mark.parametrize("label", ["many KB", "1.2.3 MB", "--1 B", "many KiB"])
-def test_human_to_bytes_rejects_malformed_number(label):
+def test_human_to_bytes_rejects_malformed_number(label, decimal):
     """Invalid numeric text should be wrapped in EasyBytesError."""
     with pytest.raises(EasyBytesError, match="could not convert string to float"):
-        human_to_bytes(label)
+        human_to_bytes(label, decimal=decimal)
 
 
+@pytest.mark.parametrize("decimal", BOTH)
 @pytest.mark.parametrize(
     "label",
     ["-1 B", "-0.5 KB", "-0.5 KiB", "-inf KB", "-Infinity TB", "-1e309 MB"],
 )
-def test_human_to_bytes_rejects_negative_size(label):
+def test_human_to_bytes_rejects_negative_size(label, decimal):
     """Reject negative sizes, including fractional ones."""
     with pytest.raises(EasyBytesError, match="size cannot be negative"):
-        human_to_bytes(label)
+        human_to_bytes(label, decimal=decimal)
 
 
+@pytest.mark.parametrize("decimal", BOTH)
 @pytest.mark.parametrize(
     "label",
     [
@@ -213,21 +337,25 @@ def test_human_to_bytes_rejects_negative_size(label):
         "  NaN\tKB\n",
     ],
 )
-def test_human_to_bytes_rejects_nonfinite_size(label):
+def test_human_to_bytes_rejects_nonfinite_size(label, decimal):
     """Non-finite numeric labels must use the public conversion error."""
     with pytest.raises(
         EasyBytesError, match="size must convert to a finite byte count"
     ):
-        human_to_bytes(label)
+        human_to_bytes(label, decimal=decimal)
 
 
+@pytest.mark.parametrize("decimal", BOTH)
 @pytest.mark.parametrize("unit", ["KB", "MB", "GB", "TB", "KiB", "MiB", "GiB", "TiB"])
-def test_human_to_bytes_rejects_scaled_overflow(unit):
+def test_human_to_bytes_rejects_scaled_overflow(unit, decimal):
     """A finite number can still overflow when scaled to bytes."""
     with pytest.raises(
         EasyBytesError, match="size must convert to a finite byte count"
     ):
-        human_to_bytes(f"1e308 {unit}")
+        human_to_bytes(f"1e308 {unit}", decimal=decimal)
+
+
+# --- add_bytes ------------------------------------------------------------
 
 
 @pytest.mark.parametrize(
@@ -239,6 +367,32 @@ def test_human_to_bytes_rejects_scaled_overflow(unit):
         ([1, 2, 3], 6),
         (["0 B"], 0),
         (["512 B"], 512),
+        (["1 KB"], 1024),
+        (["1 KiB"], 1024),
+        (["1 KB", "1 KiB"], 2048),
+        (["1.5 KB", "1.5 KiB"], 1536 + 1536),
+        ([512, "1 KB", "1.5 KiB"], 512 + 1024 + 1536),
+        (["  2 MB  ", 1], 2 * 1024**2 + 1),
+        (["1 MB", "1 MiB"], 2 * 1024**2),
+        (["1 GB", "1 GiB"], 2 * 1024**3),
+        (["1 TB", "1 TiB"], 2 * 1024**4),
+        ([2**100, "1 B"], 2**100 + 1),
+        ([10, 20, "30 B"], 60),
+        ((1, "1 KB"), 1025),
+    ],
+)
+def test_add_bytes(values, expected):
+    """By default, KB-style labels use factors of 1024, like human_to_bytes."""
+    result = add_bytes(values)
+    assert result == expected
+    assert isinstance(result, int)
+
+
+@pytest.mark.parametrize(
+    "values, expected",
+    [
+        ([], 0),
+        ([1, 2, 3], 6),
         (["1 KB"], 1000),
         (["1 KiB"], 1024),
         (["1 KB", "1 KiB"], 2024),
@@ -249,13 +403,14 @@ def test_human_to_bytes_rejects_scaled_overflow(unit):
         (["1 GB", "1 GiB"], 10**9 + 1024**3),
         (["1 TB", "1 TiB"], 10**12 + 1024**4),
         ([2**100, "1 B"], 2**100 + 1),
-        ([10, 20, "30 B"], 60),
         ((1, "1 KB"), 1001),
+        (["1.001 KB"], 1001),
+        (["4.1 MB", "1.001 KB"], 4_100_000 + 1001),
     ],
 )
-def test_add_bytes(values, expected):
-    """Sum ints and size labels into a single whole byte count."""
-    result = add_bytes(values)
+def test_add_bytes_decimal(values, expected):
+    """With decimal=True, "1 KB" is 1000 bytes and "1 KiB" is 1024 bytes."""
+    result = add_bytes(values, decimal=True)
     assert result == expected
     assert isinstance(result, int)
 
@@ -273,25 +428,37 @@ def test_add_bytes_does_not_modify_input():
     assert values == [1, "1 KB", "1 KiB"]
 
 
+@pytest.mark.parametrize("value", [0, 1, "yes", None, [], 1.0])
+def test_add_bytes_rejects_bad_decimal_flag(value):
+    """The decimal flag is checked even when the list is empty."""
+    with pytest.raises(
+        EasyBytesError, match=re.escape("decimal must be a boolean (True or False).")
+    ):
+        add_bytes([], decimal=value)
+
+
+@pytest.mark.parametrize("decimal", BOTH)
 @pytest.mark.parametrize("values", [None, 5, 1.5, "1 KB", b"1 KB", {}, {1: 2}, {1, 2}])
-def test_add_bytes_rejects_non_list(values):
+def test_add_bytes_rejects_non_list(values, decimal):
     """A bare string must not be iterated character by character."""
-    with pytest.raises(EasyBytesError, match="values must be a list"):
-        add_bytes(values)
+    with pytest.raises(EasyBytesError, match="values must be a list or a tuple"):
+        add_bytes(values, decimal=decimal)
 
 
+@pytest.mark.parametrize("decimal", BOTH)
 @pytest.mark.parametrize(
     "bad_item", [-1, True, False, 1.0, 1.5, None, [], {}, b"1 KB", ["1 KB"]]
 )
-def test_add_bytes_rejects_bad_item(bad_item):
+def test_add_bytes_rejects_bad_item(bad_item, decimal):
     """Items must be non-negative ints (not bools) or strings."""
     with pytest.raises(
         EasyBytesError,
         match="each value must be a non-negative integer or a size string",
     ):
-        add_bytes([1, bad_item])
+        add_bytes([1, bad_item], decimal=decimal)
 
 
+@pytest.mark.parametrize("decimal", BOTH)
 @pytest.mark.parametrize(
     "bad_label, message",
     [
@@ -305,10 +472,23 @@ def test_add_bytes_rejects_bad_item(bad_item):
         ("1e308 TiB", "size must convert to a finite byte count"),
     ],
 )
-def test_add_bytes_propagates_label_errors(bad_label, message):
+def test_add_bytes_propagates_label_errors(bad_label, message, decimal):
     """Invalid labels raise the same error human_to_bytes would raise."""
     with pytest.raises(EasyBytesError, match=message):
-        add_bytes([1, bad_label])
+        add_bytes([1, bad_label], decimal=decimal)
+
+
+def test_add_bytes_public_imports():
+    """Both documented import paths expose the same helper."""
+    from py_simple import add_bytes as public_helper
+    from py_simple.easy_bytes import add_bytes as module_helper
+
+    assert public_helper is module_helper
+    assert public_helper([512, "1 KB", "1 KiB"]) == 2560
+    assert public_helper([512, "1 KB", "1 KiB"], decimal=True) == 2536
+
+
+# --- percent_used ---------------------------------------------------------
 
 
 @pytest.mark.parametrize(
@@ -351,8 +531,59 @@ def test_percent_used_rejects_zero_total(used):
         percent_used(used, 0)
 
 
-def test_percent_used_with_mixed_unit_labels():
+def test_percent_used_with_add_bytes():
     """percent_used works on counts produced by add_bytes."""
-    used = add_bytes(["250 KB"])
-    total = add_bytes(["1 MB"])
+    used = add_bytes(["250 KB"], decimal=True)
+    total = add_bytes(["1 MB"], decimal=True)
     assert percent_used(used, total) == 25.0
+
+
+# --- remaining_bytes ------------------------------------------------------
+
+
+@pytest.mark.parametrize(
+    "used, total, expected",
+    [
+        (250, 1000, 750),
+        (0, 1000, 1000),
+        (1000, 1000, 0),
+        (0, 0, 0),
+        (1, 2, 1),
+        (2**100, 2**100 + 1, 1),
+    ],
+)
+def test_remaining_bytes(used, total, expected):
+    """Return an exact integer, including empty, full, and large capacities."""
+    result = remaining_bytes(used, total)
+    assert result == expected
+    assert type(result) is int
+
+
+@pytest.mark.parametrize(
+    "invalid", [-1, True, False, 1.0, "1", None, [], {}, float("nan"), float("inf")]
+)
+@pytest.mark.parametrize("argument", ["used", "total"])
+def test_remaining_bytes_rejects_bad_input(invalid, argument):
+    """Validate both arguments before performing arithmetic."""
+    counts = {"used": 0, "total": 100}
+    counts[argument] = invalid
+    with pytest.raises(
+        EasyBytesError, match="used and total must be non-negative integers"
+    ):
+        remaining_bytes(**counts)
+
+
+@pytest.mark.parametrize("used, total", [(1, 0), (1001, 1000)])
+def test_remaining_bytes_rejects_usage_above_capacity(used, total):
+    """An inconsistent storage report must not produce a negative remainder."""
+    with pytest.raises(EasyBytesError, match="used cannot exceed total"):
+        remaining_bytes(used, total)
+
+
+def test_remaining_bytes_public_imports():
+    """Both documented import paths expose the same helper."""
+    from py_simple import remaining_bytes as public_helper
+    from py_simple.easy_bytes import remaining_bytes as module_helper
+
+    assert public_helper is module_helper
+    assert public_helper(250, 1000) == 750

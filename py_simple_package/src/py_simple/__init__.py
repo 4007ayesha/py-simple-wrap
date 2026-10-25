@@ -19,6 +19,8 @@ from .easy_base64 import (
     decode_text,
     encode_text,
     is_base64,
+    encode_bytes,
+    decode_to_bytes,
 )
 from .easy_archive import (
     add_to_zip,
@@ -40,12 +42,15 @@ from .easy_async import (
     run_concurrent_map,
     run_concurrent_map_limited,
     run_periodically,
+    run_first_completed,
 )
 from .easy_bytes import (
     EasyBytesError,
     bytes_to_human,
     human_to_bytes,
     percent_used,
+    remaining_bytes,
+    add_bytes,
 )
 from .easy_colors import (
     contrast_ratio,
@@ -62,6 +67,7 @@ from .easy_config import (
     gh_workflow_config,
     create_env_file,
     read_env_file,
+    dockerfile_config,
     gitignore_config,
     requirements_config,
 )
@@ -86,6 +92,8 @@ from .easy_converter import (
     sq_meters_to_sq_feet,
 )
 from .easy_csv import (
+    iter_csv_rows,
+    merge_csv_files,
     count_csv_rows,
     drop_empty_csv_rows,
     filter_csv_rows,
@@ -104,6 +112,7 @@ from .easy_data_visualization import (
     plot_bar_chart,
     plot_line_chart,
     plot_pie_chart,
+    plot_scatter_chart,
 )
 from .easy_date_formatter import (
     dd_mm_yyyy,
@@ -185,6 +194,7 @@ from .easy_generator import (
 )
 from .easy_hash import (
     EasyHashError,
+    compare_file_hashes,
     hash_bytes,
     hash_file,
     hash_text,
@@ -192,6 +202,7 @@ from .easy_hash import (
     verify_file_hash,
 )
 from .easy_images import (
+    adjust_brightness,
     convert_image,
     convert_to_greyscale,
     create_thumbnail,
@@ -229,6 +240,7 @@ from .easy_money import (
     calculate_discount,
     format_money,
     split_bill,
+    split_bill_exact,
 )
 from .easy_logging import (
     clear_log_file,
@@ -238,6 +250,8 @@ from .easy_logging import (
     log_to_file,
     read_recent_log_lines,
     count_log_levels,
+    setup_file_logger,
+    temporary_log_level,
 )
 from .easy_math import (
     calculate_simple_interest,
@@ -294,6 +308,7 @@ from .easy_regex import (
     extract_mentions,
     extract_number_sequences,
     extract_numbers,
+    extract_phone_numbers,
     extract_urls,
 )
 from .easy_sql import (
@@ -354,6 +369,7 @@ from .easy_url import (
     EasyUrlError,
     add_query_param,
     get_domain,
+    get_path,
     is_https,
 )
 from .easy_web import (
@@ -370,4 +386,5 @@ from .easy_web import (
 )
 from .easy_terminal import (
     EasyTerminal,
+    print_styled,
 )

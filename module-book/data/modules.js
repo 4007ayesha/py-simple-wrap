@@ -228,10 +228,13 @@ window.BOOK_DATA = {
         "Turn a typed size like 10 MB back into bytes",
         "Report what percent of a drive is already full"
       ],
-      links: [
+            links: [
         { label: "Docs", icon: "📘", url: "https://sara-czasak.github.io/py-simple-wrap/docs/reference/easy_bytes/" },
         { label: "Tutorial", icon: "🎓", url: "https://sara-czasak.github.io/py-simple-wrap/docs/tutorial/easy_bytes/" },
         { label: "Source", icon: "🐍", url: "https://github.com/sara-czasak/py-simple-wrap/blob/main/py_simple_package/src/py_simple/easy_bytes.py" }
+      ]
+    },
+    {
       id: "easy_hash",
       name: "Easy Hash",
       icon: "#️⃣",
@@ -525,6 +528,7 @@ window.BOOK_DATA = {
       ],
       links: [
         { label: "Docs", icon: "📘", url: "https://sara-czasak.github.io/py-simple-wrap/docs/reference/easy_terminal/" },
+        { label: "Tutorial", icon: "🎓", url: "https://sara-czasak.github.io/py-simple-wrap/docs/tutorial/easy_terminal/" },
         { label: "Source", icon: "🐍", url: "https://github.com/sara-czasak/py-simple-wrap/blob/main/py_simple_package/src/py_simple/easy_terminal.py" }
       ]
     },

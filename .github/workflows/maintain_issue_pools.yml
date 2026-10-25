@@ -8,6 +8,7 @@ on:
 jobs:
   top-up-new-module-issues:
     runs-on: ubuntu-latest
+    if: false  # paused — new-module issue pool on hold; remove this line to re-enable
     permissions:
       issues: write
     steps:
@@ -62,6 +63,35 @@ jobs:
             gh issue create --title "$title" --body "$body" --label "$labels"
           done
 
+  top-up-contributor-hub-issues:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Top up open "contributor hub guide" issues to 3
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          title=$(grep '^title:' .github/ISSUE_TEMPLATE/contributor_hub_template_issue.md | sed 's/^title: *//')
+          labels=$(grep '^labels:' .github/ISSUE_TEMPLATE/contributor_hub_template_issue.md | sed 's/^labels: *//' | sed 's/, */,/g')
+          milestone=$(grep '^milestone:' .github/ISSUE_TEMPLATE/contributor_hub_template_issue.md | sed 's/^milestone: *//')
+          body=$(awk '/^---$/{c++; next} c>=2' .github/ISSUE_TEMPLATE/contributor_hub_template_issue.md)
+
+          open_count=$(gh issue list --state open --search "in:title \"$title\"" --json title -q '.[].title' | wc -l)
+          echo "Currently open: $open_count"
+
+          missing=$((3 - open_count))
+          if [ "$missing" -lt 0 ]; then
+            missing=0
+          fi
+          echo "Creating $missing new issue(s)"
+
+          for i in $(seq 1 "$missing"); do
+            gh issue create --title "$title" --body "$body" --label "$labels" --milestone "$milestone"
+          done
+
   top-up-expand-module-issues:
     runs-on: ubuntu-latest
     permissions:
@@ -79,7 +109,7 @@ jobs:
             base=$(basename "$file" .py)
             [ "$base" = "__init__" ] && continue
 
-            count=$(grep -cE '^(async )?def ' "$file")
+            count=$(grep -cE '^(async )?def ' "$file" || true)
             echo "$base: $count functions"
 
             if [ "$count" -lt 10 ]; then
@@ -92,4 +122,3 @@ jobs:
               fi
             fi
           done
-

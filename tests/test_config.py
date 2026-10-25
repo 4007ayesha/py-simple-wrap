@@ -6,6 +6,7 @@ from py_simple_package.src.py_simple.easy_config import (
     gh_workflow_config,
     create_env_file,
     read_env_file,
+    dockerfile_config,
     gitignore_config,
     requirements_config,
 )
@@ -227,6 +228,81 @@ def test_gitignore_config_wraps_permission_errors(tmp_path, monkeypatch):
 
 def test_gitignore_config_imported_from_py_simple():
     assert callable(top_level_gitignore_config)
+
+def test_dockerfile_config_creates_file_at_current_directory(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+
+    dockerfile_config()
+
+    dockerfile = tmp_path / "Dockerfile"
+    assert dockerfile.exists()
+    content = dockerfile.read_text(encoding="utf-8")
+    assert "FROM python:3.12-slim" in content
+    assert 'CMD ["python", "main.py"]' in content
+
+
+def test_dockerfile_config_does_not_overwrite_existing_file(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+    dockerfile = tmp_path / "Dockerfile"
+    dockerfile.write_text("FROM scratch\n", encoding="utf-8")
+
+    dockerfile_config()
+
+    assert dockerfile.read_text(encoding="utf-8") == "FROM scratch\n"
+
+
+def test_dockerfile_config_can_target_repository_root(tmp_path, monkeypatch):
+    git.Repo.init(tmp_path)
+    nested = tmp_path / "nested"
+    nested.mkdir()
+    monkeypatch.chdir(nested)
+
+    dockerfile_config(at_root=False)
+
+    dockerfile = tmp_path / "Dockerfile"
+    assert dockerfile.exists()
+    assert "FROM python:3.12-slim" in dockerfile.read_text(encoding="utf-8")
+    assert not (nested / "Dockerfile").exists()
+
+
+def test_dockerfile_config_wraps_template_errors(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+
+    def missing_template(_package):
+        raise FileNotFoundError("template missing")
+
+    monkeypatch.setattr(
+        "py_simple_package.src.py_simple.easy_config.files", missing_template
+    )
+
+    with pytest.raises(EasyConfigError, match="template missing"):
+        dockerfile_config()
+
+
+def test_dockerfile_config_wraps_git_errors(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+
+    with pytest.raises(EasyConfigError):
+        dockerfile_config(at_root=False)
+
+
+def test_dockerfile_config_wraps_permission_errors(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+
+    def mock_open(*args, **kwargs):
+        raise PermissionError("Permission denied")
+
+    monkeypatch.setattr("builtins.open", mock_open)
+
+    with pytest.raises(EasyConfigError, match="Permission denied"):
+        dockerfile_config()
+
+
+def test_dockerfile_config_imported_from_py_simple():
+    from py_simple import dockerfile_config as imported_function
+
+    assert callable(imported_function)
+
 
 def test_requirements_config_creates_file(tmp_path):
     requirements_file = tmp_path / "requirements.txt"

@@ -52,6 +52,36 @@ people = [
 write_csv_from_list("people.csv", people)
 ```
 
+## Combine files with matching headers
+
+Use `merge_csv_files()` to join CSV files without loading them all into memory:
+
+```python
+from py_simple import merge_csv_files, write_csv_from_list, read_csv_to_list
+
+write_csv_from_list("january.csv", [{"Name": "Alice", "Age": "24"}])
+write_csv_from_list("february.csv", [{"Name": "Bob", "Age": "31"}])
+merge_csv_files(["january.csv", "february.csv"], "combined.csv")
+print(read_csv_to_list("combined.csv"))
+# [{'Name': 'Alice', 'Age': '24'}, {'Name': 'Bob', 'Age': '31'}]
+```
+
+Files are read as UTF-8, in the order supplied. The header appears once and
+must match exactly, including column order. Quoted commas, embedded newlines,
+Unicode, empty fields and data record field counts are preserved. Use
+`delimiter=";"` if all the files use semicolons.
+
+Header-only files are accepted. An empty input list, a zero-byte file or a
+blank first record raises `ValueError`, as do mismatched headers. Invalid
+CSV quoting raises `csv.Error`; file and decoding errors propagate.
+
+Choose an output path different from every input, including symbolic and hard
+links. Its parent directory must already exist. The helper uses a temporary
+file there and replaces the destination only after every input succeeds.
+Inputs and an existing destination remain unchanged if merging fails.
+An unrelated output symlink is replaced, leaving its target unchanged;
+file permissions and other metadata are not copied to the new output.
+
 ## Why use these helpers?
 
 Instead of repeatedly opening files, creating CSV readers and writers, handling headers, and filtering rows manually, you can simply write:

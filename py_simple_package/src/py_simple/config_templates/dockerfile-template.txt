@@ -1,0 +1,26 @@
+# Starter Dockerfile for a Python project.
+# Read through each section and change the parts your project needs.
+
+# The base image: the Python version your project runs on.
+# Swap in another version, e.g. python:3.13-slim.
+FROM python:3.12-slim
+
+# Keep the image small and the logs readable.
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
+
+# The folder your project lives in inside the container.
+WORKDIR /app
+
+# Copy the requirements file first, so Docker can reuse the install step
+# whenever only your code changes.
+COPY requirements.txt .
+
+# Install your dependencies.
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy the rest of your project.
+COPY . .
+
+# The command that starts your app.
+CMD ["python", "main.py"]

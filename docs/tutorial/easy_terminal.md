@@ -35,3 +35,14 @@ You can also use `set_bg_color()` to add a background color or `set_light_weight
 Without `EasyTerminal`, you would need to create a Rich console and manually build style strings such as `"bold green"`.
 
 With `EasyTerminal`, the same styling can be expressed by chaining readable methods together, which keeps terminal output code simple and beginner-friendly.
+
+## Print styled text in a single call
+
+If you prefer a single function call instead of chaining methods, use `print_styled()`:
+
+```python
+from py_simple import print_styled
+
+print_styled("Build complete", color="green", bold=True)
+print_styled("Warning note", color="yellow", bg_color="black", dim=True)
+```

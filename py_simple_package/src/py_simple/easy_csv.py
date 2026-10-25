@@ -4,8 +4,191 @@ easy_csv is built to simplify reading and writing CSV files.
 
 import csv
 import os.path
+from collections.abc import Generator
 from typing import Any
 import tempfile
+
+
+def merge_csv_files(
+    filepaths: list[str], output_filepath: str, delimiter: str = ","
+) -> None:
+    """
+    Combines CSV files with matching headers into one file in input order.
+
+    Reads UTF-8 files one record at a time and writes the header only once.
+    Header names and their order must match exactly. Header-only files are
+    accepted; empty files or files with a blank first record are rejected.
+    Data records are copied without changing their field count or values.
+
+    Writes to a temporary file beside the output, then replaces the output
+    only after all inputs succeed. Inputs and any existing output are left
+    unchanged on failure. The output must not refer to an input, including
+    through a symbolic or hard link. An unrelated output symlink is replaced
+    itself, leaving its target unchanged. File metadata is not copied.
+
+    Args:
+        filepaths (list[str]): Non-empty list of input paths, in merge order.
+        output_filepath (str): Destination path; its parent must exist.
+        delimiter (str): Field delimiter for all files (default is comma).
+
+    Raises:
+        ValueError: If there are no inputs, an input has no header, headers
+            differ, or the output refers to an input.
+        OSError: If a file cannot be read, written or replaced.
+        UnicodeError: If an input cannot be decoded as UTF-8.
+        csv.Error: If CSV parsing fails.
+
+    Example:
+        === "The Py_simple Way"
+            ```python
+            from py_simple import merge_csv_files
+
+            merge_csv_files(["january.csv", "february.csv"], "combined.csv")
+            ```
+
+        === "The Traditional Way"
+            ```python
+            import csv
+            import os
+            import tempfile
+
+            inputs = ["january.csv", "february.csv"]
+            output = "combined.csv"
+            if not inputs:
+                raise ValueError("At least one input is required")
+            for path in inputs:
+                if os.path.realpath(path) == os.path.realpath(output) or (
+                    os.path.exists(output) and os.path.samefile(path, output)
+                ):
+                    raise ValueError("Output must not be an input")
+
+            temporary_path = None
+            try:
+                with tempfile.NamedTemporaryFile(
+                    "w", newline="", encoding="utf-8", delete=False,
+                    dir=os.path.dirname(os.path.abspath(output))
+                ) as temporary:
+                    temporary_path = temporary.name
+                    writer = csv.writer(temporary)
+                    header = None
+                    for path in inputs:
+                        with open(path, newline="", encoding="utf-8") as source:
+                            reader = csv.reader(source, strict=True)
+                            current = next(reader, None)
+                            if not current:
+                                raise ValueError(f"File has no header: {path}")
+                            if header is None:
+                                header = current
+                                writer.writerow(header)
+                            elif current != header:
+                                raise ValueError(f"Headers do not match: {path}")
+                            writer.writerows(reader)
+                os.replace(temporary_path, output)
+            finally:
+                if temporary_path is not None and os.path.exists(temporary_path):
+                    os.remove(temporary_path)
+            ```
+    """
+    if not filepaths:
+        raise ValueError("At least one input CSV file is required")
+
+    for filepath in filepaths:
+        if os.path.realpath(filepath) == os.path.realpath(output_filepath) or (
+            os.path.exists(output_filepath)
+            and os.path.samefile(filepath, output_filepath)
+        ):
+            raise ValueError(f"Output must not refer to an input file: {filepath}")
+
+    temp_filepath = None
+    try:
+        with tempfile.NamedTemporaryFile(
+            "w",
+            newline="",
+            encoding="utf-8",
+            delete=False,
+            dir=os.path.dirname(os.path.abspath(output_filepath)),
+        ) as temp_file:
+            temp_filepath = temp_file.name
+            writer = csv.writer(temp_file, delimiter=delimiter)
+            headers = None
+            for filepath in filepaths:
+                with open(filepath, newline="", encoding="utf-8") as source:
+                    reader = csv.reader(source, delimiter=delimiter, strict=True)
+                    current = next(reader, None)
+                    if not current:
+                        raise ValueError(f"File has no header: {filepath}")
+                    if headers is None:
+                        headers = current
+                        writer.writerow(headers)
+                    elif current != headers:
+                        raise ValueError(
+                            f"Headers do not match in {filepath}: "
+                            f"expected {headers!r}, got {current!r}"
+                        )
+                    writer.writerows(reader)
+        os.replace(temp_filepath, output_filepath)
+    finally:
+        if temp_filepath is not None and os.path.exists(temp_filepath):
+            os.remove(temp_filepath)
+
+
+def iter_csv_rows(
+    filepath: str,
+    return_dict: bool = True,
+    delimiter: str = ",",
+) -> Generator[dict[str, str] | list[str], None, None]:
+    """
+    Returns CSV rows one at a time without loading the whole file into memory.
+
+    Args:
+        filepath (str): Path to a UTF-8 CSV file.
+        return_dict (bool): Use the first row as dictionary keys (default True).
+            If False, yield lists including the header, like read_csv_to_list.
+        delimiter (str): Field separator (default comma).
+
+    Returns:
+        Iterator: Rows such as {'Name': 'Alice', 'Age': '24'}.
+
+    Raises:
+        FileNotFoundError: When iteration begins and the file does not exist.
+        ValueError: When iteration begins and the file is empty.
+
+    The file opens on the first iteration and closes on exhaustion. If you
+    stop early, call the iterator's close() method to release it immediately.
+
+    Example:
+        === "The Py_simple Way"
+            ```python
+            from py_simple.easy_csv import iter_csv_rows
+
+            for person in iter_csv_rows("people.csv"):
+                print(person["Name"])
+            ```
+
+        === "The Traditional Way"
+            ```python
+            import csv
+
+            with open("people.csv", newline="", encoding="utf-8") as file:
+                reader = csv.reader(file)
+                headers = next(reader)
+                for row in reader:
+                    person = dict(zip(headers, row))
+                    print(person["Name"])
+            ```
+    """
+    with open(filepath, "r", newline="", encoding="utf-8") as file:
+        reader = csv.reader(file, delimiter=delimiter)
+        try:
+            first = next(reader)
+        except StopIteration:
+            raise ValueError(f"File is empty: {filepath}") from None
+        if return_dict:
+            for row in reader:
+                yield dict(zip(first, row))
+        else:
+            yield first
+            yield from reader
 
 
 def read_csv_to_list(
@@ -345,6 +528,7 @@ def sort_csv_by_column(
     save_path = output_filepath if output_filepath else filepath
     write_csv_from_list(save_path, data=sorted_data, delimiter=delimiter)
 
+
 def append_row_to_csv(
     filepath: str,
     row: dict[str, Any] | list[Any],
@@ -376,7 +560,6 @@ def append_row_to_csv(
         else:
             writer = csv.writer(f, delimiter=delimiter)
             writer.writerow(row)
-
 
 
 def read_csv_column(
@@ -427,9 +610,13 @@ def read_csv_column(
     col = column if column is not None else column_name
 
     if path is None:
-        raise TypeError("read_csv_column() missing required argument: 'filepath' or 'file_path'")
+        raise TypeError(
+            "read_csv_column() missing required argument: 'filepath' or 'file_path'"
+        )
     if col is None:
-        raise TypeError("read_csv_column() missing required argument: 'column' or 'column_name'")
+        raise TypeError(
+            "read_csv_column() missing required argument: 'column' or 'column_name'"
+        )
 
     if not os.path.exists(path):
         raise FileNotFoundError(f"File not found: {path}")
@@ -597,4 +784,3 @@ def delete_csv_rows(
         raise ValueError(f"No rows found with {column}={value} in {filepath}")
 
     os.replace(temp_filepath, filepath)
-

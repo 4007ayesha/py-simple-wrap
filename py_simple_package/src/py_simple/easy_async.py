@@ -560,3 +560,115 @@ async def run_periodically(func, interval: float, times: int, *args) -> list:
         except Exception as e:
             raise EasyAsyncError(f"\n\n\nERROR: {e}") from None
     return results
+
+
+async def run_first_completed(functions: list) -> tuple:
+    """
+    Runs multiple zero-argument functions concurrently and returns the
+    result of whichever finishes first.
+
+    Pending tasks are cancelled once the first function completes.
+    Note that cancelling an asyncio task does not forcibly terminate
+    an already running thread in the thread pool.
+    Raises EasyAsyncError if `functions` is empty, contains non-callable
+    items, or if the first completed function raises an exception.
+
+    Args:
+        functions (list): Functions to run concurrently, each taking no
+            arguments. Must be a non-empty list.
+
+    Returns:
+        tuple: A tuple containing `(func_name, result)` of the first
+            function to finish.
+
+    Raises:
+        EasyAsyncError: If `functions` is not a list, is empty, contains
+            non-callable elements, or if the first completed function
+            raises an exception.
+
+    Example:
+        === "The Py_simple Way"
+            ```python
+            import asyncio
+            from py_simple import run_first_completed
+
+            def fetch_fast():
+                return "quick response"
+
+            def fetch_slow():
+                return "slow response"
+
+            async def main():
+                return await run_first_completed([fetch_fast, fetch_slow])
+
+            asyncio.run(main())  # -> ("fetch_fast", "quick response")
+            ```
+
+        === "The Traditional Way"
+            ```python
+            import asyncio
+
+            def fetch_fast():
+                return "quick response"
+
+            def fetch_slow():
+                return "slow response"
+
+            async def main():
+                loop = asyncio.get_running_loop()
+                tasks = [
+                    asyncio.ensure_future(loop.run_in_executor(None, f))
+                    for f in [fetch_fast, fetch_slow]
+                ]
+                task_to_fn = {
+                    t: f for t, f in zip(tasks, [fetch_fast, fetch_slow])
+                }
+                try:
+                    done, pending = await asyncio.wait(
+                        tasks, return_when=asyncio.FIRST_COMPLETED
+                    )
+                finally:
+                    for t in tasks:
+                        if not t.done():
+                            t.cancel()
+                first = next(iter(done))
+                return (task_to_fn[first].__name__, first.result())
+
+            asyncio.run(main())
+            ```
+    """
+    if not isinstance(functions, list) or len(functions) == 0:
+        raise EasyAsyncError("functions must be a non-empty list of callables")
+    for f in functions:
+        if not callable(f):
+            raise EasyAsyncError(
+                f"All items in functions must be callable, got {type(f).__name__}"
+            )
+
+    loop = asyncio.get_running_loop()
+    task_to_func = {}
+    completed_order = []
+    for f in functions:
+        task = asyncio.ensure_future(loop.run_in_executor(None, f))
+        task.add_done_callback(completed_order.append)
+        task_to_func[task] = f
+
+    try:
+        done, _ = await asyncio.wait(
+            task_to_func.keys(), return_when=asyncio.FIRST_COMPLETED
+        )
+    finally:
+        for task in task_to_func:
+            if not task.done():
+                task.cancel()
+
+    first_task = completed_order[0] if completed_order else next(iter(done))
+    func = task_to_func[first_task]
+    func_name = getattr(func, "__name__", None)
+    if func_name is None:
+        func_name = repr(func)
+    try:
+        result = first_task.result()
+        return (func_name, result)
+    except Exception as e:
+        raise EasyAsyncError(f"\n\n\nERROR: {e}") from None
