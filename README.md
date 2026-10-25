@@ -118,6 +118,12 @@ py-simple-wrap is a beginner-friendly Python toolbox — simple, intuitive funct
         <sub><b>Pratham Pansare</b></sub>
       </a>
     </td>
+    <td align="center" valign="top" width="8.6%">
+      <a href="https://github.com/Utkarsh3725">
+        <img src="https://github.com/Utkarsh3725.png" width="100px;" alt="Utkarsh Arya"/><br />
+        <sub><b>Utkarsh Arya</b></sub>
+      </a>
+    </td>
     <td align="center" valign="top" width="14.28%">
       <a href="https://github.com/VidyavathiGK">
         <img src="https://github.com/VidyavathiGK.png" width="100px;" alt="Vidyavathi GK"/><br />
