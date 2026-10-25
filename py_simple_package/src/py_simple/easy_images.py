@@ -367,3 +367,75 @@ def adjust_brightness(input_path: str, output_path: str, value: float):
             img = img.convert("RGB")
         adj_img = ImageEnhance.Brightness(img).enhance(value)
         adj_img.save(output_path)
+
+
+def crop_image(
+    input_path: str,
+    output_path: str,
+    left: int,
+    top: int,
+    right: int,
+    bottom: int,
+):
+    """
+    Crop an image to a bounding box and save the result.
+
+    Args:
+        input_path (str): Path of the image to crop.
+        output_path (str): Path to save the cropped image to.
+        left (int): Left pixel coordinate.
+        top (int): Top pixel coordinate.
+        right (int): Right pixel coordinate.
+        bottom (int): Bottom pixel coordinate.
+
+    Raises:
+        ValueError: If coordinates are not non-negative integers, if
+            `left >= right` or `top >= bottom`, or if boundaries exceed
+            image dimensions.
+        ImageProcessingError: If the input file is missing or not a
+            supported image.
+
+    Example:
+        === "The Py_simple Way"
+            ```python
+            from py_simple import crop_image
+
+            crop_image("photo.jpg", "cropped.jpg", 10, 10, 100, 100)
+            ```
+
+        === "The Traditional Way"
+            ```python
+            from PIL import Image
+
+            with Image.open("photo.jpg") as img:
+                img.crop((10, 10, 100, 100)).save("cropped.jpg")
+            ```
+    """
+    coords = (left, top, right, bottom)
+    if any(
+        not isinstance(val, int) or isinstance(val, bool) or val < 0
+        for val in coords
+    ):
+        raise ValueError("Crop coordinates must be non-negative integers.")
+
+    if left >= right:
+        raise ValueError(
+            f"left coordinate ({left}) must be less than right coordinate ({right})."
+        )
+    if top >= bottom:
+        raise ValueError(
+            f"top coordinate ({top}) must be less than bottom coordinate ({bottom})."
+        )
+
+    with _open_image(input_path) as img:
+        if right > img.width or bottom > img.height:
+            raise ValueError(
+                f"Crop boundaries ({right}, {bottom}) exceed image dimensions ({img.width}, {img.height})."
+            )
+        if img.mode in ("RGBA", "P") and output_path.lower().endswith(
+            (".jpg", ".jpeg")
+        ):
+            img = img.convert("RGB")
+        cropped = img.crop((left, top, right, bottom))
+        cropped.save(output_path)
+

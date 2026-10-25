@@ -205,6 +205,7 @@ from .easy_images import (
     convert_image,
     convert_to_greyscale,
     create_thumbnail,
+    crop_image,
     flip_image,
     get_image_info,
     resize_image,
