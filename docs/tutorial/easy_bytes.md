@@ -74,9 +74,9 @@ Example output:
 2.5 KB
 ```
 
-Here `512` is already a byte count, and `"1 KB"` and `"1 KiB"` are both 1024 bytes, 
-in order to preserve beckwards compatibility. To count `"1 KB"` as 1000 bytes, pass `decimal=True`. 
-The `decimal=True` parameter only works with values such as `KB, MB, GB and TB`. 
+Here `512` is already a byte count, and `"1 KB"` and `"1 KiB"` are both 1024 bytes,
+in order to preserve beckwards compatibility. To count `"1 KB"` as 1000 bytes, pass `decimal=True`.
+The `decimal=True` parameter only works with values such as `KB, MB, GB and TB`.
 `KiB, MiB, GiB and TiB` are binary by default, so the `decimal=True` parameter doesn't affect them.
 Here's an example:
 
@@ -93,7 +93,7 @@ print(add_bytes([512, "1 KB", "1 KiB"], decimal=True))
 ## What happened?
 
 `human_to_bytes()` reads a label like `"2.5 MB"` and returns the byte count.
-The scaling is exact, so `"1.001 KB"` is `1001` bytes with `decimal=True`. 
+The scaling is exact, so `"1.001 KB"` is `1001` bytes with `decimal=True`.
 A real fractional byte is cut off, so `"0.1 KiB"` becomes `102`.
 
 `bytes_to_human()` turns a count back into a short label. Whole numbers drop

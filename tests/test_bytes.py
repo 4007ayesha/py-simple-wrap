@@ -355,6 +355,47 @@ def test_human_to_bytes_rejects_scaled_overflow(unit, decimal):
         human_to_bytes(f"1e308 {unit}", decimal=decimal)
 
 
+@pytest.mark.parametrize("decimal", BOTH)
+@pytest.mark.parametrize(
+    "label",
+    [
+        "1e-9999999999999999999 B",
+        "1e-9999999999999999999 KB",
+        "1e-9999999999999999999 TiB",
+        "0e-9999999999999999999 MB",
+    ],
+)
+def test_human_to_bytes_wraps_unrepresentable_decimal(label, decimal):
+    """Extreme exponents must raise EasyBytesError, not decimal.InvalidOperation."""
+    with pytest.raises(
+        EasyBytesError, match="size could not be converted to a whole byte count"
+    ):
+        human_to_bytes(label, decimal=decimal)
+
+
+@pytest.mark.parametrize("decimal", BOTH)
+@pytest.mark.parametrize(
+    "label", ["1e-9999999999999999999 B", "1e-9999999999999999999 KB"]
+)
+def test_add_bytes_wraps_unrepresentable_decimal(label, decimal):
+    """add_bytes must surface the same public error, wherever the label sits."""
+    with pytest.raises(
+        EasyBytesError, match="size could not be converted to a whole byte count"
+    ):
+        add_bytes([label], decimal=decimal)
+    with pytest.raises(
+        EasyBytesError, match="size could not be converted to a whole byte count"
+    ):
+        add_bytes([1, "1 KB", label], decimal=decimal)
+
+
+@pytest.mark.parametrize("decimal", BOTH)
+def test_human_to_bytes_extreme_but_representable_exponents_still_work(decimal):
+    """Only inputs Decimal cannot hold are rejected; tiny ones it can hold are 0."""
+    assert human_to_bytes("1e-999999999 KB", decimal=decimal) == 0
+    assert human_to_bytes("1e-400000000000 KB", decimal=decimal) == 0
+
+
 # --- add_bytes ------------------------------------------------------------
 
 

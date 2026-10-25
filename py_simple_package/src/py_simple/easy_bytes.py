@@ -24,8 +24,9 @@ _KIB_UNITS = ("B", "KiB", "MiB", "GiB", "TiB")  # KiB-style names (always 1024)
 
 _UNITS = _KB_UNITS + _KIB_UNITS[1:]  # Every accepted unit name
 
-# How many bytes are in each unit. KiB-style names always mean 1024. 
-# KB-style names mean 1024 by default (the original behavior) and 1000 when the caller asks for decimal units.
+# How many bytes are in each unit. KiB-style names always mean 1024. KB-style
+# names mean 1024 by default (the original behavior) and 1000 when the caller
+# asks for decimal units.
 _KIB_MULTIPLIERS = {unit: 1024**power for power, unit in enumerate(_KIB_UNITS)}
 _LEGACY_MULTIPLIERS = {
     **{unit: 1024**power for power, unit in enumerate(_KB_UNITS)},
@@ -51,13 +52,21 @@ def _scale_to_bytes(number_text: str, multiplier: int) -> int:
 
     The product is computed exactly with `Decimal`, so `"1.001"` times 1000 is
     1001 and not 1000.9999999999999. Any real fractional byte is truncated.
+    Raises `EasyBytesError` if `Decimal` cannot represent the number.
     """
     context = Context(
         prec=len(number_text) + len(str(multiplier)) + 2,
         Emax=MAX_EMAX,
         Emin=MIN_EMIN,
     )
-    return int(context.multiply(Decimal(number_text), multiplier))
+    try:
+        return int(context.multiply(Decimal(number_text), multiplier))
+    except ArithmeticError:
+        # Decimal cannot represent some extreme inputs, such as an exponent
+        # with hundreds of digits, even though float() accepted them.
+        raise EasyBytesError(
+            "\n\nERROR: size could not be converted to a whole byte count."
+        ) from None
 
 
 def bytes_to_human(num_bytes: int, binary: bool = False, decimal: bool = False) -> str:
@@ -200,8 +209,8 @@ def human_to_bytes(label: str, decimal: bool = False) -> int:
     if number < 0:
         raise EasyBytesError("\n\nERROR: size cannot be negative.") from None
     multiplier = multipliers[unit]
-    # The float is only used to validate the input (nan, inf, overflow). 
-    # The actual byte count is computed exactly below.
+    # The float is only used to validate the input (nan, inf, overflow). The
+    # actual byte count is computed exactly below.
     if not math.isfinite(number * multiplier):
         raise EasyBytesError(
             "\n\nERROR: size must convert to a finite byte count."
