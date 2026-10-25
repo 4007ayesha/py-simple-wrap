@@ -967,6 +967,15 @@
         "code",
         "documentation"
       ]
+    },
+    {
+      "login": "amandeavor",
+      "name": "Aman Awasthi",
+      "avatar_url": "https://github.com/amandeavor.png",
+      "profile": "https://github.com/amandeavor",
+      "contributions": [
+        "documentation"
+      ]
     }
   ]
 }
