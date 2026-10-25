@@ -96,6 +96,7 @@ nav:
       - Module Tests Template: contributor-hub/tests_template.md
       - Public API Export Template: contributor-hub/public_api_template.md
       - Pre-commit Guide: contributor-hub/pre_commit_template.md
+      - Pull Request Workflow Guide: contributor-hub/pr_workflow_template.md
   - Reference:
       - Easy AI: reference/easy_ai.md
       - Easy Archive: reference/easy_archive.md

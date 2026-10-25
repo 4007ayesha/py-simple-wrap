@@ -21,6 +21,9 @@ The [Public API Export Template](public_api_template.md) shows where to expose a
 **🧹 "A pre-commit check failed, or changed my files. What do I do next?"**
 The [Pre-commit Guide](pre_commit_template.md) shows how to run the repository's hooks, review their fixes, and stage and check your files again.
 
+**🔀 "I wrote my changes, but what are the exact steps to test, commit, and open a PR?"**
+The [Pull Request Workflow Guide](pr_workflow_template.md) breaks down the complete lifecycle: branch naming, running local pytest and ruff checks, formatting commit messages, opening the pull request, and addressing review feedback.
+
 ## Still stuck, or something's not covered here?
 
 That's okay too. Open an issue, or mention it in your pull request, and it'll get sorted out together — see [CONTRIBUTING.md](https://github.com/sara-czasak/py-simple-wrap/blob/main/CONTRIBUTING.md) for how to reach out. Nobody's expected to figure this out alone.
