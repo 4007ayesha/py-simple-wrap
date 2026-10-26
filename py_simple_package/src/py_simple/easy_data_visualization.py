@@ -695,3 +695,84 @@ def plot_scatter_chart(
     plt.show()
 
 
+def plot_histogram(
+    data: list[int | float],
+    bins: int | None = None,
+    title: str | None = None,
+    x_label: str | None = None,
+    y_label: str | None = None,
+) -> None:
+    """
+    Displays a histogram for a numeric data series.
+
+    A histogram groups the values into bins and draws one bar per bin,
+    so you can see at a glance where values cluster and how they spread
+    out — for example, most test scores landing between 70 and 90.
+
+    Args:
+        data (list[int | float]): The numeric values to visualize.
+        bins (int, optional): Number of bins to group the values into.
+            Defaults to `None`, which lets matplotlib pick.
+        title (str, optional): Text shown above the chart. Defaults to
+            `None` (no title).
+        x_label (str, optional): Text shown under the x-axis. Defaults
+            to `None` (no label).
+        y_label (str, optional): Text shown beside the y-axis. Defaults
+            to `None` (no label).
+
+    Returns:
+        None: The histogram is rendered directly via `plt.show()`.
+
+    Raises:
+        ValueError: If `data` is empty, or if `bins` is not a positive
+            integer.
+
+    Example:
+        === "The Py_simple Way"
+            ```python
+            from py_simple import plot_histogram
+
+            plot_histogram(
+                [65, 72, 78, 80, 82, 85, 88, 90, 92],
+                bins=3,
+                title="Test Scores",
+                x_label="Score",
+                y_label="Students",
+            )
+            ```
+
+        === "The Traditional Way"
+            ```python
+            import matplotlib.pyplot as plt
+
+            data = [65, 72, 78, 80, 82, 85, 88, 90, 92]
+            fig, ax = plt.subplots()
+            ax.hist(data, bins=3)
+            ax.set_title("Test Scores")
+            ax.set_xlabel("Score")
+            ax.set_ylabel("Students")
+            plt.show()
+            ```
+    """
+    import matplotlib.pyplot as plt
+
+    if not data:
+        raise ValueError("The data series cannot be empty.")
+
+    if bins is not None and (not isinstance(bins, int) or isinstance(bins, bool) or bins < 1):
+        raise ValueError("bins must be a positive integer.")
+
+    _, ax = plt.subplots()
+    ax.hist(data, bins=bins)
+
+    if title:
+        ax.set_title(title)
+    if x_label:
+        ax.set_xlabel(x_label)
+    if y_label:
+        ax.set_ylabel(y_label)
+
+    ax.spines[["top", "right"]].set_visible(False)
+    plt.show()
+
+

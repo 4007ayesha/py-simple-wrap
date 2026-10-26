@@ -13,6 +13,7 @@ from py_simple_package.src.py_simple.easy_money import (
     EasyMoneyError,
     add_tax,
     calculate_discount,
+    calculate_tip,
     format_money,
     split_bill,
     split_bill_exact,
@@ -79,6 +80,38 @@ def test_calculate_discount_rejects_invalid_amount():
 
     with pytest.raises(EasyMoneyError):
         calculate_discount(True, 10)
+
+
+def test_calculate_tip():
+    assert calculate_tip(50, 18) == Decimal("9.00")
+    assert calculate_tip("100.00", 20) == Decimal("20.00")
+    assert calculate_tip(33.50, 15) == Decimal("5.03")
+    assert calculate_tip(0, 15) == Decimal("0.00")
+    assert calculate_tip(50, 0) == Decimal("0.00")
+
+
+def test_calculate_tip_rejects_negative_rate():
+    with pytest.raises(EasyMoneyError):
+        calculate_tip(50, -1)
+
+
+def test_calculate_tip_rejects_invalid_amount():
+    with pytest.raises(EasyMoneyError):
+        calculate_tip("invalid", 15)
+    with pytest.raises(EasyMoneyError):
+        calculate_tip(True, 15)
+    with pytest.raises(EasyMoneyError):
+        calculate_tip(50, "invalid")
+    with pytest.raises(EasyMoneyError):
+        calculate_tip(50, True)
+
+
+def test_calculate_tip_public_imports():
+    from py_simple import calculate_tip as public_helper
+    from py_simple.easy_money import calculate_tip as module_helper
+
+    assert public_helper is module_helper
+
 
 
 @pytest.mark.parametrize(

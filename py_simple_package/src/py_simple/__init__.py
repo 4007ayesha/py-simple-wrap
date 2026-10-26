@@ -17,10 +17,11 @@ from .easy_ai import (
 from .easy_base64 import (
     EasyBase64Error,
     decode_text,
+    decode_to_bytes,
+    encode_bytes,
+    encode_file,
     encode_text,
     is_base64,
-    encode_bytes,
-    decode_to_bytes,
 )
 from .easy_archive import (
     add_to_zip,
@@ -43,13 +44,16 @@ from .easy_async import (
     run_concurrent_map_limited,
     run_periodically,
     run_first_completed,
+    run_with_default,
 )
 from .easy_bytes import (
     EasyBytesError,
     bytes_to_human,
     human_to_bytes,
+    percent_free,
     percent_used,
     remaining_bytes,
+    add_bytes,
 )
 from .easy_colors import (
     contrast_ratio,
@@ -66,6 +70,7 @@ from .easy_config import (
     gh_workflow_config,
     create_env_file,
     read_env_file,
+    create_env_example_file,
     dockerfile_config,
     gitignore_config,
     requirements_config,
@@ -112,6 +117,7 @@ from .easy_data_visualization import (
     plot_line_chart,
     plot_pie_chart,
     plot_scatter_chart,
+    plot_histogram,
 )
 from .easy_date_formatter import (
     dd_mm_yyyy,
@@ -205,6 +211,7 @@ from .easy_images import (
     convert_image,
     convert_to_greyscale,
     create_thumbnail,
+    crop_image,
     flip_image,
     get_image_info,
     resize_image,
@@ -237,6 +244,7 @@ from .easy_money import (
     EasyMoneyError,
     add_tax,
     calculate_discount,
+    calculate_tip,
     format_money,
     split_bill,
     split_bill_exact,
@@ -385,5 +393,6 @@ from .easy_web import (
 )
 from .easy_terminal import (
     EasyTerminal,
+    print_centered,
     print_styled,
 )

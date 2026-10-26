@@ -200,3 +200,46 @@ def decode_to_bytes(encoded: str) -> bytes:
         return base64.b64decode(encoded, validate=True)
     except (binascii.Error, ValueError, UnicodeDecodeError) as error:
         raise EasyBase64Error(f"\n\nERROR: {error}") from None
+
+
+def encode_file(file_path: str) -> str:
+    """
+    Encode the contents of a file as a Base64 string.
+
+    Reads a file in binary mode and returns its contents encoded as Base64.
+    Useful for embedding icons, images, or documents into JSON, HTML, or API payloads.
+
+    Args:
+        file_path (str): Path to the file to encode.
+
+    Returns:
+        str: The Base64 text representing the file's contents.
+
+    Raises:
+        EasyBase64Error: If `file_path` is not a string, the file is not found,
+            or an error occurs reading the file.
+
+    Example:
+        === "The Py_simple Way"
+            ```python
+            from py_simple import encode_file
+
+            data = encode_file("logo.png")
+            ```
+
+        === "The Traditional Way"
+            ```python
+            import base64
+
+            with open("logo.png", "rb") as file:
+                data = base64.b64encode(file.read()).decode("ascii")
+            ```
+    """
+    if not isinstance(file_path, str):
+        raise EasyBase64Error("\n\nERROR: file_path must be a string.")
+    try:
+        with open(file_path, "rb") as file:
+            return base64.b64encode(file.read()).decode("ascii")
+    except (FileNotFoundError, OSError) as error:
+        raise EasyBase64Error(f"\n\nERROR: {error}") from None
+

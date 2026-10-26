@@ -976,6 +976,27 @@
       "contributions": [
         "documentation"
       ]
+    },
+    {
+      "login": "drudru18",
+      "name": "Doroiman Alexandru",
+      "avatar_url": "https://github.com/drudru18.png",
+      "profile": "https://github.com/drudru18",
+      "contributions": [
+        "test",
+        "code",
+        "documentation"
+      ]
+    },
+    {
+      "login": "Dikshant-Neupane",
+      "name": "Dikshant Neupane",
+      "avatar_url": "https://github.com/Dikshant-Neupane.png",
+      "profile": "https://github.com/Dikshant-Neupane",
+      "contributions": [
+        "test",
+        "code"
+      ]
     }
   ]
 }

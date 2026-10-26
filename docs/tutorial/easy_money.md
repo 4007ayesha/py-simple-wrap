@@ -30,11 +30,33 @@ $17.36
 `add_tax()` takes the price and a percent, then returns the total rounded to
 cents.
 
+`calculate_tip()` calculates the tip amount to add based on a percentage.
+
 `split_bill()` divides that total by the number of people and rounds each
 share to cents.
 
 `format_money()` prints the result with a dollar sign and two decimal places.
 Pass another symbol, such as `"€"`, when you need one.
+
+## Calculating tips and discounts
+
+Use `calculate_tip()` to find the tip on a bill:
+
+```python
+from py_simple import calculate_tip, format_money
+
+tip = calculate_tip(50, 18)
+print(format_money(tip))  # $9.00
+```
+
+Use `calculate_discount()` to find the price after subtracting a discount:
+
+```python
+from py_simple import calculate_discount, format_money
+
+sale_price = calculate_discount(100, 15)
+print(format_money(sale_price))  # $85.00
+```
 
 ## Keep every cent when splitting a bill
 
