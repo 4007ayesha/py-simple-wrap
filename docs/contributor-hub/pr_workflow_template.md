@@ -95,6 +95,6 @@ Closes #<issue_number>
 
 ## What happens after opening?
 
-1. **Automated CI Checks**: GitHub Actions runs the test suite on Ubuntu across supported Python versions (3.10 to 3.14), along with Pylint and CodeQL static analysis.
+1. **Automated CI Checks**: GitHub Actions runs the test suite on Ubuntu across supported Python versions (3.11 through 3.14), along with Pylint and CodeQL static analysis.
 2. **Review & Feedback**: The maintainer or reviewers will review your code. If any changes are requested, simply make the edits on your local branch, commit, and push. GitHub automatically updates the pull request.
 3. **Merge**: Once approved and checks pass, your PR will be merged into `main` and your name will be added to the contributors list!
