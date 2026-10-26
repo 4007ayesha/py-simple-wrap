@@ -4,6 +4,7 @@ from py_simple_package.src.py_simple import (
     decode_text as public_decode_text,
     decode_to_bytes as public_decode_to_bytes,
     encode_bytes as public_encode_bytes,
+    encode_file as public_encode_file,
     encode_text as public_encode_text,
     is_base64 as public_is_base64,
 )
@@ -12,6 +13,7 @@ from py_simple_package.src.py_simple.easy_base64 import (
     decode_text,
     decode_to_bytes,
     encode_bytes,
+    encode_file,
     encode_text,
     is_base64,
 )
@@ -64,3 +66,26 @@ def test_decode_to_bytes_rejects_invalid_text():
 def test_decode_to_bytes_rejects_non_string():
     with pytest.raises(EasyBase64Error):
         decode_to_bytes(123)
+
+
+def test_encode_file(tmp_path):
+    file_path = tmp_path / "sample.bin"
+    file_path.write_bytes(b"hello world")
+    encoded = encode_file(str(file_path))
+    assert encoded == encode_text("hello world")
+    assert decode_text(encoded) == "hello world"
+
+
+def test_encode_file_rejects_non_string():
+    with pytest.raises(EasyBase64Error):
+        encode_file(123)
+
+
+def test_encode_file_rejects_missing_file(tmp_path):
+    with pytest.raises(EasyBase64Error):
+        encode_file(str(tmp_path / "nonexistent.bin"))
+
+
+def test_public_imports_includes_encode_file():
+    assert public_encode_file is encode_file
+
