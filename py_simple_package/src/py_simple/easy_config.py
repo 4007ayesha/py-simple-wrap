@@ -38,8 +38,8 @@ def gh_workflow_config(filename: str, at_root: bool = True) -> None:
     Returns:
         None
     Raises:
-        EasyConfigError: If the template cannot be read or the workflow
-            file cannot be written.
+        EasyConfigError: If the template cannot be read, the git repository
+            cannot be found, or the workflow file cannot be written.
     Example:
         === "The Py_simple Way"
             ```python
@@ -71,15 +71,15 @@ def gh_workflow_config(filename: str, at_root: bool = True) -> None:
                 )
             ```
     """
-    if at_root:
-        workflow_path = f".github/workflows/{filename}.yml"
-    else:
-        import git
-
-        git_repo = git.Repo(os.getcwd(), search_parent_directories=True)
-        git_root = git_repo.git.rev_parse("--show-toplevel")
-        workflow_path = f"{git_root}/.github/workflows/{filename}.yml"
     try:
+        if at_root:
+            workflow_path = f".github/workflows/{filename}.yml"
+        else:
+            import git
+
+            git_repo = git.Repo(os.getcwd(), search_parent_directories=True)
+            git_root = git_repo.git.rev_parse("--show-toplevel")
+            workflow_path = f"{git_root}/.github/workflows/{filename}.yml"
         if not os.path.exists(workflow_path):
             template_path = (
                 files("py_simple") / "config_templates" / "workflow-template.yml"
