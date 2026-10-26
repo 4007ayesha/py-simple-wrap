@@ -112,6 +112,7 @@ from .easy_data_visualization import (
     plot_line_chart,
     plot_pie_chart,
     plot_scatter_chart,
+    plot_histogram,
 )
 from .easy_date_formatter import (
     dd_mm_yyyy,
