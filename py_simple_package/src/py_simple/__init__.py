@@ -44,6 +44,7 @@ from .easy_async import (
     run_concurrent_map_limited,
     run_periodically,
     run_first_completed,
+    run_with_default,
 )
 from .easy_bytes import (
     EasyBytesError,
