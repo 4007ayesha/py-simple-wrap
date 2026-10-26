@@ -201,6 +201,7 @@ from .easy_hash import (
     EasyHashError,
     compare_file_hashes,
     hash_bytes,
+    hash_directory,
     hash_file,
     hash_text,
     hashes_match,

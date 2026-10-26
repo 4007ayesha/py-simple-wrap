@@ -3,6 +3,7 @@ easy_hash creates checksums for text, bytes, and files without the hashlib boile
 """
 
 import hashlib
+import os
 from pathlib import Path
 
 
@@ -145,6 +146,81 @@ def hash_file(filepath: str, algorithm: str = "sha256") -> str:
         hasher.update(Path(filepath).read_bytes())
     except OSError as error:
         raise EasyHashError(f"\n\nERROR: {error}") from None
+    return hasher.hexdigest()
+
+
+def hash_directory(dirpath: str | Path, algorithm: str = "sha256") -> str:
+    """
+    Create a single checksum for a whole directory tree.
+
+    Files are hashed in sorted order by their path relative to the
+    directory, so the same tree always produces the same checksum no
+    matter what order the files were created in. Each file contributes
+    its relative path, a null separator, and the hex digest of its
+    contents (fixed length for the chosen algorithm), so record
+    boundaries are unambiguous and renaming a file or changing its
+    contents changes the checksum.
+
+    Args:
+        dirpath (str | Path): Path to the directory.
+        algorithm (str, optional): One of `"sha256"`, `"sha1"`, or
+            `"md5"`. Defaults to `"sha256"`.
+
+    Returns:
+        str: The checksum as lowercase hex.
+
+    Raises:
+        EasyHashError: If `dirpath` is not a directory, a directory
+            cannot be scanned, a file cannot be read, or the
+            algorithm is not supported.
+
+    Example:
+        === "The Py_simple Way"
+            ```python
+            from py_simple import hash_directory
+
+            digest = hash_directory("project")
+            print(digest)
+            ```
+
+        === "The Traditional Way"
+            ```python
+            import hashlib
+            from pathlib import Path
+
+            hasher = hashlib.sha256()
+            root = Path("project")
+            for path in sorted((p for p in root.rglob("*") if p.is_file()), key=lambda p: p.relative_to(root).as_posix()):
+                hasher.update(path.relative_to(root).as_posix().encode("utf-8"))
+                hasher.update(b"\\0")
+                hasher.update(hashlib.sha256(path.read_bytes()).hexdigest().encode("ascii"))
+            digest = hasher.hexdigest()
+            ```
+    """
+    hasher = _new_hasher(algorithm)
+    root = Path(dirpath)
+    if not root.is_dir():
+        raise EasyHashError("\n\nERROR: dirpath must be an existing directory.")
+
+    def _on_walk_error(error: OSError) -> None:
+        raise EasyHashError(f"\n\nERROR: {error}") from None
+
+    try:
+        found = [
+            Path(dirpath_) / name
+            for dirpath_, _dirnames, filenames in os.walk(root, onerror=_on_walk_error)
+            for name in filenames
+            if (Path(dirpath_) / name).is_file()
+        ]
+    except EasyHashError:
+        raise
+    except OSError as error:
+        raise EasyHashError(f"\n\nERROR: {error}") from None
+    files = sorted(found, key=lambda p: p.relative_to(root).as_posix())
+    for path in files:
+        hasher.update(path.relative_to(root).as_posix().encode("utf-8"))
+        hasher.update(b"\0")
+        hasher.update(_hash_file_chunks(path, algorithm).encode("ascii"))
     return hasher.hexdigest()
 
 
