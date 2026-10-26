@@ -389,3 +389,23 @@ def test_script_runner_handles_errors_in_main_guard(runner, tmp_path):
             runner(str(script))
     else:
         assert runner(str(script)) == (False, "main entry point failed")
+
+
+
+def test_time_it_preserves_metadata_and_signature(capsys):
+    import inspect
+
+    def calculate(value: int, *, offset: int = 1) -> int:
+        """Calculate an adjusted value."""
+        return value + offset
+
+    timed = time_it(calculate)
+
+    assert timed.__name__ == calculate.__name__
+    assert timed.__qualname__ == calculate.__qualname__
+    assert timed.__doc__ == calculate.__doc__
+    assert timed.__annotations__ == calculate.__annotations__
+    assert inspect.signature(timed) == inspect.signature(calculate)
+    assert inspect.unwrap(timed) is calculate
+    assert timed(2, offset=3) == 5
+    assert "calculate took" in capsys.readouterr().out

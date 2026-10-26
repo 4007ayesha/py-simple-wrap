@@ -377,3 +377,21 @@ def test_requirements_config_imported_from_py_simple():
     from py_simple import requirements_config as imported_function
 
     assert callable(imported_function)
+
+
+@pytest.mark.parametrize("error_kind", ["missing_repo", "git_command"])
+def test_gh_workflow_config_wraps_repository_lookup_errors(tmp_path, monkeypatch, error_kind):
+    monkeypatch.chdir(tmp_path)
+    if error_kind == "missing_repo":
+        error = git.InvalidGitRepositoryError("not a repository")
+    else:
+        error = git.GitCommandError("git rev-parse", 128, stderr="repository lookup failed")
+
+    def failing_repo(*args, **kwargs):
+        raise error
+
+    monkeypatch.setattr(git, "Repo", failing_repo)
+
+    with pytest.raises(EasyConfigError, match="not a repository|repository lookup failed"):
+        gh_workflow_config("release", at_root=False)
+    assert not (tmp_path / ".github").exists()

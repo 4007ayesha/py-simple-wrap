@@ -1175,6 +1175,14 @@ Every tile below is a real person who showed up for this project. 💛
       </a>
     </td>
   </tr>
+  <tr>
+    <td align="center" valign="top" width="8.6%">
+      <a href="https://github.com/amandeavor">
+        <img src="https://github.com/amandeavor.png" width="100px;" alt="Aman Awasthi"/><br />
+        <sub><b>Aman Awasthi</b></sub>
+      </a>
+    </td>
+  </tr>
 </table>
 
 ---
@@ -1272,6 +1280,12 @@ Every tile below is a real person who showed up for this project. 💛
       <a href="https://github.com/Pratham2511">
         <img src="https://github.com/Pratham2511.png" width="100px;" alt="Pratham Pansare"/><br />
         <sub><b>Pratham Pansare</b></sub>
+      </a>
+    </td>
+    <td align="center" valign="top" width="8.6%">
+      <a href="https://github.com/Utkarsh3725">
+        <img src="https://github.com/Utkarsh3725.png" width="100px;" alt="Utkarsh Arya"/><br />
+        <sub><b>Utkarsh Arya</b></sub>
       </a>
     </td>
     <td align="center" valign="top" width="14.28%">
@@ -1438,6 +1452,9 @@ The Module Magicians. The Code Conjurers. The Test Sentinels. The Lore Keepers. 
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/supergioo0"><img src="https://github.com/supergioo0.png?s=80" width="80px;" alt="Giorgio Ciafardoni"/><br /><sub><b>Giorgio Ciafardoni</b></sub></a><br /><a href="https://github.com/sara-czasak/py_simple/commits?author=supergioo0" title="Tests">🧪</a> <a href="https://github.com/sara-czasak/py_simple/commits?author=supergioo0" title="Code">💻</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/anisayakmitra-in"><img src="https://github.com/anisayakmitra-in.png?s=80" width="80px;" alt="Anisayak Mitra"/><br /><sub><b>Anisayak Mitra</b></sub></a><br /><a href="https://github.com/sara-czasak/py_simple/commits?author=anisayakmitra-in" title="Tests">🧪</a> <a href="https://github.com/sara-czasak/py_simple/commits?author=anisayakmitra-in" title="Code">💻</a> <a href="https://github.com/sara-czasak/py_simple/commits?author=anisayakmitra-in" title="Docs">📖</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/Ash1-gif"><img src="https://github.com/Ash1-gif.png?s=80" width="80px;" alt="Ash"/><br /><sub><b>Ash</b></sub></a><br /><a href="https://github.com/sara-czasak/py_simple/commits?author=Ash1-gif" title="Tests">🧪</a> <a href="https://github.com/sara-czasak/py_simple/commits?author=Ash1-gif" title="Code">💻</a> <a href="https://github.com/sara-czasak/py_simple/commits?author=Ash1-gif" title="Docs">📖</a></td>
+    </tr>
+    <tr>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/amandeavor"><img src="https://github.com/amandeavor.png?s=80" width="80px;" alt="Aman Awasthi"/><br /><sub><b>Aman Awasthi</b></sub></a><br /><a href="https://github.com/sara-czasak/py_simple/commits?author=amandeavor" title="Docs">📖</a></td>
     </tr>
   </tbody>
 </table>

@@ -17,7 +17,7 @@
 [![PyPI](https://img.shields.io/pypi/v/py-simple-wrap?style=flat-square&logo=pypi&logoColor=white&color=3775A9)](https://pypi.org/project/py-simple-wrap/)
 [![Tests](https://img.shields.io/github/actions/workflow/status/sara-czasak/py-simple-wrap/tests.yml?style=flat-square&logo=github&label=tests)](https://github.com/sara-czasak/py-simple-wrap/actions/workflows/tests.yml)
 [![Security: SkillsLLM](https://skillsllm.com/security-check/badge.svg?owner=sara-czasak&repo=py-simple-wrap)](https://skillsllm.com/security-check/ClrqG49aEoiZ)
-[![Contributors](https://img.shields.io/badge/contributors-90-orange?style=flat-square)](CONTRIBUTORS.md)
+[![Contributors](https://img.shields.io/badge/contributors-91-orange?style=flat-square)](CONTRIBUTORS.md)
 [![PyPI Downloads](https://static.pepy.tech/personalized-badge/py-simple-wrap?period=total&units=NONE&left_color=BLACK&right_color=GREEN&left_text=downloads)](https://pepy.tech/projects/py-simple-wrap)
 [![License](https://img.shields.io/badge/license-MIT-yellow?style=flat-square)](LICENSE.md)
 [![Discord](https://img.shields.io/discord/1533803449895092245?style=flat-square&logo=discord&logoColor=white&label=discord&color=5865F2)](https://discord.gg/f9PUGNaVZ)
@@ -116,6 +116,12 @@ py-simple-wrap is a beginner-friendly Python toolbox — simple, intuitive funct
       <a href="https://github.com/Pratham2511">
         <img src="https://github.com/Pratham2511.png" width="100px;" alt="Pratham Pansare"/><br />
         <sub><b>Pratham Pansare</b></sub>
+      </a>
+    </td>
+    <td align="center" valign="top" width="8.6%">
+      <a href="https://github.com/Utkarsh3725">
+        <img src="https://github.com/Utkarsh3725.png" width="100px;" alt="Utkarsh Arya"/><br />
+        <sub><b>Utkarsh Arya</b></sub>
       </a>
     </td>
     <td align="center" valign="top" width="14.28%">

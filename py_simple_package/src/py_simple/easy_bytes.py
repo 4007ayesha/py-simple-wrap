@@ -320,6 +320,21 @@ def add_bytes(values: list, decimal: bool = False) -> int:
         EasyBytesError: If `values` is not a list or a tuple, if an item is
             neither a non-negative integer nor a string, if a string is not
             a valid size label, or if `decimal` is not a boolean.
+def percent_free(used: int, total: int) -> float:
+    """
+    Report how much of a storage total is still free.
+
+    Args:
+        used (int): Bytes already used. Must be a non-negative integer
+            no greater than `total`.
+        total (int): Bytes available in total. Must be greater than 0.
+
+    Returns:
+        float: The free share as a percent, rounded to one decimal place.
+
+    Raises:
+        EasyBytesError: If the numbers are not valid byte counts, if
+            `total` is not positive, or if `used` exceeds `total`.
 
     Example:
         === "The Py_simple Way"
@@ -328,6 +343,9 @@ def add_bytes(values: list, decimal: bool = False) -> int:
 
             print(add_bytes([512, "1 KB", "1 KiB"]))
             print(add_bytes([512, "1 KB", "1 KiB"], decimal=True))
+            from py_simple import percent_free
+
+            print(percent_free(250, 1000))
             ```
 
         === "The Traditional Way"
@@ -351,3 +369,19 @@ def add_bytes(values: list, decimal: bool = False) -> int:
                 "\n\nERROR: each value must be a non-negative integer or a size string."
             ) from None
     return total
+            used = 250
+            total = 1000
+            print(round((total - used) / total * 100, 1))
+            ```
+    """
+    for value in (used, total):
+        if isinstance(value, bool) or not isinstance(value, int) or value < 0:
+            raise EasyBytesError(
+                "\n\nERROR: used and total must be non-negative integers."
+            ) from None
+    if total < 1:
+        raise EasyBytesError("\n\nERROR: total must be at least 1.") from None
+    if used > total:
+        raise EasyBytesError("\n\nERROR: used cannot exceed total.") from None
+    return round((total - used) / total * 100, 1)
+
