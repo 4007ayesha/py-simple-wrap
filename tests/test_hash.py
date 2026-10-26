@@ -501,11 +501,19 @@ def test_hash_directory_unreadable_subdirectory_raises(tmp_path, monkeypatch):
         hash_directory(root)
 
 
-def test_hash_directory_docstring_examples_agree(tmp_path, monkeypatch):
+@pytest.mark.parametrize(
+    "layout",
+    [
+        {"a.txt": b"hello", "sub/b.txt": b"world"},
+        {"a.txt": b"hello", "a/b": b"world"},
+    ],
+)
+def test_hash_directory_docstring_examples_agree(tmp_path, monkeypatch, layout):
     project = tmp_path / "project"
-    (project / "sub").mkdir(parents=True)
-    (project / "a.txt").write_bytes(b"hello")
-    (project / "sub" / "b.txt").write_bytes(b"world")
+    for relative, content in layout.items():
+        path = project / relative
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_bytes(content)
     monkeypatch.chdir(tmp_path)
     blocks = [
         textwrap.dedent(part.split("```")[0])

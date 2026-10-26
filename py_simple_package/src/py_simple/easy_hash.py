@@ -190,7 +190,7 @@ def hash_directory(dirpath: str | Path, algorithm: str = "sha256") -> str:
 
             hasher = hashlib.sha256()
             root = Path("project")
-            for path in sorted(p for p in root.rglob("*") if p.is_file()):
+            for path in sorted((p for p in root.rglob("*") if p.is_file()), key=lambda p: p.relative_to(root).as_posix()):
                 hasher.update(path.relative_to(root).as_posix().encode("utf-8"))
                 hasher.update(b"\\0")
                 hasher.update(hashlib.sha256(path.read_bytes()).hexdigest().encode("ascii"))
