@@ -197,14 +197,15 @@ def remove_query_param(url: str, key: str) -> str:
             from urllib.parse import parse_qsl, urlencode, urlparse, urlunparse
 
             parsed = urlparse("https://school.example/clubs?page=2&sort=name")
-            query = dict(parse_qsl(parsed.query))
-            query.pop("page", None)
+            query = [(k, v) for k, v in parse_qsl(parsed.query) if k != "page"]
             print(urlunparse(parsed._replace(query=urlencode(query))))
             ```
     """
     if not isinstance(key, str) or key == "":
         raise EasyUrlError("\n\nERROR: key must be a non-empty string.") from None
     parsed = _parsed(url)
-    query = dict(parse_qsl(parsed.query, keep_blank_values=True))
-    query.pop(key, None)
-    return urlunparse(parsed._replace(query=urlencode(query)))
+    pairs = parse_qsl(parsed.query, keep_blank_values=True)
+    remaining = [(k, v) for k, v in pairs if k != key]
+    if len(remaining) == len(pairs):
+        return url
+    return urlunparse(parsed._replace(query=urlencode(remaining)))

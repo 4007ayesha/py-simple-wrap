@@ -66,6 +66,19 @@ def test_remove_query_param():
     assert remove_query_param(start, "missing") == start
 
 
+def test_remove_query_param_keeps_repeated_keys():
+    start = "https://school.example/clubs?tag=python&page=2&tag=beginner"
+    assert (
+        remove_query_param(start, "page")
+        == "https://school.example/clubs?tag=python&tag=beginner"
+    )
+
+
+def test_remove_query_param_missing_key_leaves_encoded_url_untouched():
+    start = "https://school.example/search?q=art%20club"
+    assert remove_query_param(start, "missing") == start
+
+
 def test_remove_query_param_rejects_bad_key_and_url():
     with pytest.raises(EasyUrlError):
         remove_query_param("https://school.example/clubs?page=2", "")
