@@ -646,3 +646,36 @@ def test_run_with_default_fallback_uses_repr_for_callables_without_name():
         repr(failer),
         "default",
     )
+
+
+@pytest.mark.parametrize("runner", ["no_params", "with_params", "map"])
+@pytest.mark.parametrize("raises_later", [False, True])
+def test_concurrent_helpers_distinguish_returned_and_raised_exceptions(runner, raises_later):
+    returned_error = ValueError("returned as data")
+
+    def return_error(*args):
+        return returned_error
+
+    def second_result(*args):
+        if raises_later:
+            raise RuntimeError("actually raised")
+        return "ok"
+
+    def mapped(index):
+        return return_error() if index == 0 else second_result()
+
+    async def run():
+        if runner == "no_params":
+            return await run_at_the_same_time_no_params([return_error, second_result])
+        if runner == "with_params":
+            return await run_at_the_same_time_with_params([(return_error, 1), (second_result, 2)])
+        return await run_concurrent_map(mapped, [0, 1])
+
+    if raises_later:
+        with pytest.raises(EasyAsyncError, match="actually raised"):
+            asyncio.run(run())
+    else:
+        results = asyncio.run(run())
+        values = results if runner == "map" else [value for _, value in results]
+        assert values[0] is returned_error
+        assert values[1] == "ok"

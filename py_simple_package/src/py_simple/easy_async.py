@@ -35,7 +35,8 @@ async def run_at_the_same_time_no_params(functions: list) -> list:
         functions (list): Functions to run, each taking no arguments.
 
     Returns:
-        list: A list of (name, result) tuples, one per function.
+        list: A list of (name, result) tuples, one per function. Exception
+            objects returned by callbacks are preserved as values.
 
     Example:
         === "The Py_simple Way"
@@ -78,8 +79,9 @@ async def run_at_the_same_time_no_params(functions: list) -> list:
     loop = asyncio.get_running_loop()
     tasks = [loop.run_in_executor(None, function) for function in functions]
     results = await asyncio.gather(*tasks, return_exceptions=True)
-    for result in results:
-        if isinstance(result, Exception):
+    for task, result in zip(tasks, results):
+        # Exception instances may also be ordinary callback return values.
+        if isinstance(result, Exception) and task.exception() is not None:
             raise EasyAsyncError(f"\n\n\nERROR: {result}") from None
     return list(zip((f.__name__ for f in functions), results))
 
@@ -99,7 +101,8 @@ async def run_at_the_same_time_with_params(functions_and_args: list[tuple]) -> l
             with, e.g. (func, arg1, arg2).
 
     Returns:
-        list: A list of (name, result) tuples, one per function.
+        list: A list of (name, result) tuples, one per function. Exception
+            objects returned by callbacks are preserved as values.
 
     Example:
         === "The Py_simple Way"
@@ -151,8 +154,9 @@ async def run_at_the_same_time_with_params(functions_and_args: list[tuple]) -> l
         loop.run_in_executor(None, items[0], *items[1:]) for items in functions_and_args
     ]
     results = await asyncio.gather(*tasks, return_exceptions=True)
-    for result in results:
-        if isinstance(result, Exception):
+    for task, result in zip(tasks, results):
+        # Exception instances may also be ordinary callback return values.
+        if isinstance(result, Exception) and task.exception() is not None:
             raise EasyAsyncError(f"\n\n\nERROR: {result}") from None
     names = [items[0].__name__ for items in functions_and_args]
     return list(zip(names, results))
@@ -228,7 +232,8 @@ async def run_concurrent_map(func, items: list) -> list:
         items (list): The list of items to pass one by one into the function.
 
     Returns:
-        list: The list of return values in the same order as items.
+        list: The list of return values in the same order as items, including
+            exception objects returned (rather than raised) by callbacks.
 
     Example:
         === "The Py_simple Way"
@@ -264,8 +269,9 @@ async def run_concurrent_map(func, items: list) -> list:
     loop = asyncio.get_running_loop()
     tasks = [loop.run_in_executor(None, func, item) for item in items]
     results = await asyncio.gather(*tasks, return_exceptions=True)
-    for result in results:
-        if isinstance(result, Exception):
+    for task, result in zip(tasks, results):
+        # Exception instances may also be ordinary callback return values.
+        if isinstance(result, Exception) and task.exception() is not None:
             raise EasyAsyncError(f"\n\n\nERROR: {result}") from None
     return results
 
