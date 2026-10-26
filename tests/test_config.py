@@ -5,6 +5,7 @@ from py_simple_package.src.py_simple.easy_config import (
     EasyConfigError,
     gh_workflow_config,
     create_env_file,
+    create_env_example_file,
     read_env_file,
     dockerfile_config,
     gitignore_config,
@@ -152,6 +153,69 @@ def test_read_env_file_keeps_equals_signs_in_values(tmp_path):
 def test_read_env_file_wraps_missing_file_error(tmp_path):
     with pytest.raises(EasyConfigError, match="does_not_exist"):
         read_env_file(str(tmp_path / "does_not_exist.env"))
+
+
+def test_create_env_example_file_blanks_values_but_keeps_keys(tmp_path):
+    env_file = tmp_path / ".env"
+    env_file.write_text(
+        "# local config\n\nPORT=8000\nDEBUG=True\n", encoding="utf-8"
+    )
+    example_file = tmp_path / ".env.example"
+
+    create_env_example_file(str(env_file), str(example_file))
+
+    assert example_file.read_text(encoding="utf-8") == (
+        "# local config\n\nPORT=\nDEBUG=\n"
+    )
+
+
+def test_create_env_example_file_does_not_overwrite_by_default(tmp_path):
+    env_file = tmp_path / ".env"
+    env_file.write_text("PORT=8000\n", encoding="utf-8")
+    example_file = tmp_path / ".env.example"
+    example_file.write_text("PORT=\n", encoding="utf-8")
+
+    create_env_example_file(str(env_file), str(example_file))
+
+    assert example_file.read_text(encoding="utf-8") == "PORT=\n"
+
+
+def test_create_env_example_file_overwrites_when_flag_is_true(tmp_path):
+    env_file = tmp_path / ".env"
+    env_file.write_text("PORT=8000\n", encoding="utf-8")
+    example_file = tmp_path / ".env.example"
+    example_file.write_text("OLD=kept\n", encoding="utf-8")
+
+    create_env_example_file(str(env_file), str(example_file), overwrite=True)
+
+    assert example_file.read_text(encoding="utf-8") == "PORT=\n"
+
+
+def test_create_env_example_file_rejects_same_source_and_destination(tmp_path):
+    env_file = tmp_path / ".env"
+    env_file.write_text("PORT=8000\n", encoding="utf-8")
+
+    with pytest.raises(EasyConfigError, match="must be different"):
+        create_env_example_file(str(env_file), str(env_file), overwrite=True)
+
+    with pytest.raises(EasyConfigError, match="must be different"):
+        create_env_example_file(str(env_file), str(tmp_path / "./.env"), overwrite=True)
+
+    assert env_file.read_text(encoding="utf-8") == "PORT=8000\n"
+
+
+def test_create_env_example_file_wraps_missing_source_error(tmp_path):
+    with pytest.raises(EasyConfigError, match="does_not_exist"):
+        create_env_example_file(
+            str(tmp_path / "does_not_exist.env"),
+            str(tmp_path / ".env.example"),
+        )
+
+
+def test_create_env_example_file_imported_from_py_simple():
+    from py_simple import create_env_example_file as top_level
+
+    assert callable(top_level)
 
 
 def test_gitignore_config_creates_file_at_current_directory(tmp_path, monkeypatch):
