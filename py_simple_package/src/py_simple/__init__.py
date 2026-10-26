@@ -17,10 +17,11 @@ from .easy_ai import (
 from .easy_base64 import (
     EasyBase64Error,
     decode_text,
+    decode_to_bytes,
+    encode_bytes,
+    encode_file,
     encode_text,
     is_base64,
-    encode_bytes,
-    decode_to_bytes,
 )
 from .easy_archive import (
     add_to_zip,
