@@ -379,6 +379,7 @@ from .easy_url import (
     get_domain,
     get_path,
     is_https,
+    remove_query_param,
 )
 from .easy_web import (
     count_links,
