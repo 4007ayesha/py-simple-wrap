@@ -26,7 +26,9 @@ def test_add_query_param_sets_and_replaces():
     start = "https://school.example/clubs"
     with_page = add_query_param(start, "page", "2")
     assert with_page == "https://school.example/clubs?page=2"
-    assert add_query_param(with_page, "page", "3") == "https://school.example/clubs?page=3"
+    assert (
+        add_query_param(with_page, "page", "3") == "https://school.example/clubs?page=3"
+    )
 
 
 def test_get_path():
@@ -51,14 +53,8 @@ def test_rejects_incomplete_url():
 
 def test_remove_query_param():
     start = "https://school.example/clubs?page=2&sort=name"
-    assert (
-        remove_query_param(start, "page")
-        == "https://school.example/clubs?sort=name"
-    )
-    assert (
-        remove_query_param(start, "sort")
-        == "https://school.example/clubs?page=2"
-    )
+    assert remove_query_param(start, "page") == "https://school.example/clubs?sort=name"
+    assert remove_query_param(start, "sort") == "https://school.example/clubs?page=2"
     assert (
         remove_query_param("https://school.example/clubs?page=2", "page")
         == "https://school.example/clubs"
