@@ -42,6 +42,7 @@ Quickstart = "https://github.com/sara-czasak/py-simple-wrap/blob/main/QUICKSTART
 base = []
 ai = [
     "pydantic>=2.0.0",
+    "certifi>=2026.10.19",
     "langchain-core>=0.2.0",
     "langchain-openai>=0.1.0",
     "langchain-ollama>=0.1.0",
@@ -62,6 +63,7 @@ images = [
 web = [
     "requests>=2.25.0",
     "beautifulsoup4>=4.9.0",
+    "certifi>=2026.10.19",
 ]
 config = [
     "GitPython>=3.1.0",
