@@ -13,7 +13,7 @@ maintainers = [
 ]
 description = "A package to make complex python functionality simple"
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = ">=3.11"
 keywords = ["python", "beginner-friendly", "wrapper", "education", "utilities", "helper-functions", "simple-api", "easy-to-use", "automation", "beginner", "learning", "students"]
 classifiers = [
     "Development Status :: 4 - Beta",
@@ -57,8 +57,7 @@ viz = [
     "matplotlib>=3.0.0",
 ]
 images = [
-    "Pillow>=12.3.0,<13; python_version < '3.11'",
-    "Pillow>=13.0.0; python_version >= '3.11'",
+    "Pillow>=13.0.0",
     "qrcode>=7.4.0",
 ]
 web = [
