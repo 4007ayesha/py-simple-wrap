@@ -206,9 +206,7 @@ def test_print_centered_uses_terminal_width(monkeypatch, capsys):
     import os
     import shutil
 
-    monkeypatch.setattr(
-        shutil, "get_terminal_size", lambda: os.terminal_size((10, 24))
-    )
+    monkeypatch.setattr(shutil, "get_terminal_size", lambda: os.terminal_size((10, 24)))
     print_centered("Hi")
     assert capsys.readouterr().out == "    Hi    \n"
 
