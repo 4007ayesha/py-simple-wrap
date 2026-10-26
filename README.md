@@ -148,6 +148,20 @@ py-simple-wrap is a beginner-friendly Python toolbox — simple, intuitive funct
 </div>
 <br>
 
+### 🐍 Python Compatibility
+
+**py-simple-wrap v0.9.0+ requires Python 3.11 or newer.**
+
+Supported versions: **Python 3.11, 3.12, 3.13, and 3.14.**
+
+⚠️ **Python 3.10 support has been discontinued** due to security vulnerabilities affecting Pillow, a dependency used by the image utilities.
+
+If you're using Python 3.10, please upgrade to a supported version before installing v0.9.0 or later.
+
+For more details, see our [Security Policy](SECURITY.md).
+
+<br>
+
 ```bash
 pip install py-simple-wrap
 ```
