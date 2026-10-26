@@ -692,8 +692,10 @@ async def run_with_default(func, fallback, *args) -> tuple:
         *args: Positional arguments to pass to the function.
 
     Returns:
-        tuple: A tuple containing `(func.__name__, result)` on success
-            or `(func.__name__, fallback)` on failure.
+        tuple: A tuple containing `(name, result)` on success
+            or `(name, fallback)` on failure, where `name` is
+            `func.__name__` when present and `repr(func)` otherwise
+            (same approach as `run_first_completed`).
 
     Example:
         === "The Py_simple Way"
@@ -728,9 +730,12 @@ async def run_with_default(func, fallback, *args) -> tuple:
             asyncio.run(main())
             ```
     """
+    func_name = getattr(func, "__name__", None)
+    if func_name is None:
+        func_name = repr(func)
     loop = asyncio.get_running_loop()
     try:
         result = await loop.run_in_executor(None, func, *args)
-        return (func.__name__, result)
+        return (func_name, result)
     except Exception:
-        return (func.__name__, fallback)
+        return (func_name, fallback)

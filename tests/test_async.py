@@ -623,3 +623,26 @@ def test_run_with_default_passes_args_and_keeps_name():
         "greet",
         "hello",
     )
+
+
+def test_run_with_default_uses_repr_for_callables_without_name():
+    from functools import partial
+
+    def add(a, b):
+        return a + b
+
+    adder = partial(add, 2)
+    assert asyncio.run(run_with_default(adder, 0, 3)) == (repr(adder), 5)
+
+
+def test_run_with_default_fallback_uses_repr_for_callables_without_name():
+    from functools import partial
+
+    def failing(a):
+        raise ValueError("boom")
+
+    failer = partial(failing, 1)
+    assert asyncio.run(run_with_default(failer, "default")) == (
+        repr(failer),
+        "default",
+    )
