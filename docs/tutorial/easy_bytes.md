@@ -11,13 +11,20 @@ Imagine a homework folder that can hold 10 MB, and the files inside already
 use 2.5 MB.
 
 ```python
-from py_simple import bytes_to_human, human_to_bytes, percent_used, remaining_bytes
+from py_simple import (
+    bytes_to_human,
+    human_to_bytes,
+    percent_free,
+    percent_used,
+    remaining_bytes,
+)
 
 used = human_to_bytes("2.5 MB")
 total = human_to_bytes("10 MB")
 
 print(bytes_to_human(used))
 print(percent_used(used, total))
+print(percent_free(used, total))
 print(bytes_to_human(remaining_bytes(used, total)))
 ```
 
@@ -26,6 +33,7 @@ Example output:
 ```text
 2.5 MB
 25.0
+75.0
 7.5 MB
 ```
 
@@ -38,6 +46,8 @@ drop the decimal, so `2048` bytes becomes `"2 KB"`.
 
 `percent_used()` compares the two counts and returns the filled share rounded
 to one decimal place.
+
+`percent_free()` returns the percentage of capacity still free.
 
 `remaining_bytes()` subtracts used bytes from the total. It accepts whole,
 non-negative byte counts, including a total of zero when usage is also zero.

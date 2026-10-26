@@ -48,6 +48,7 @@ from .easy_bytes import (
     EasyBytesError,
     bytes_to_human,
     human_to_bytes,
+    percent_free,
     percent_used,
     remaining_bytes,
 )

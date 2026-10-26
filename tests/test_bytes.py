@@ -4,6 +4,7 @@ from py_simple_package.src.py_simple.easy_bytes import (
     EasyBytesError,
     bytes_to_human,
     human_to_bytes,
+    percent_free,
     percent_used,
     remaining_bytes,
 )
@@ -235,3 +236,61 @@ def test_remaining_bytes_public_imports():
 
     assert public_helper is module_helper
     assert public_helper(250, 1000) == 750
+
+
+@pytest.mark.parametrize(
+    "used, total, expected",
+    [
+        (0, 1000, 100.0),
+        (0, 1, 100.0),
+        (1, 1, 0.0),
+        (1000, 1000, 0.0),
+        (250, 1000, 75.0),
+        (1, 3, 66.7),
+        (2, 3, 33.3),
+        (1, 8, 87.5),
+    ],
+)
+def test_percent_free(used, total, expected):
+    """Return the free share as a float rounded to one decimal place."""
+    result = percent_free(used, total)
+    assert result == expected
+    assert isinstance(result, float)
+
+
+@pytest.mark.parametrize(
+    "invalid", [-1, True, False, 1.0, 1.5, "1", None, [], {}, float("nan"), float("inf")]
+)
+@pytest.mark.parametrize("argument", ["used", "total"])
+def test_percent_free_rejects_bad_input(invalid, argument):
+    """Validate each byte count independently, excluding booleans and non-ints."""
+    counts = {"used": 1, "total": 100}
+    counts[argument] = invalid
+    with pytest.raises(
+        EasyBytesError, match="used and total must be non-negative integers"
+    ):
+        percent_free(**counts)
+
+
+@pytest.mark.parametrize("used", [0, 1])
+def test_percent_free_rejects_zero_total(used):
+    """Even zero used bytes require a positive total."""
+    with pytest.raises(EasyBytesError, match="total must be at least 1"):
+        percent_free(used, 0)
+
+
+@pytest.mark.parametrize("used, total", [(1001, 1000), (2, 1)])
+def test_percent_free_rejects_usage_above_capacity(used, total):
+    """Usage exceeding total cannot produce negative free percentages."""
+    with pytest.raises(EasyBytesError, match="used cannot exceed total"):
+        percent_free(used, total)
+
+
+def test_percent_free_public_imports():
+    """Both documented import paths expose the percent_free helper."""
+    from py_simple import percent_free as public_helper
+    from py_simple.easy_bytes import percent_free as module_helper
+
+    assert public_helper is module_helper
+    assert public_helper(250, 1000) == 75.0
+
