@@ -240,6 +240,7 @@ from .easy_money import (
     EasyMoneyError,
     add_tax,
     calculate_discount,
+    calculate_tip,
     format_money,
     split_bill,
     split_bill_exact,

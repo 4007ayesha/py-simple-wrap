@@ -152,6 +152,48 @@ def calculate_discount(amount, discount_rate: float) -> Decimal:
     return _cents(discounted_price)
 
 
+def calculate_tip(amount, tip_rate: float) -> Decimal:
+    """
+    Calculate the tip amount for a bill given a percentage rate.
+
+    Args:
+        amount: The bill amount before tip.
+        tip_rate (float): Tip percentage, such as `15` or `20` for 15% or 20%.
+
+    Returns:
+        Decimal: The tip amount to add, rounded to two decimal places.
+
+    Raises:
+        EasyMoneyError: If `amount` or `tip_rate` is not a valid number,
+            or if `tip_rate` is negative.
+
+    Example:
+        === "The Py_simple Way"
+            ```python
+            from py_simple import calculate_tip
+
+            tip = calculate_tip(50, 18)
+            ```
+
+        === "The Traditional Way"
+            ```python
+            from decimal import Decimal, ROUND_HALF_UP
+
+            bill = Decimal("50")
+            rate = Decimal("18")
+            tip = (bill * (rate / Decimal(100))).quantize(
+                Decimal("0.01"), rounding=ROUND_HALF_UP
+            )
+            ```
+    """
+    price = _as_money(amount)
+    tip = _as_money(tip_rate)
+    if tip < 0:
+        raise EasyMoneyError("\n\nERROR: tip rate cannot be negative.") from None
+    tip_amount = price * (tip / Decimal(100))
+    return _cents(tip_amount)
+
+
 def split_bill(total, people: int) -> Decimal:
     """
     Split a bill evenly and round each share to cents.
