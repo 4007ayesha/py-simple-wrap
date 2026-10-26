@@ -191,6 +191,19 @@ def test_create_env_example_file_overwrites_when_flag_is_true(tmp_path):
     assert example_file.read_text(encoding="utf-8") == "PORT=\n"
 
 
+def test_create_env_example_file_rejects_same_source_and_destination(tmp_path):
+    env_file = tmp_path / ".env"
+    env_file.write_text("PORT=8000\n", encoding="utf-8")
+
+    with pytest.raises(EasyConfigError, match="must be different"):
+        create_env_example_file(str(env_file), str(env_file), overwrite=True)
+
+    with pytest.raises(EasyConfigError, match="must be different"):
+        create_env_example_file(str(env_file), str(tmp_path / "./.env"), overwrite=True)
+
+    assert env_file.read_text(encoding="utf-8") == "PORT=8000\n"
+
+
 def test_create_env_example_file_wraps_missing_source_error(tmp_path):
     with pytest.raises(EasyConfigError, match="does_not_exist"):
         create_env_example_file(

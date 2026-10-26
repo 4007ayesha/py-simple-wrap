@@ -297,6 +297,8 @@ def create_env_example_file(
     Raises:
         EasyConfigError: If the source file cannot be read or the
             example file cannot be written.
+        EasyConfigError: If the source and destination paths point to
+            the same file.
 
     Example:
         === "The Py_simple Way"
@@ -320,6 +322,11 @@ def create_env_example_file(
                         target.write(f"{key}=\\n")
             ```
     """
+    if os.path.realpath(file_path) == os.path.realpath(example_path):
+        raise EasyConfigError(
+            "\n\n\nERROR: source and destination must be different files"
+        )
+
     if os.path.exists(example_path) and not overwrite:
         return
 
