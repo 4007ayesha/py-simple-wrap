@@ -526,6 +526,12 @@ Every tile below is a real person who showed up for this project. 💛
         <sub><b>Dikshant Neupane</b></sub>
       </a>
     </td>
+    <td align="center" valign="top" width="8.6%">
+      <a href="https://github.com/spdly-studios">
+        <img src="https://github.com/spdly-studios.png" width="100px;" alt="Shivaprasad V"/><br />
+        <sub><b>Shivaprasad V</b></sub>
+      </a>
+    </td>
   </tr>
 </table>
 
@@ -1002,6 +1008,12 @@ Every tile below is a real person who showed up for this project. 💛
       <a href="https://github.com/Dikshant-Neupane">
         <img src="https://github.com/Dikshant-Neupane.png" width="100px;" alt="Dikshant Neupane"/><br />
         <sub><b>Dikshant Neupane</b></sub>
+      </a>
+    </td>
+    <td align="center" valign="top" width="8.6%">
+      <a href="https://github.com/spdly-studios">
+        <img src="https://github.com/spdly-studios.png" width="100px;" alt="Shivaprasad V"/><br />
+        <sub><b>Shivaprasad V</b></sub>
       </a>
     </td>
   </tr>
@@ -1491,6 +1503,7 @@ The Module Magicians. The Code Conjurers. The Test Sentinels. The Lore Keepers. 
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/amandeavor"><img src="https://github.com/amandeavor.png?s=80" width="80px;" alt="Aman Awasthi"/><br /><sub><b>Aman Awasthi</b></sub></a><br /><a href="https://github.com/sara-czasak/py_simple/commits?author=amandeavor" title="Docs">📖</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/drudru18"><img src="https://github.com/drudru18.png?s=80" width="80px;" alt="Doroiman Alexandru"/><br /><sub><b>Doroiman Alexandru</b></sub></a><br /><a href="https://github.com/sara-czasak/py_simple/commits?author=drudru18" title="Tests">🧪</a> <a href="https://github.com/sara-czasak/py_simple/commits?author=drudru18" title="Code">💻</a> <a href="https://github.com/sara-czasak/py_simple/commits?author=drudru18" title="Docs">📖</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/Dikshant-Neupane"><img src="https://github.com/Dikshant-Neupane.png?s=80" width="80px;" alt="Dikshant Neupane"/><br /><sub><b>Dikshant Neupane</b></sub></a><br /><a href="https://github.com/sara-czasak/py_simple/commits?author=Dikshant-Neupane" title="Tests">🧪</a> <a href="https://github.com/sara-czasak/py_simple/commits?author=Dikshant-Neupane" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/spdly-studios"><img src="https://github.com/spdly-studios.png?s=80" width="80px;" alt="Shivaprasad V"/><br /><sub><b>Shivaprasad V</b></sub></a><br /><a href="https://github.com/sara-czasak/py_simple/commits?author=spdly-studios" title="Tests">🧪</a> <a href="https://github.com/sara-czasak/py_simple/commits?author=spdly-studios" title="Code">💻</a> <a href="https://github.com/sara-czasak/py_simple/issues?q=author%3Aspdly-studios" title="Bug reports">🐛</a></td>
     </tr>
   </tbody>
 </table>

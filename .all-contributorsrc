@@ -997,6 +997,17 @@
         "test",
         "code"
       ]
+    },
+    {
+      "login": "spdly-studios",
+      "name": "Shivaprasad V",
+      "avatar_url": "https://github.com/spdly-studios.png",
+      "profile": "https://github.com/spdly-studios",
+      "contributions": [
+        "test",
+        "code",
+        "bug"
+      ]
     }
   ]
 }
