@@ -12,6 +12,7 @@ from py_simple_package.src.py_simple.easy_hash import (
     EasyHashError,
     compare_file_hashes,
     hash_bytes,
+    hash_directory,
     hash_file,
     hash_text,
     hashes_match,
@@ -379,3 +380,75 @@ def test_compare_file_hashes_public_imports(tmp_path):
 
     assert public_compare_file_hashes is compare_file_hashes
     assert public_compare_file_hashes(file1, file2) is True
+
+
+def test_hash_directory_matches_manual_digest(tmp_path):
+    root = tmp_path / "project"
+    (root / "sub").mkdir(parents=True)
+    (root / "a.txt").write_bytes(b"hello")
+    (root / "sub" / "b.txt").write_bytes(b"world")
+    expected = hashlib.sha256()
+    for rel, data in [(b"a.txt", b"hello"), (b"sub/b.txt", b"world")]:
+        expected.update(rel)
+        expected.update(b"\0")
+        expected.update(data)
+    assert hash_directory(root) == expected.hexdigest()
+
+
+def test_hash_directory_deterministic_and_order_independent(tmp_path):
+    first = tmp_path / "first"
+    second = tmp_path / "second"
+    (first / "sub").mkdir(parents=True)
+    (second / "sub").mkdir(parents=True)
+    (first / "a.txt").write_bytes(b"hello")
+    (first / "sub" / "b.txt").write_bytes(b"world")
+    (second / "sub" / "b.txt").write_bytes(b"world")
+    (second / "a.txt").write_bytes(b"hello")
+    assert hash_directory(first) == hash_directory(second)
+    assert hash_directory(first) == hash_directory(first)
+
+
+def test_hash_directory_changes_on_rename_or_content_change(tmp_path):
+    root = tmp_path / "project"
+    note = root / "note.txt"
+    root.mkdir()
+    note.write_bytes(b"hello")
+    original = hash_directory(root)
+    note.write_bytes(b"goodbye")
+    assert hash_directory(root) != original
+    note.write_bytes(b"hello")
+    renamed = root / "renamed.txt"
+    note.rename(renamed)
+    assert hash_directory(root) != original
+
+
+def test_hash_directory_empty_directory(tmp_path):
+    root = tmp_path / "empty"
+    root.mkdir()
+    assert hash_directory(root) == hashlib.sha256(b"").hexdigest()
+
+
+def test_hash_directory_rejects_non_directory_and_bad_algorithm(tmp_path):
+    note = tmp_path / "note.txt"
+    note.write_bytes(b"hello")
+    with pytest.raises(EasyHashError, match="existing directory"):
+        hash_directory(note)
+    with pytest.raises(EasyHashError, match="existing directory"):
+        hash_directory(tmp_path / "missing")
+    with pytest.raises(
+        EasyHashError, match="algorithm must be 'sha256', 'sha1', or 'md5'"
+    ):
+        hash_directory(tmp_path, "sha512")
+
+
+def test_hash_directory_public_imports(tmp_path):
+    from py_simple import hash_directory as public_hash_directory
+    from py_simple.easy_hash import (
+        hash_directory as module_hash_directory,
+    )
+
+    root = tmp_path / "project"
+    root.mkdir()
+    (root / "a.txt").write_bytes(b"hello")
+    assert public_hash_directory is module_hash_directory
+    assert public_hash_directory(root) == module_hash_directory(root)
