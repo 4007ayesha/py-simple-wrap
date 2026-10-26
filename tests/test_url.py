@@ -9,6 +9,7 @@ from py_simple_package.src.py_simple.easy_url import (
     get_domain,
     get_path,
     is_https,
+    remove_query_param,
 )
 
 
@@ -46,3 +47,40 @@ def test_rejects_incomplete_url():
         get_path("school.example")
     with pytest.raises(EasyUrlError):
         add_query_param("https://school.example", "", "2")
+
+
+def test_remove_query_param():
+    start = "https://school.example/clubs?page=2&sort=name"
+    assert (
+        remove_query_param(start, "page")
+        == "https://school.example/clubs?sort=name"
+    )
+    assert (
+        remove_query_param(start, "sort")
+        == "https://school.example/clubs?page=2"
+    )
+    assert (
+        remove_query_param("https://school.example/clubs?page=2", "page")
+        == "https://school.example/clubs"
+    )
+    assert remove_query_param(start, "missing") == start
+
+
+def test_remove_query_param_rejects_bad_key_and_url():
+    with pytest.raises(EasyUrlError):
+        remove_query_param("https://school.example/clubs?page=2", "")
+    with pytest.raises(EasyUrlError):
+        remove_query_param("https://school.example/clubs?page=2", 2)
+    with pytest.raises(EasyUrlError):
+        remove_query_param("school.example/clubs", "page")
+
+
+def test_remove_query_param_public_imports():
+    from py_simple import remove_query_param as public_remove
+    from py_simple.easy_url import remove_query_param as module_remove
+
+    assert public_remove is module_remove
+    assert (
+        public_remove("https://school.example/clubs?page=2", "page")
+        == "https://school.example/clubs"
+    )

@@ -162,3 +162,49 @@ def get_path(url: str) -> str:
             ```
     """
     return _parsed(url).path or "/"
+
+
+def remove_query_param(url: str, key: str) -> str:
+    """
+    Remove one query parameter from a link.
+
+    The counterpart to `add_query_param`: where that function sets a
+    parameter, this one drops it. All other parameters, and the rest
+    of the link, are left unchanged. Removing a parameter that is not
+    present returns the link unchanged.
+
+    Args:
+        url (str): A full link.
+        key (str): Parameter name to remove, such as `"page"`.
+
+    Returns:
+        str: The link without that parameter.
+
+    Raises:
+        EasyUrlError: If `url` is not a full link, or if `key` is not
+            a non-empty string.
+
+    Example:
+        === "The Py_simple Way"
+            ```python
+            from py_simple import remove_query_param
+
+            print(remove_query_param("https://school.example/clubs?page=2&sort=name", "page"))
+            ```
+
+        === "The Traditional Way"
+            ```python
+            from urllib.parse import parse_qsl, urlencode, urlparse, urlunparse
+
+            parsed = urlparse("https://school.example/clubs?page=2&sort=name")
+            query = dict(parse_qsl(parsed.query))
+            query.pop("page", None)
+            print(urlunparse(parsed._replace(query=urlencode(query))))
+            ```
+    """
+    if not isinstance(key, str) or key == "":
+        raise EasyUrlError("\n\nERROR: key must be a non-empty string.") from None
+    parsed = _parsed(url)
+    query = dict(parse_qsl(parsed.query, keep_blank_values=True))
+    query.pop(key, None)
+    return urlunparse(parsed._replace(query=urlencode(query)))
