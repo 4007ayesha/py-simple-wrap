@@ -1,5 +1,7 @@
 import hashlib
 import io
+import os
+import textwrap
 from contextlib import contextmanager
 from pathlib import Path
 
@@ -391,7 +393,7 @@ def test_hash_directory_matches_manual_digest(tmp_path):
     for rel, data in [(b"a.txt", b"hello"), (b"sub/b.txt", b"world")]:
         expected.update(rel)
         expected.update(b"\0")
-        expected.update(data)
+        expected.update(hashlib.sha256(data).hexdigest().encode("ascii"))
     assert hash_directory(root) == expected.hexdigest()
 
 
@@ -452,3 +454,67 @@ def test_hash_directory_public_imports(tmp_path):
     (root / "a.txt").write_bytes(b"hello")
     assert public_hash_directory is module_hash_directory
     assert public_hash_directory(root) == module_hash_directory(root)
+
+
+def test_hash_directory_no_record_boundary_collision(tmp_path):
+    first = tmp_path / "first"
+    second = tmp_path / "second"
+    first.mkdir()
+    (first / "a").write_bytes(b"b\x00x")
+    second.mkdir()
+    (second / "a").write_bytes(b"")
+    (second / "b").write_bytes(b"x")
+    assert hash_directory(first) != hash_directory(second)
+
+
+def test_hash_directory_unreadable_root_raises(tmp_path, monkeypatch):
+    root = tmp_path / "project"
+    (root / "sub").mkdir(parents=True)
+    (root / "a.txt").write_bytes(b"hello")
+    real_scandir = os.scandir
+
+    def failing_scandir(path):
+        if Path(path) == root:
+            raise PermissionError("permission denied")
+        return real_scandir(path)
+
+    monkeypatch.setattr(os, "scandir", failing_scandir)
+    with pytest.raises(EasyHashError):
+        hash_directory(root)
+
+
+def test_hash_directory_unreadable_subdirectory_raises(tmp_path, monkeypatch):
+    root = tmp_path / "project"
+    blocked = root / "blocked"
+    blocked.mkdir(parents=True)
+    (root / "a.txt").write_bytes(b"hello")
+    (blocked / "b.txt").write_bytes(b"world")
+    real_scandir = os.scandir
+
+    def failing_scandir(path):
+        if Path(path) == blocked:
+            raise PermissionError("permission denied")
+        return real_scandir(path)
+
+    monkeypatch.setattr(os, "scandir", failing_scandir)
+    with pytest.raises(EasyHashError):
+        hash_directory(root)
+
+
+def test_hash_directory_docstring_examples_agree(tmp_path, monkeypatch):
+    project = tmp_path / "project"
+    (project / "sub").mkdir(parents=True)
+    (project / "a.txt").write_bytes(b"hello")
+    (project / "sub" / "b.txt").write_bytes(b"world")
+    monkeypatch.chdir(tmp_path)
+    blocks = [
+        textwrap.dedent(part.split("```")[0])
+        for part in hash_directory.__doc__.split("```python")[1:]
+    ]
+    assert len(blocks) == 2
+    digests = []
+    for block in blocks:
+        namespace = {}
+        exec(block, namespace)
+        digests.append(namespace["digest"])
+    assert digests[0] == digests[1] == hash_directory(project)
