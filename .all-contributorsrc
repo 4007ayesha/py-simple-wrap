@@ -987,6 +987,16 @@
         "code",
         "documentation"
       ]
+    },
+    {
+      "login": "Dikshant-Neupane",
+      "name": "Dikshant Neupane",
+      "avatar_url": "https://github.com/Dikshant-Neupane.png",
+      "profile": "https://github.com/Dikshant-Neupane",
+      "contributions": [
+        "test",
+        "code"
+      ]
     }
   ]
 }
