@@ -672,3 +672,65 @@ async def run_first_completed(functions: list) -> tuple:
         return (func_name, result)
     except Exception as e:
         raise EasyAsyncError(f"\n\n\nERROR: {e}") from None
+
+
+async def run_with_default(func, fallback, *args) -> tuple:
+    """
+    Runs a function asynchronously, returning a fallback value if it fails.
+
+    When the function succeeds you get its result; when it raises, you
+    get the fallback instead of an exception. Useful for optional work
+    where a default is fine, such as reading an optional config file
+    or fetching a best-effort value. This is the async counterpart of
+    the synchronous `run_with_fallback` in easy_flow: it runs the
+    function in an executor and returns a `(name, result)` tuple like
+    the other helpers in this module.
+
+    Args:
+        func (callable): The function to execute.
+        fallback: The value to return if the function raises.
+        *args: Positional arguments to pass to the function.
+
+    Returns:
+        tuple: A tuple containing `(func.__name__, result)` on success
+            or `(func.__name__, fallback)` on failure.
+
+    Example:
+        === "The Py_simple Way"
+            ```python
+            import asyncio
+            from py_simple import run_with_default
+
+            def read_config():
+                raise FileNotFoundError("no config file")
+
+            async def main():
+                return await run_with_default(read_config, {"theme": "light"})
+
+            asyncio.run(main())  # -> ("read_config", {"theme": "light"})
+            ```
+
+        === "The Traditional Way"
+            ```python
+            import asyncio
+
+            def read_config():
+                raise FileNotFoundError("no config file")
+
+            async def main():
+                loop = asyncio.get_running_loop()
+                try:
+                    result = await loop.run_in_executor(None, read_config)
+                    return (read_config.__name__, result)
+                except Exception:
+                    return (read_config.__name__, {"theme": "light"})
+
+            asyncio.run(main())
+            ```
+    """
+    loop = asyncio.get_running_loop()
+    try:
+        result = await loop.run_in_executor(None, func, *args)
+        return (func.__name__, result)
+    except Exception:
+        return (func.__name__, fallback)

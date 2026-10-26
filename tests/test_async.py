@@ -17,6 +17,7 @@ from py_simple_package.src.py_simple.easy_async import (
     run_with_retry,
     run_periodically,
     run_first_completed,
+    run_with_default,
 )
 
 
@@ -595,3 +596,30 @@ def test_run_first_completed_outer_cancellation():
             await task
 
     asyncio.run(scenario())
+
+
+def test_run_with_default_returns_result_on_success():
+    def add(a, b):
+        return a + b
+
+    assert asyncio.run(run_with_default(add, 0, 2, 3)) == ("add", 5)
+
+
+def test_run_with_default_returns_fallback_on_failure():
+    def failing():
+        raise ValueError("Something went wrong")
+
+    assert asyncio.run(run_with_default(failing, "default")) == (
+        "failing",
+        "default",
+    )
+
+
+def test_run_with_default_passes_args_and_keeps_name():
+    def greet(name):
+        raise RuntimeError("no greeting available")
+
+    assert asyncio.run(run_with_default(greet, "hello", "world")) == (
+        "greet",
+        "hello",
+    )
