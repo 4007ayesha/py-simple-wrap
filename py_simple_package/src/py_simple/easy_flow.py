@@ -4,6 +4,7 @@ easy_flow is built to simplify work flows
 
 import runpy
 import time
+from functools import wraps
 
 
 class EasyFlowError(Exception):
@@ -158,6 +159,8 @@ def time_it(func):
     """
     Decorator that measures how long a function takes to run,
     prints the elapsed time, and returns the original result.
+    Preserves the original function's name, docstring, and inspectable
+    signature, so documentation and introspection still describe `func`.
 
     Args:
         func (callable): The function to decorate.
@@ -192,6 +195,7 @@ def time_it(func):
             ```
     """
 
+    @wraps(func)
     def wrapper(*args, **kwargs):
         start = time.time()
         result = func(*args, **kwargs)
