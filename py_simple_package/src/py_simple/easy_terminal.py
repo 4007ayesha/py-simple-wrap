@@ -263,3 +263,42 @@ def print_styled(
     elif dim:
         terminal.set_light_weight()
     terminal.show()
+
+
+def print_centered(text: str, width: int | None = None) -> None:
+    """
+    Prints text centered across the terminal width.
+
+    A one-line way to center a heading or message without working out
+    the padding yourself. When no width is given, the current terminal
+    width is used.
+
+    Args:
+        text (str): The text to print.
+        width (int, optional): Width to center within. Defaults to the
+            current terminal width.
+
+    Example:
+        === "The Py_simple Way"
+            ```python
+            from py_simple import print_centered
+
+            print_centered("Hello World")
+            ```
+
+        === "The Traditional Way"
+            ```python
+            from rich.align import Align
+            from rich.console import Console
+
+            Console().print(Align.center("Hello World"))
+            ```
+    """
+    import shutil
+
+    from rich.align import Align
+    from rich.console import Console
+
+    if width is None:
+        width = shutil.get_terminal_size().columns
+    Console(width=width).print(Align.center(str(text)))

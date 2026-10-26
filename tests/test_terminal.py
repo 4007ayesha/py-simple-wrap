@@ -1,8 +1,10 @@
 from py_simple_package.src.py_simple import (
+    print_centered as public_print_centered,
     print_styled as public_print_styled,
 )
 from py_simple_package.src.py_simple.easy_terminal import (
     EasyTerminal,
+    print_centered,
     print_styled,
 )
 
@@ -193,3 +195,31 @@ def test_print_styled_both_bold_and_dim_output(capsys):
 
 def test_print_styled_public_import():
     assert public_print_styled is print_styled
+
+
+def test_print_centered_with_explicit_width(capsys):
+    print_centered("Hi", width=10)
+    assert capsys.readouterr().out == "    Hi    \n"
+
+
+def test_print_centered_uses_terminal_width(monkeypatch, capsys):
+    import os
+    import shutil
+
+    monkeypatch.setattr(
+        shutil,
+        "get_terminal_size",
+        lambda *args, fallback=None, **kwargs: os.terminal_size((10, 24)),
+    )
+    print_centered("Hi")
+    assert capsys.readouterr().out == "    Hi    \n"
+
+
+def test_print_centered_long_text_does_not_crash(capsys):
+    print_centered("toolongtext", width=5)
+    out = capsys.readouterr().out.replace("\n", "").replace(" ", "")
+    assert out == "toolongtext"
+
+
+def test_print_centered_public_import():
+    assert public_print_centered is print_centered
