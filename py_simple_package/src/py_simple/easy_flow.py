@@ -105,7 +105,7 @@ def run_py_file_safe(filename: str):
 def time_function_call(function, args: list | None = None) -> float:
     """
     Runs a function once and returns how long it took to run, in
-    seconds.
+    seconds, using a monotonic performance counter.
 
     Raises EasyFlowError if the function raises an exception while
     running.
@@ -136,21 +136,21 @@ def time_function_call(function, args: list | None = None) -> float:
             def add(a, b):
                 return a + b
 
-            start = time.time()
+            start = time.perf_counter()
             try:
                 add(2, 3)
             except Exception as e:
                 print(f"Couldn't time the function: {e}")
-            duration = time.time() - start
+            duration = time.perf_counter() - start
             ```
     """
     try:
-        start = time.time()
+        start = time.perf_counter()
         if args is None:
             function()
         else:
             function(*args)
-        return time.time() - start
+        return time.perf_counter() - start
     except Exception as e:
         raise EasyFlowError(f"\n\n\nERROR: {e}") from None
 
@@ -159,6 +159,8 @@ def time_it(func):
     """
     Decorator that measures how long a function takes to run,
     prints the elapsed time, and returns the original result.
+    Uses a monotonic performance counter so clock adjustments do not
+    change the measured duration.
     Preserves the original function's name, docstring, and inspectable
     signature, so documentation and introspection still describe `func`.
 
@@ -188,18 +190,18 @@ def time_it(func):
             def add(a, b):
                 return a + b
 
-            start = time.time()
+            start = time.perf_counter()
             result = add(2, 3)
-            elapsed = time.time() - start
+            elapsed = time.perf_counter() - start
             print(f"add took {elapsed:.2f}s")
             ```
     """
 
     @wraps(func)
     def wrapper(*args, **kwargs):
-        start = time.time()
+        start = time.perf_counter()
         result = func(*args, **kwargs)
-        elapsed = time.time() - start
+        elapsed = time.perf_counter() - start
         print(f"{func.__name__} took {elapsed:.2f}s")
         return result
 
