@@ -172,9 +172,47 @@ The start and finish dates remain in ISO format so they can be grouped by month.
 
 ## Step 9: Visualize monthly reading activity
 
-Once monthly totals have been calculated, use the appropriate chart helper to display the results. For a month-labelled chart, use a dedicated chart function with month labels and corresponding counts, after confirming its supported parameters in your installed version.
+Once monthly totals have been calculated, use `plot_bar_chart()` and `plot_line_chart()` from `py_simple` to visualize the results.
 
-The chart should compare books completed across months, rather than imply that an entire book is finished each day.
+First, convert the month labels into a more readable format:
+
+```python
+display_months = [
+    date(int(month[:4]), int(month[5:7]), 1).strftime("%b %Y")
+    for month in months
+]
+```
+
+### Create a bar chart
+
+Use `plot_bar_chart()` to compare the number of books completed each month:
+
+```python
+plot_bar_chart(
+    display_months,
+    counts,
+    title="Books Completed per Month",
+    x_label="Month",
+    y_label="Books Completed",
+)
+```
+
+### Create a line chart
+
+Use `plot_line_chart()` to visualize changes in your reading activity over time:
+
+```python
+plot_line_chart(
+    display_months,
+    counts,
+    title="Monthly Reading Trend",
+    x_label="Month",
+    y_label="Books Completed",
+)
+```
+
+Both functions use month labels on the x-axis and the corresponding number of completed books on the y-axis. The bar chart helps compare monthly totals, while the line chart shows reading trends over time.
+
 
 ## Test your project
 
