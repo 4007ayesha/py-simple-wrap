@@ -5,8 +5,13 @@ from py_simple_package.src.py_simple.easy_config import (
     EasyConfigError,
     gh_workflow_config,
     create_env_file,
+    create_env_example_file,
     read_env_file,
+    dockerfile_config,
+    gitignore_config,
+    requirements_config,
 )
+from py_simple import gitignore_config as top_level_gitignore_config
 
 
 def test_gh_workflow_config_writes_template_at_current_directory(tmp_path, monkeypatch):
@@ -148,3 +153,309 @@ def test_read_env_file_keeps_equals_signs_in_values(tmp_path):
 def test_read_env_file_wraps_missing_file_error(tmp_path):
     with pytest.raises(EasyConfigError, match="does_not_exist"):
         read_env_file(str(tmp_path / "does_not_exist.env"))
+
+
+def test_create_env_example_file_blanks_values_but_keeps_keys(tmp_path):
+    env_file = tmp_path / ".env"
+    env_file.write_text(
+        "# local config\n\nPORT=8000\nDEBUG=True\n", encoding="utf-8"
+    )
+    example_file = tmp_path / ".env.example"
+
+    create_env_example_file(str(env_file), str(example_file))
+
+    assert example_file.read_text(encoding="utf-8") == (
+        "# local config\n\nPORT=\nDEBUG=\n"
+    )
+
+
+def test_create_env_example_file_does_not_overwrite_by_default(tmp_path):
+    env_file = tmp_path / ".env"
+    env_file.write_text("PORT=8000\n", encoding="utf-8")
+    example_file = tmp_path / ".env.example"
+    example_file.write_text("PORT=\n", encoding="utf-8")
+
+    create_env_example_file(str(env_file), str(example_file))
+
+    assert example_file.read_text(encoding="utf-8") == "PORT=\n"
+
+
+def test_create_env_example_file_overwrites_when_flag_is_true(tmp_path):
+    env_file = tmp_path / ".env"
+    env_file.write_text("PORT=8000\n", encoding="utf-8")
+    example_file = tmp_path / ".env.example"
+    example_file.write_text("OLD=kept\n", encoding="utf-8")
+
+    create_env_example_file(str(env_file), str(example_file), overwrite=True)
+
+    assert example_file.read_text(encoding="utf-8") == "PORT=\n"
+
+
+def test_create_env_example_file_rejects_same_source_and_destination(tmp_path):
+    env_file = tmp_path / ".env"
+    env_file.write_text("PORT=8000\n", encoding="utf-8")
+
+    with pytest.raises(EasyConfigError, match="must be different"):
+        create_env_example_file(str(env_file), str(env_file), overwrite=True)
+
+    with pytest.raises(EasyConfigError, match="must be different"):
+        create_env_example_file(str(env_file), str(tmp_path / "./.env"), overwrite=True)
+
+    assert env_file.read_text(encoding="utf-8") == "PORT=8000\n"
+
+
+def test_create_env_example_file_wraps_missing_source_error(tmp_path):
+    with pytest.raises(EasyConfigError, match="does_not_exist"):
+        create_env_example_file(
+            str(tmp_path / "does_not_exist.env"),
+            str(tmp_path / ".env.example"),
+        )
+
+
+def test_create_env_example_file_imported_from_py_simple():
+    from py_simple import create_env_example_file as top_level
+
+    assert callable(top_level)
+
+
+def test_gitignore_config_creates_file_at_current_directory(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+
+    gitignore_config()
+
+    gitignore_file = tmp_path / ".gitignore"
+    assert gitignore_file.exists()
+    content = gitignore_file.read_text(encoding="utf-8")
+    assert "__pycache__/" in content
+    assert "*.py[cod]" in content
+    assert ".venv/" in content
+    assert ".env" in content
+
+
+def test_gitignore_config_does_not_overwrite_existing_file(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+    gitignore_file = tmp_path / ".gitignore"
+    gitignore_file.write_text("custom gitignore\n", encoding="utf-8")
+
+    gitignore_config()
+
+    assert gitignore_file.read_text(encoding="utf-8") == "custom gitignore\n"
+
+
+def test_gitignore_config_can_target_repository_root(tmp_path, monkeypatch):
+    git.Repo.init(tmp_path)
+    nested = tmp_path / "nested"
+    nested.mkdir()
+    monkeypatch.chdir(nested)
+
+    gitignore_config(at_root=False)
+
+    gitignore_file = tmp_path / ".gitignore"
+    assert gitignore_file.exists()
+    content = gitignore_file.read_text(encoding="utf-8")
+    assert "__pycache__/" in content
+    assert not (nested / ".gitignore").exists()
+
+
+def test_gitignore_config_wraps_template_errors(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+
+    def missing_template(_package):
+        raise FileNotFoundError("template missing")
+
+    monkeypatch.setattr(
+        "py_simple_package.src.py_simple.easy_config.files", missing_template
+    )
+
+    with pytest.raises(EasyConfigError, match="template missing"):
+        gitignore_config()
+
+
+def test_gitignore_config_wraps_git_errors(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+
+    with pytest.raises(EasyConfigError):
+        gitignore_config(at_root=False)
+
+
+def test_gitignore_config_wraps_permission_errors(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+
+    def mock_open(*args, **kwargs):
+        raise PermissionError("Permission denied")
+
+    monkeypatch.setattr("builtins.open", mock_open)
+
+    with pytest.raises(EasyConfigError, match="Permission denied"):
+        gitignore_config()
+
+
+def test_gitignore_config_imported_from_py_simple():
+    assert callable(top_level_gitignore_config)
+
+def test_dockerfile_config_creates_file_at_current_directory(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+
+    dockerfile_config()
+
+    dockerfile = tmp_path / "Dockerfile"
+    assert dockerfile.exists()
+    content = dockerfile.read_text(encoding="utf-8")
+    assert "FROM python:3.12-slim" in content
+    assert 'CMD ["python", "main.py"]' in content
+
+
+def test_dockerfile_config_does_not_overwrite_existing_file(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+    dockerfile = tmp_path / "Dockerfile"
+    dockerfile.write_text("FROM scratch\n", encoding="utf-8")
+
+    dockerfile_config()
+
+    assert dockerfile.read_text(encoding="utf-8") == "FROM scratch\n"
+
+
+def test_dockerfile_config_can_target_repository_root(tmp_path, monkeypatch):
+    git.Repo.init(tmp_path)
+    nested = tmp_path / "nested"
+    nested.mkdir()
+    monkeypatch.chdir(nested)
+
+    dockerfile_config(at_root=False)
+
+    dockerfile = tmp_path / "Dockerfile"
+    assert dockerfile.exists()
+    assert "FROM python:3.12-slim" in dockerfile.read_text(encoding="utf-8")
+    assert not (nested / "Dockerfile").exists()
+
+
+def test_dockerfile_config_wraps_template_errors(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+
+    def missing_template(_package):
+        raise FileNotFoundError("template missing")
+
+    monkeypatch.setattr(
+        "py_simple_package.src.py_simple.easy_config.files", missing_template
+    )
+
+    with pytest.raises(EasyConfigError, match="template missing"):
+        dockerfile_config()
+
+
+def test_dockerfile_config_wraps_git_errors(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+
+    with pytest.raises(EasyConfigError):
+        dockerfile_config(at_root=False)
+
+
+def test_dockerfile_config_wraps_permission_errors(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+
+    def mock_open(*args, **kwargs):
+        raise PermissionError("Permission denied")
+
+    monkeypatch.setattr("builtins.open", mock_open)
+
+    with pytest.raises(EasyConfigError, match="Permission denied"):
+        dockerfile_config()
+
+
+def test_dockerfile_config_imported_from_py_simple():
+    from py_simple import dockerfile_config as imported_function
+
+    assert callable(imported_function)
+
+
+def test_requirements_config_creates_file(tmp_path):
+    requirements_file = tmp_path / "requirements.txt"
+
+    requirements_config(
+        ["numpy", "pandas", "scikit-learn"],
+        file_path=str(requirements_file),
+    )
+
+    assert requirements_file.exists()
+    assert requirements_file.read_text(encoding="utf-8") == (
+        "numpy\n"
+        "pandas\n"
+        "scikit-learn\n"
+    )
+
+def test_requirements_config_does_not_overwrite_by_default(tmp_path):
+    requirements_file = tmp_path / "requirements.txt"
+    requirements_file.write_text("old-package\n", encoding="utf-8")
+
+    requirements_config(
+        ["numpy", "pandas"],
+        file_path=str(requirements_file),
+    )
+
+    assert requirements_file.read_text(encoding="utf-8") == "old-package\n"
+    
+def test_requirements_config_overwrites_when_flag_is_true(tmp_path):
+    requirements_file = tmp_path / "requirements.txt"
+    requirements_file.write_text("old-package\n", encoding="utf-8")
+
+    requirements_config(
+        ["numpy", "pandas"],
+        file_path=str(requirements_file),
+        overwrite=True,
+    )
+
+    assert requirements_file.read_text(encoding="utf-8") == (
+        "numpy\n"
+        "pandas\n"
+    )
+    
+def test_requirements_config_creates_parent_directories(tmp_path):
+    requirements_file = tmp_path / "config" / "requirements.txt"
+
+    requirements_config(
+        ["numpy", "pandas"],
+        file_path=str(requirements_file),
+    )
+
+    assert requirements_file.exists()
+    assert requirements_file.read_text(encoding="utf-8") == (
+        "numpy\n"
+        "pandas\n"
+    )
+    
+def test_requirements_config_wraps_errors(tmp_path, monkeypatch):
+    requirements_file = tmp_path / "requirements.txt"
+
+    def mock_open(*args, **kwargs):
+        raise PermissionError("Permission denied")
+
+    monkeypatch.setattr("builtins.open", mock_open)
+
+    with pytest.raises(EasyConfigError):
+        requirements_config(
+            ["numpy"],
+            file_path=str(requirements_file),
+        )
+        
+def test_requirements_config_imported_from_py_simple():
+    from py_simple import requirements_config as imported_function
+
+    assert callable(imported_function)
+
+
+@pytest.mark.parametrize("error_kind", ["missing_repo", "git_command"])
+def test_gh_workflow_config_wraps_repository_lookup_errors(tmp_path, monkeypatch, error_kind):
+    monkeypatch.chdir(tmp_path)
+    if error_kind == "missing_repo":
+        error = git.InvalidGitRepositoryError("not a repository")
+    else:
+        error = git.GitCommandError("git rev-parse", 128, stderr="repository lookup failed")
+
+    def failing_repo(*args, **kwargs):
+        raise error
+
+    monkeypatch.setattr(git, "Repo", failing_repo)
+
+    with pytest.raises(EasyConfigError, match="not a repository|repository lookup failed"):
+        gh_workflow_config("release", at_root=False)
+    assert not (tmp_path / ".github").exists()

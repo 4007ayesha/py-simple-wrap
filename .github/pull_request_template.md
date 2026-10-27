@@ -17,7 +17,7 @@
 ## Before you submit
 
 Nobody expects this to be perfect on the first try — see
-[CONTRIBUTING.md](../CONTRIBUTING.md) if any of this is unclear, and
+[CONTRIBUTING.md](https://github.com/sara-czasak/py-simple-wrap/blob/main/CONTRIBUTING.md) if any of this is unclear, and
 just say so in the PR if you're stuck on one of these. This checklist
 exists so review comments are about the *idea*, not formatting nits.
 

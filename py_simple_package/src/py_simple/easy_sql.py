@@ -554,3 +554,139 @@ def run_update(
             "\n\t- Lowercase letters (a-z)"
             "\n\t- Underscores  (_)."
         ) from None
+def table_exists(
+    connection: sqlite3.Connection,
+    cursor: sqlite3.Cursor,
+    table_name: str,
+) -> bool:
+
+    """
+    Checks whether a table exists in the SQLite database.
+
+    The `table_name` is validated before being used in the query because
+    SQLite does not support parameterized table names. The validation
+    ensures that only letters, numbers, and underscores are allowed,
+    preventing invalid input from being interpolated into the query.
+
+    Args:
+        connection (sqlite3.Connection): Open connection to the database.
+        cursor (sqlite3.Cursor): Cursor for executing SQL statements.
+        table_name (str): Name of the table to check.
+
+    Returns:
+        bool: True if the table exists, otherwise False.
+
+    Raises:
+        EasySqlError: If `table_name` contains anything other than letters,
+            numbers, or underscores, or if checking the table fails.
+
+    Example:
+        === "The Py_simple Way"
+            ```python
+            from py_simple import open_db, table_exists
+
+            connection, cursor = open_db('mydb.db')
+
+            if table_exists(connection, cursor, 'users'):
+                print("Table exists")
+            ```
+
+        === "The Traditional Way"
+            ```python
+            import sqlite3
+
+            conn = sqlite3.connect('mydb.db')
+            cursor = conn.cursor()
+
+            result = cursor.execute(
+                "SELECT name FROM sqlite_master "
+                "WHERE type = 'table' AND name = ?",
+                ('users',)
+            ).fetchone()
+
+            if result:
+                print("Table exists")
+            ```
+    """
+
+    if not _check_if_valid(table_name):
+        raise EasySqlError(
+            "\n\nERROR: table_name "
+            "can only contain:"
+            "\n\t- Uppercase letters (A-Z)"
+            "\n\t- Lowercase letters (a-z)"
+            "\n\t- Numbers (0-9)"
+            "\n\t- Underscores (_)."
+        ) from None
+
+    try:
+        cursor.execute(
+            "SELECT name FROM sqlite_master "
+            "WHERE type = 'table' AND name = ?",
+            (table_name,),
+        )
+        return cursor.fetchone() is not None
+    except (sqlite3.OperationalError, sqlite3.ProgrammingError) as e:
+        raise EasySqlError(f"\n\nERROR: {e}") from None
+
+
+def list_tables(connection: sqlite3.Connection, cursor: sqlite3.Cursor) -> list[str]:
+    """
+    Lists the user tables in a SQLite database.
+
+    Skips SQLite's own internal tables (names starting with `sqlite_`)
+    so the result is the tables you created.
+
+    Args:
+        connection (sqlite3.Connection): Open connection to the database.
+        cursor (sqlite3.Cursor): Cursor for executing SQL statements.
+
+    Returns:
+        list[str]: Table names, in the order SQLite returns them. An
+            empty list means the database has no user tables yet.
+
+    Raises:
+        EasySqlError: If the cursor does not belong to the connection,
+            or if the query cannot be run.
+
+    Example:
+        === "The Py_simple Way"
+            ```python
+            from py_simple import list_tables, open_db
+
+            connection, cursor = open_db("notes.db")
+            print(list_tables(connection, cursor))
+            ```
+
+        === "The Traditional Way"
+            ```python
+            import sqlite3
+
+            connection = sqlite3.connect("notes.db")
+            cursor = connection.cursor()
+            cursor.execute(
+                "SELECT name FROM sqlite_master "
+                "WHERE type = 'table' AND name NOT LIKE 'sqlite_%' "
+                "ORDER BY name"
+            )
+            print([row[0] for row in cursor.fetchall()])
+            ```
+    """
+    if cursor.connection is not connection:
+        raise EasySqlError(
+            "\n\nERROR: cursor does not belong to the given connection."
+        ) from None
+
+    try:
+        cursor.execute(
+            "SELECT name FROM sqlite_master "
+            "WHERE type = 'table' AND name NOT LIKE 'sqlite_%' "
+            "ORDER BY name"
+        )
+        return [row[0] for row in cursor.fetchall()]
+    except (
+        sqlite3.OperationalError,
+        sqlite3.ProgrammingError,
+        sqlite3.DatabaseError,
+    ) as error:
+        raise EasySqlError(f"\n\nERROR: {error}") from None

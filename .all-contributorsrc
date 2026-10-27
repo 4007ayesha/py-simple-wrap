@@ -126,7 +126,8 @@
         "test",
         "code",
         "documentation",
-        "module-author"
+        "module-author",
+        "collaborators"
       ]
     },
     {
@@ -235,7 +236,8 @@
       "contributions": [
         "code",
         "test",
-        "module-author"
+        "module-author",
+        "collaborators"
       ]
     },
     {
@@ -346,7 +348,9 @@
       "avatar_url": "https://github.com/VidyavathiGK.png",
       "profile": "https://github.com/VidyavathiGK",
       "contributions": [
-        "test"
+        "test",
+        "code",
+        "collaborators"
       ]
     },
     {
@@ -459,7 +463,8 @@
       "profile": "https://github.com/dave123981",
       "contributions": [
         "test",
-        "code"
+        "code",
+        "collaborators"
       ]
     },
     {
@@ -720,7 +725,8 @@
       "profile": "https://github.com/Cid-oe",
       "contributions": [
         "code",
-        "test"
+        "test",
+        "collaborators"
       ]
     },
     {
@@ -759,6 +765,248 @@
       "profile": "https://github.com/veligetisamanvi",
       "contributions": [
         "documentation"
+      ]
+    },
+    {
+      "login": "G-Glitch404",
+      "name": "Yousif Wael",
+      "avatar_url": "https://github.com/G-Glitch404.png",
+      "profile": "https://github.com/G-Glitch404",
+      "contributions": [
+        "code",
+        "test"
+      ]
+    },
+    {
+      "login": "vedddev",
+      "name": "Vedant Shelake",
+      "avatar_url": "https://github.com/vedddev.png",
+      "profile": "https://github.com/vedddev",
+      "contributions": [
+        "code",
+        "test"
+      ]
+    },
+    {
+      "login": "rugged-code",
+      "name": "Shrey Raj",
+      "avatar_url": "https://github.com/rugged-code.png",
+      "profile": "https://github.com/rugged-code",
+      "contributions": [
+        "code",
+        "test"
+      ]
+    },
+    {
+      "login": "mansi-singh4",
+      "name": "Mansi Singh",
+      "avatar_url": "https://github.com/mansi-singh4.png",
+      "profile": "https://github.com/mansi-singh4",
+      "contributions": [
+        "code",
+        "test"
+      ]
+    },
+    {
+      "login": "Ymax27",
+      "name": "Ymax27",
+      "avatar_url": "https://github.com/Ymax27.png",
+      "profile": "https://github.com/Ymax27",
+      "contributions": [
+        "code",
+        "test",
+        "collaborators"
+      ]
+    },
+    {
+      "login": "veligetisamanvi",
+      "name": "Samanvi V",
+      "avatar_url": "https://github.com/veligetisamanvi.png",
+      "profile": "https://github.com/veligetisamanvi",
+      "contributions": [
+        "code",
+        "test"
+      ]
+    },
+    {
+      "login": "Pratham2511",
+      "name": "Pratham Pansare",
+      "avatar_url": "https://github.com/Pratham2511.png",
+      "profile": "https://github.com/Pratham2511",
+      "contributions": [
+        "test",
+        "code",
+        "documentation",
+        "collaborators"
+      ]
+    },
+    {
+      "login": "aviraj09",
+      "name": "Aviraj Singh",
+      "avatar_url": "https://github.com/aviraj09.png",
+      "profile": "https://github.com/aviraj09",
+      "contributions": [
+        "test"
+      ]
+    },
+    {
+      "login": "AugustoDaimon",
+      "name": "AugustoDaimon",
+      "avatar_url": "https://github.com/AugustoDaimon.png",
+      "profile": "https://github.com/AugustoDaimon",
+      "contributions": [
+        "test",
+        "code"
+      ]
+    },
+    {
+      "login": "rajshadow",
+      "name": "Rajeev Atmakuri",
+      "avatar_url": "https://github.com/rajshadow.png",
+      "profile": "https://github.com/rajshadow",
+      "contributions": [
+        "test",
+        "code",
+        "documentation"
+      ]
+    },
+    {
+      "login": "montionugera",
+      "name": "Pasit Nusso",
+      "avatar_url": "https://github.com/montionugera.png",
+      "profile": "https://github.com/montionugera",
+      "contributions": [
+        "test"
+      ]
+    },
+    {
+      "login": "xhwm41319-a11y",
+      "name": "xhwm41319-a11y",
+      "avatar_url": "https://github.com/xhwm41319-a11y.png",
+      "profile": "https://github.com/xhwm41319-a11y",
+      "contributions": [
+        "test"
+      ]
+    },
+    {
+      "login": "hmmlavi",
+      "name": "lakshit",
+      "avatar_url": "https://github.com/hmmlavi.png",
+      "profile": "https://github.com/hmmlavi",
+      "contributions": [
+        "test",
+        "code"
+      ]
+    },
+    {
+      "login": "Codexhack286",
+      "name": "Ryan Dave Fernandes",
+      "avatar_url": "https://github.com/Codexhack286.png",
+      "profile": "https://github.com/Codexhack286",
+      "contributions": [
+        "test"
+      ]
+    },
+    {
+      "login": "javascp",
+      "name": "JavaSCP",
+      "avatar_url": "https://github.com/javascp.png",
+      "profile": "https://github.com/javascp",
+      "contributions": [
+        "test"
+      ]
+    },
+    {
+      "login": "Mr-Neutr0n",
+      "name": "hari",
+      "avatar_url": "https://github.com/Mr-Neutr0n.png",
+      "profile": "https://github.com/Mr-Neutr0n",
+      "contributions": [
+        "test",
+        "code"
+      ]
+    },
+    {
+      "login": "nawaaaaaAaar",
+      "name": "nawaaaar",
+      "avatar_url": "https://github.com/nawaaaaaAaar.png",
+      "profile": "https://github.com/nawaaaaaAaar",
+      "contributions": [
+        "test",
+        "code"
+      ]
+    },
+    {
+      "login": "supergioo0",
+      "name": "Giorgio Ciafardoni",
+      "avatar_url": "https://github.com/supergioo0.png",
+      "profile": "https://github.com/supergioo0",
+      "contributions": [
+        "test",
+        "code"
+      ]
+    },
+    {
+      "login": "anisayakmitra-in",
+      "name": "Anisayak Mitra",
+      "avatar_url": "https://github.com/anisayakmitra-in.png",
+      "profile": "https://github.com/anisayakmitra-in",
+      "contributions": [
+        "test",
+        "code",
+        "documentation"
+      ]
+    },
+    {
+      "login": "Ash1-gif",
+      "name": "Ash",
+      "avatar_url": "https://github.com/Ash1-gif.png",
+      "profile": "https://github.com/Ash1-gif",
+      "contributions": [
+        "test",
+        "code",
+        "documentation"
+      ]
+    },
+    {
+      "login": "amandeavor",
+      "name": "Aman Awasthi",
+      "avatar_url": "https://github.com/amandeavor.png",
+      "profile": "https://github.com/amandeavor",
+      "contributions": [
+        "documentation"
+      ]
+    },
+    {
+      "login": "drudru18",
+      "name": "Doroiman Alexandru",
+      "avatar_url": "https://github.com/drudru18.png",
+      "profile": "https://github.com/drudru18",
+      "contributions": [
+        "test",
+        "code",
+        "documentation"
+      ]
+    },
+    {
+      "login": "Dikshant-Neupane",
+      "name": "Dikshant Neupane",
+      "avatar_url": "https://github.com/Dikshant-Neupane.png",
+      "profile": "https://github.com/Dikshant-Neupane",
+      "contributions": [
+        "test",
+        "code"
+      ]
+    },
+    {
+      "login": "spdly-studios",
+      "name": "Shivaprasad V",
+      "avatar_url": "https://github.com/spdly-studios.png",
+      "profile": "https://github.com/spdly-studios",
+      "contributions": [
+        "test",
+        "code",
+        "bug"
       ]
     }
   ]

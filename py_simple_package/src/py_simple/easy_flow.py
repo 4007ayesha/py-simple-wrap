@@ -4,6 +4,7 @@ easy_flow is built to simplify work flows
 
 import runpy
 import time
+from functools import wraps
 
 
 class EasyFlowError(Exception):
@@ -46,14 +47,14 @@ def run_py_file(filename: str):
 
             print("RUNNING: script.py")
             try:
-                runpy.run_path("script.py")
+                runpy.run_path("script.py", run_name="__main__")
             except Exception as e:
                 print(f"Couldn't run the file: {e}")
             ```
     """
     print(f"RUNNING: {filename}")
     try:
-        runpy.run_path(filename)
+        runpy.run_path(filename, run_name="__main__")
     except Exception as e:
         raise EasyFlowError(f"\n\n\nERROR: {e}") from None
 
@@ -88,14 +89,14 @@ def run_py_file_safe(filename: str):
 
             print("RUNNING: script.py")
             try:
-                runpy.run_path("script.py")
+                runpy.run_path("script.py", run_name="__main__")
             except Exception as e:
                 print(f"Couldn't run the file: {e}")
             ```
     """
     print(f"RUNNING: {filename}")
     try:
-        runpy.run_path(filename)
+        runpy.run_path(filename, run_name="__main__")
         return True, None
     except Exception as e:
         return False, str(e)
@@ -158,6 +159,8 @@ def time_it(func):
     """
     Decorator that measures how long a function takes to run,
     prints the elapsed time, and returns the original result.
+    Preserves the original function's name, docstring, and inspectable
+    signature, so documentation and introspection still describe `func`.
 
     Args:
         func (callable): The function to decorate.
@@ -192,6 +195,7 @@ def time_it(func):
             ```
     """
 
+    @wraps(func)
     def wrapper(*args, **kwargs):
         start = time.time()
         result = func(*args, **kwargs)

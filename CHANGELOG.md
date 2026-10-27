@@ -9,6 +9,88 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [0.9.0] - 2026-10-26
+
+### Breaking Changes
+- **Dropped support for Python 3.10 due to security vulnerabilities affecting Pillow.** Python 3.11 or newer is now required. Updated `requires-python`, supported Python classifiers, and CI configurations to reflect this change. Users running Python 3.10 must upgrade their Python environment to install v0.9.0 or later.
+- Updated the minimum supported Pillow version to `13.0.0` to address security vulnerabilities.
+
+### Security
+- Updated vulnerable dependencies, including Pillow, GitPython, and certificate-related dependencies.
+- Updated `certifi` requirements for the `ai` and `web` optional dependency groups.
+- Hardened GitHub Actions workflows and addressed security scanning findings.
+
+### Added
+- Added `encode_bytes`, `decode_to_bytes`, and `encode_file` to `easy_base64`, with tests and documentation ([@JavaSCP](https://github.com/JavaSCP), [@anisayakmitra-in](https://github.com/anisayakmitra-in)).
+- Added `compare_file_hashes` to `easy_hash` ([@Cid-oe](https://github.com/Cid-oe)).
+- Added `calculate_tip` and exact bill-splitting support to `easy_money` ([@anisayakmitra-in](https://github.com/anisayakmitra-in), [@Pratham2511](https://github.com/Pratham2511)).
+- Added `add_bytes`, `remaining_bytes`, and `percent_free` to `easy_bytes` ([@drudru18](https://github.com/drudru18), [@Ash1-gif](https://github.com/Ash1-gif), [@anisayakmitra-in](https://github.com/anisayakmitra-in)).
+- Added `crop_image` and `adjust_brightness` to `easy_images`, with tests ([@anisayakmitra-in](https://github.com/anisayakmitra-in), [@supergioo0](https://github.com/supergioo0)).
+- Added `plot_scatter_chart` and `plot_histogram` to `easy_data_visualization` ([@anisayakmitra-in](https://github.com/anisayakmitra-in), [@Dikshant-Neupane](https://github.com/Dikshant-Neupane)).
+- Added `iter_csv_rows` for memory-efficient CSV iteration and `merge_csv_files` for merging CSV files ([@nawaaaaaAaar](https://github.com/nawaaaaaAaar), [@Pratham2511](https://github.com/Pratham2511)).
+- Added `get_path` to `easy_url` ([@Cid-oe](https://github.com/Cid-oe)).
+- Added `extract_phone_numbers` to `easy_regex` ([@Cid-oe](https://github.com/Cid-oe)).
+- Added `setup_file_logger` and `temporary_log_level` to `easy_logging` ([@Cid-oe](https://github.com/Cid-oe), [@Pratham2511](https://github.com/Pratham2511)).
+- Added `run_first_completed` to `easy_async` ([@Cid-oe](https://github.com/Cid-oe)).
+- Added `print_styled` to `easy_terminal` ([@Cid-oe](https://github.com/Cid-oe)).
+- Added `dockerfile_config` to `easy_config` for generating a starter Dockerfile ([@Mr-Neutr0n](https://github.com/Mr-Neutr0n)).
+- Added new project-based tutorials covering backup verification, word-frequency analysis, study habits, and bill splitting.
+- Expanded the Contributor Hub with guides for public API exports and pre-commit checks ([@Utkarsh3725](https://github.com/Utkarsh3725), [@Pratham2511](https://github.com/Pratham2511)).
+
+### Changed
+- Updated Python compatibility metadata and dependency constraints.
+- Updated GitHub Actions workflows for security, compatibility, and reliability.
+- Paused automatic creation of new-module contribution issues following completion of the initial module target.
+- Expanded contributor documentation and tutorials.
+
+### Fixed
+- Fixed malformed Base64 input handling to correctly catch `binascii.Error`.
+- Fixed `easy_archive` allowing extraction output paths that overwrite input archives ([@Utkarsh3725](https://github.com/Utkarsh3725)).
+- Fixed `easy_flow` script execution to correctly run `__main__` guards and preserve timed-function metadata ([@Utkarsh3725](https://github.com/Utkarsh3725)).
+- Fixed repository lookup error handling in `easy_config` ([@Utkarsh3725](https://github.com/Utkarsh3725)).
+- Improved primality testing in `easy_numbers` using integer square roots ([@Utkarsh3725](https://github.com/Utkarsh3725)).
+- Fixed CSV tests for improved Windows portability ([@Ash1-gif](https://github.com/Ash1-gif)).
+- Fixed matplotlib figure cleanup in visualization tests to prevent accumulated open figures ([@Codexhack286](https://github.com/Codexhack286)).
+- Fixed GitHub Actions workflow configuration errors affecting CodeQL and CI.
+- Improved input validation and error handling in `easy_bytes`.
+
+## [0.8.0] - 2026-10-20
+
+### Added
+- Added the `easy_base64` module (`encode_text`, `decode_text`, `is_base64`), with full test coverage, a reference page, and a tutorial ([@Ymax27](https://github.com/Ymax27))
+- Added the `easy_hash` module (`hash_text`, `hash_file`, `hashes_match`), later joined by `verify_file_hash` for chunked file checksum verification and `hash_bytes` for in-memory byte hashing, with full test coverage, a reference page, and a tutorial ([@Ymax27](https://github.com/Ymax27), [@Pratham2511](https://github.com/Pratham2511), [@hmmlavi](https://github.com/hmmlavi))
+- Added the `easy_money` module (`format_money`, `add_tax`, `split_bill`), later joined by `calculate_discount`, with full test coverage, a reference page, and a tutorial ([@Ymax27](https://github.com/Ymax27), [@aviraj09](https://github.com/aviraj09))
+- Added the `easy_url` module (`get_domain`, `is_https`, `add_query_param`), with full test coverage, a reference page, and a tutorial ([@Ymax27](https://github.com/Ymax27))
+- Added the `easy_bytes` module (`bytes_to_human`, `human_to_bytes`, `percent_used`), with full test coverage, a reference page, and a tutorial ([@Ymax27](https://github.com/Ymax27))
+- Added `EasyTerminal` to the public API — builds chainable styled terminal text output on top of `rich`, with full test coverage and docs ([@sara-czasak](https://github.com/sara-czasak))
+- Substantially expanded `easy_data_visualization`: `plot_box_plot`, `plot_bar_chart`, `plot_heatmap`, `plot_line_chart`, and `plot_pie_chart` join the existing `plot_data`, plus a `get_data_range` helper that isn't yet part of the public API (reachable via `from py_simple.easy_data_visualization import get_data_range` directly) ([@runway28R](https://github.com/runway28R), [@veligetisamanvi](https://github.com/veligetisamanvi), [@G-Glitch404](https://github.com/G-Glitch404), [@Ymax27](https://github.com/Ymax27), [@VidyavathiGK](https://github.com/VidyavathiGK))
+- Added `detect_language`, `analyze_sentiment`, and `chunk_text` to `easy_ai` ([@motors78](https://github.com/motors78), [@Cid-oe](https://github.com/Cid-oe), [@Ymax27](https://github.com/Ymax27))
+- Added `read_csv_column`, `sort_csv_by_column`, `append_row_to_csv`, `delete_csv_rows`, and `drop_empty_csv_rows` to `easy_csv` ([@Cid-oe](https://github.com/Cid-oe), [@AugustoDaimon](https://github.com/AugustoDaimon), [@VidyavathiGK](https://github.com/VidyavathiGK), [@mansi-singh4](https://github.com/mansi-singh4), [@Ymax27](https://github.com/Ymax27))
+- Added `create_env_file`, `read_env_file`, `gitignore_config` (with a bundled `.gitignore` template), and `requirements_config` to `easy_config` ([@Akkii50](https://github.com/Akkii50), [@Utkarsh3725](https://github.com/Utkarsh3725), [@Cid-oe](https://github.com/Cid-oe), [@vedddev](https://github.com/vedddev))
+- Added `run_after_delay`, `run_periodically`, and `run_concurrent_map_limited` to `easy_async` ([@Utkarsh3725](https://github.com/Utkarsh3725), [@ghostfix-pm](https://github.com/ghostfix-pm), [@Pratham2511](https://github.com/Pratham2511))
+- Added `generate_passphrase`, `generate_coupon_code`, and `generate_random_hex` to `easy_generator` ([@UroojFatima-052](https://github.com/UroojFatima-052), [@Ymax27](https://github.com/Ymax27), [@Cid-oe](https://github.com/Cid-oe))
+- Added `get_zip_file_count` and `zip_contains_file` to `easy_archive` ([@Akkii50](https://github.com/Akkii50), [@Utkarsh3725](https://github.com/Utkarsh3725))
+- Added `log_to_file` and `count_log_levels` to `easy_logging`, and exported the existing `find_log_lines` to the public API for the first time ([@Utkarsh3725](https://github.com/Utkarsh3725), [@Ymax27](https://github.com/Ymax27))
+- Added `least_common_multiple` to `easy_numbers` ([@Utkarsh3725](https://github.com/Utkarsh3725))
+- Added `run_if` to `easy_flow` ([@Utkarsh3725](https://github.com/Utkarsh3725))
+- Added `to_camel_case` to `easy_strings` ([@lui01212](https://github.com/lui01212))
+- Added `flip_image` and `convert_to_greyscale` to `easy_images` ([@Ymax27](https://github.com/Ymax27), [@rajshadow](https://github.com/rajshadow))
+- Added `table_exists` and `list_tables` to `easy_sql` ([@rugged-code](https://github.com/rugged-code), [@Ymax27](https://github.com/Ymax27))
+- Added a tutorial for `easy_terminal`, and project-based tutorials for a screen-time detective, lunch picker, homework log, and palette journal ([@dr-nullptr](https://github.com/dr-nullptr), [@veligetisamanvi](https://github.com/veligetisamanvi), [@Ymax27](https://github.com/Ymax27))
+
+### Changed
+- Reworked `pages.yml` to only deploy the docs/module-book site on a `pyproject.toml` version bump, mirroring `publish.yml`'s gating, instead of on every push to `main` ([@sara-czasak](https://github.com/sara-czasak))
+- Updated the "expand a module" contributor issue template to tell contributors to check for an existing test file before creating a new one, after several PRs this release landed near-duplicate test files and duplicate function definitions ([@sara-czasak](https://github.com/sara-czasak))
+
+### Fixed
+- Fixed `extract_file_from_zip` returning a non-normalized path ([@runway28R](https://github.com/runway28R))
+- Fixed `plot_data` always sizing its figure for two charts regardless of how many were actually drawn ([@veligetisamanvi](https://github.com/veligetisamanvi))
+- Fixed `human_to_bytes` silently producing `inf`/`nan` byte counts instead of raising — it now rejects non-finite results ([@Pratham2511](https://github.com/Pratham2511))
+- Removed a duplicate `analyze_sentiment` definition (and its duplicated tests) in `easy_ai`, left over from two PRs that both closed the same issue ([@sara-czasak](https://github.com/sara-czasak))
+- Removed a duplicate `read_csv_column` definition that had been accidentally introduced into `easy_csv.py` ([@xhwm41319-a11y](https://github.com/xhwm41319-a11y))
+- Consolidated `tests/test_easy_config.py` into `tests/test_config.py`, and `tests/test_hashtag_names.py`/`tests/test_plot_bar_chart.py` into `tests/test_regex.py`/`tests/test_data_visualization.py` ([@sara-czasak](https://github.com/sara-czasak))
+- Expanded test coverage for `easy_bytes` and `easy_csv` ([@Pratham2511](https://github.com/Pratham2511), [@montionugera](https://github.com/montionugera))
+
 ## [0.7.0] - 2026-09-25
 
 ### Added

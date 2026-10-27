@@ -9,6 +9,7 @@ example with logging.basicConfig(level=logging.INFO).
 
 import logging
 import os
+import re
 from collections.abc import Callable, Iterator
 from contextlib import contextmanager
 from functools import wraps
@@ -177,6 +178,7 @@ def log_function(
 
     return decorator
 
+
 def clear_log_file(file_path: str) -> bool:
     """
     Empties a log file, leaving it in place but with no contents.
@@ -323,6 +325,208 @@ def find_log_lines(file_path: str, search_text: str) -> list[str]:
         return []
 
     with open(file_path) as log_file:
-        return [
-            line.rstrip("\n") for line in log_file if search_text in line
-        ]
+        return [line.rstrip("\n") for line in log_file if search_text in line]
+
+
+def count_log_levels(file_path: str) -> dict[str, int]:
+    """
+    Counts how many lines in a log file mention each standard level.
+
+    Looks for DEBUG, INFO, WARNING, ERROR, and CRITICAL as whole words,
+    so a line is counted once for each level name it contains. A missing
+    file returns zeros for every level.
+
+    Args:
+        file_path (str): Path to the log file to scan.
+
+    Returns:
+        dict[str, int]: Counts keyed by level name, always including
+            DEBUG, INFO, WARNING, ERROR, and CRITICAL.
+
+    Example:
+        === "The Py_simple Way"
+            ```python
+            from py_simple import count_log_levels
+
+            totals = count_log_levels("app.log")
+            print(totals["ERROR"])
+            ```
+
+        === "The Traditional Way"
+            ```python
+            import os
+            import re
+
+            levels = ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]
+            totals = {level: 0 for level in levels}
+            if os.path.exists("app.log"):
+                with open("app.log") as log_file:
+                    for line in log_file:
+                        for level in levels:
+                            if re.search(rf"\b{level}\b", line):
+                                totals[level] += 1
+            ```
+    """
+    levels = ("DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL")
+    totals = {level: 0 for level in levels}
+    if not os.path.exists(file_path):
+        return totals
+
+    patterns = {level: re.compile(rf"\b{level}\b") for level in levels}
+    with open(file_path) as log_file:
+        for line in log_file:
+            for level, pattern in patterns.items():
+                if pattern.search(line):
+                    totals[level] += 1
+    return totals
+
+
+@contextmanager
+def temporary_log_level(logger: logging.Logger, level: int | str) -> Iterator[None]:
+    """
+    Changes a logger's level for a block and restores its previous level.
+
+    Restores the exact explicit level, including NOTSET, even if the block
+    raises. Nested blocks restore the level that was active on entry.
+    Handler levels/filters, logger filters, propagation and global logging
+    settings still apply and are not changed. A shared logger's temporary
+    level is visible to other users of that logger; this is not thread-local.
+
+    Args:
+        logger (logging.Logger): Logger to adjust, normally obtained with
+            logging.getLogger(). Its explicit level will change.
+        level (int | str): Integer logging level or a registered level name,
+            such as logging.DEBUG or "debug". String names are uppercased,
+            matching setup_file_logger. Integers follow Logger.setLevel.
+
+    Yields:
+        None: Runs the block without providing an `as` target value.
+
+    Raises:
+        TypeError: If logger is not a logging.Logger or level is neither
+            an integer nor a string accepted by logging.
+        ValueError: If a string does not name a registered logging level.
+        BaseException: Propagates any exception from the enclosed block
+            after restoring the previous level.
+
+    Example:
+        === "The Py_simple Way"
+            ```python
+            import logging
+            from py_simple.easy_logging import temporary_log_level
+
+            logger = logging.getLogger("example")
+            logger.setLevel(logging.WARNING)
+            with temporary_log_level(logger, "debug"):
+                print(logger.isEnabledFor(logging.DEBUG))  # True
+            print(logger.level == logging.WARNING)  # True
+            ```
+
+        === "The Traditional Way"
+            ```python
+            import logging
+
+            logger = logging.getLogger("example")
+            logger.setLevel(logging.WARNING)
+            previous_level = logger.level
+            logger.setLevel("DEBUG")
+            try:
+                print(logger.isEnabledFor(logging.DEBUG))  # True
+            finally:
+                logger.setLevel(previous_level)
+            print(logger.level == logging.WARNING)  # True
+            ```
+    """
+    if not isinstance(logger, logging.Logger):
+        raise TypeError("logger must be a logging.Logger")
+    if isinstance(level, str):
+        level = level.upper()
+
+    previous_level = logger.level
+    logger.setLevel(level)
+    try:
+        yield
+    finally:
+        logger.setLevel(previous_level)
+
+
+def setup_file_logger(
+    log_file: str,
+    level: int | str = logging.INFO,
+    format_string: str = "%(asctime)s - %(levelname)s - %(message)s",
+    name: str | None = None,
+) -> logging.Logger:
+    """
+    Sets up and returns a logger configured to write to a file.
+
+    Creates parent directories for the log file if they do not exist.
+    Adds a `logging.FileHandler` formatted with `format_string` at the
+    specified logging level. If a handler for the same file path is already
+    attached to the logger, duplicate handlers are not added.
+
+    Args:
+        log_file (str): Path to the log file to write to.
+        level (int or str, optional): Logging level such as `logging.INFO`,
+            `logging.DEBUG`, or string equivalents like `"INFO"`.
+            Defaults to `logging.INFO`.
+        format_string (str, optional): Message format for the log handler.
+            Defaults to `"%(asctime)s - %(levelname)s - %(message)s"`.
+        name (str, optional): Name of the logger to configure. Defaults to
+            `None`, which uses `log_file` as the logger name.
+
+    Returns:
+        logging.Logger: The configured logger instance.
+
+    Example:
+        === "The Py_simple Way"
+            ```python
+            from py_simple import setup_file_logger
+
+            logger = setup_file_logger("app.log")
+            logger.info("Application started")
+            ```
+
+        === "The Traditional Way"
+            ```python
+            import logging
+
+            logger = logging.getLogger("app.log")
+            logger.setLevel(logging.INFO)
+            handler = logging.FileHandler("app.log", encoding="utf-8")
+            handler.setLevel(logging.INFO)
+            formatter = logging.Formatter(
+                "%(asctime)s - %(levelname)s - %(message)s"
+            )
+            handler.setFormatter(formatter)
+            logger.addHandler(handler)
+            logger.info("Application started")
+            ```
+    """
+    if isinstance(level, str):
+        level = level.upper()
+
+    logger_name = name if name is not None else log_file
+    logger = logging.getLogger(logger_name)
+    logger.setLevel(level)
+
+    abs_path = os.path.abspath(log_file)
+    handler_exists = False
+    for handler in logger.handlers:
+        if (
+            isinstance(handler, logging.FileHandler)
+            and os.path.abspath(getattr(handler, "baseFilename", "")) == abs_path
+        ):
+            handler.setLevel(level)
+            handler_exists = True
+
+    if not handler_exists:
+        parent_dir = os.path.dirname(abs_path)
+        if parent_dir:
+            os.makedirs(parent_dir, exist_ok=True)
+
+        file_handler = logging.FileHandler(log_file, encoding="utf-8")
+        file_handler.setLevel(level)
+        file_handler.setFormatter(logging.Formatter(format_string))
+        logger.addHandler(file_handler)
+
+    return logger
