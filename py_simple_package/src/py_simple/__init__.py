@@ -397,5 +397,6 @@ from .easy_web import (
 from .easy_terminal import (
     EasyTerminal,
     print_centered,
+    print_rule,
     print_styled,
 )
