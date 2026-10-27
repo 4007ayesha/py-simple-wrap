@@ -8,6 +8,7 @@ from py_simple_package.src.py_simple.easy_url import (
     add_query_param,
     get_domain,
     get_path,
+    get_query_values,
     is_https,
     remove_query_param,
 )
@@ -93,3 +94,91 @@ def test_remove_query_param_public_imports():
         public_remove("https://school.example/clubs?page=2", "page")
         == "https://school.example/clubs"
     )
+
+
+@pytest.mark.parametrize(
+    "url,key,expected",
+    [
+        (
+            "https://school.example/?tag=a&other=x&tag=&tag=a&tag",
+            "tag",
+            ["a", "", "a", ""],
+        ),
+        (
+            "https://school.example/?tag=art+club&tag=art%20club&tag=%2B",
+            "tag",
+            ["art club", "art club", "+"],
+        ),
+        ("https://school.example/?%74ag=one&tag=two&Tag=three", "tag", ["one", "two"]),
+        (
+            "https://school.example/?%E5%90%8D=%E9%9B%AA&%E5%90%8D=caf%C3%A9",
+            "名",
+            ["雪", "café"],
+        ),
+        ("https://school.example/?a+b=one&a%2Bb=two", "a b", ["one"]),
+        ("https://school.example/?a+b=one&a%2Bb=two", "a+b", ["two"]),
+        ("https://school.example/?%2574ag=encoded&tag=plain", "%74ag", ["encoded"]),
+        ("https://school.example/?key=a%26b%3Dc&key=%2520", "key", ["a&b=c", "%20"]),
+        ("https://school.example/?key=%FF&key=%ZZ", "key", ["�", "%ZZ"]),
+        ("https://school.example/?key=first;key=second", "key", ["first;key=second"]),
+        ("https://school.example/?key=query#key=fragment", "key", ["query"]),
+        ("https://school.example/?=unnamed&%20=space", " ", ["space"]),
+        ("https://school.example/?other=value", "key", []),
+        ("https://school.example/?Tag=value", "tag", []),
+        ("https://school.example/?", "tag", []),
+        ("https://school.example/", "tag", []),
+        ("https://school.example/#?tag=fragment", "tag", []),
+    ],
+)
+def test_get_query_values(url, key, expected):
+    assert get_query_values(url, key) == expected
+
+
+@pytest.mark.parametrize("key", ["", None, 1, True, [], b"tag"])
+def test_get_query_values_rejects_invalid_keys(key):
+    with pytest.raises(EasyUrlError, match="key must be a non-empty string"):
+        get_query_values("https://school.example/?tag=a", key)
+
+
+@pytest.mark.parametrize(
+    "url",
+    [
+        None,
+        1,
+        True,
+        [],
+        b"https://school.example",
+        "",
+        "  ",
+        "school.example",
+        "/clubs",
+        "https:///clubs",
+    ],
+)
+def test_get_query_values_rejects_invalid_urls(url):
+    with pytest.raises(EasyUrlError, match="url must"):
+        get_query_values(url, "tag")
+
+
+def test_get_query_values_key_validation_precedes_url_validation():
+    with pytest.raises(EasyUrlError, match="key must"):
+        get_query_values(None, "")
+
+
+def test_get_query_values_does_not_change_url_or_share_results():
+    link = "HTTPS://School.example/clubs;params?tag=art%20club&tag=&tag#list"
+    values = get_query_values(link, "tag")
+    values.append("new")
+    assert get_query_values(link, "tag") == ["art club", "", ""]
+    assert link == "HTTPS://School.example/clubs;params?tag=art%20club&tag=&tag#list"
+
+
+def test_get_query_values_public_imports():
+    from py_simple import get_query_values as public_get
+    from py_simple.easy_url import get_query_values as module_get
+
+    assert public_get is module_get
+    assert public_get(url="https://school.example/?tag=one&tag=two", key="tag") == [
+        "one",
+        "two",
+    ]
