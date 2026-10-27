@@ -18,6 +18,7 @@ from .easy_base64 import (
     EasyBase64Error,
     decode_text,
     decode_to_bytes,
+    decode_to_file,
     encode_bytes,
     encode_file,
     encode_text,

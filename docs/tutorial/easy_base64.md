@@ -39,7 +39,7 @@ plain text is allowed.
 
 `decode_text()` turns a valid code back into the original sentence.
 
-## Encoding files
+## Working with files
 
 To encode an entire file (such as an image or an icon) into Base64 without opening and reading bytes yourself, use `encode_file()`:
 
@@ -47,6 +47,14 @@ To encode an entire file (such as an image or an icon) into Base64 without openi
 from py_simple import encode_file
 
 image_data = encode_file("icon.png")
+```
+
+To decode a Base64 string and save it directly to a file (such as restoring an image or document from an API response), use `decode_to_file()`:
+
+```python
+from py_simple import decode_to_file
+
+decode_to_file(image_data, "restored_icon.png")
 ```
 
 ## Why use these helpers?

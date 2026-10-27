@@ -243,3 +243,50 @@ def encode_file(file_path: str) -> str:
     except (FileNotFoundError, OSError) as error:
         raise EasyBase64Error(f"\n\nERROR: {error}") from None
 
+
+def decode_to_file(encoded: str, file_path: str) -> None:
+    """
+    Decode a Base64 string and save the decoded bytes to a file.
+
+    Useful for saving images, documents, or downloaded assets received as Base64
+    directly to disk without juggling binary file handling and decoding manually.
+
+    Args:
+        encoded (str): Base64 text to decode.
+        file_path (str): Path to the destination file.
+
+    Raises:
+        EasyBase64Error: If `encoded` or `file_path` is not a string, `encoded`
+            is not valid Base64 text, or an error occurs writing the file.
+
+    Example:
+        === "The Py_simple Way"
+            ```python
+            from py_simple import decode_to_file
+
+            decode_to_file("aGVsbG8gd29ybGQ=", "greeting.txt")
+            ```
+
+        === "The Traditional Way"
+            ```python
+            import base64
+
+            raw = base64.b64decode("aGVsbG8gd29ybGQ=", validate=True)
+            with open("greeting.txt", "wb") as file:
+                file.write(raw)
+            ```
+    """
+    if not isinstance(encoded, str):
+        raise EasyBase64Error("\n\nERROR: encoded text must be a string.")
+    if not isinstance(file_path, str):
+        raise EasyBase64Error("\n\nERROR: file_path must be a string.")
+
+    data = decode_to_bytes(encoded)
+
+    try:
+        with open(file_path, "wb") as file:
+            file.write(data)
+    except (FileNotFoundError, OSError) as error:
+        raise EasyBase64Error(f"\n\nERROR: {error}") from None
+
+
