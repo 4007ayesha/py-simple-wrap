@@ -26,6 +26,8 @@ Every module starts with a short docstring explaining what it wraps and why:
 easy_<name> is meant to simplify <what it does>.
 Built on top of the <stdlib module> module — no more <the pain point>.
 """
+```
+
 ### 3. Write Your Helper Functions
 - Use descriptive, plain-English names (e.g., `generate_username` instead of `gen_u`).
 - Follow the [Docstring Template](docstring_template.md) for every public function (including Args, Returns, and the `=== "The Py_simple Way"` vs `=== "The Traditional Way"` code tabs).
@@ -35,7 +37,8 @@ Built on top of the <stdlib module> module — no more <the pain point>.
 Make sure your new functions are accessible from the main package import per the [Public API Export Template](public_api_template.md).
 
 ### 5. Add Automated Tests
-Create a test file in `tests/test_easy_<name>.py` using `pytest` to cover your new helpers thoroughly. Follow the [Module Tests Template](tests_template.md).
+Create a test file in `tests/test_<name>.py` using `pytest` to cover your new helpers thoroughly. Follow the [Module Tests Template](tests_template.md).
 
 ### 6. Write a Tutorial Page
 Add a Markdown tutorial page under `docs/tutorial/easy_<name>.md` demonstrating 2–3 functions used together in a realistic mini-example. Follow the [Tutorial Template](tutorial_template.md).
+

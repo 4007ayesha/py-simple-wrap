@@ -98,9 +98,7 @@ nav:
       - Public API Export Template: contributor-hub/public_api_template.md
       - Pre-commit Guide: contributor-hub/pre_commit_template.md
       - Pull Request Workflow Guide: contributor-hub/pr_workflow_template.md
- add-easy-data-visualization-function
       - Adding a New Module Guide: contributor-hub/new_module_template.md
- main
   - Reference:
       - Easy AI: reference/easy_ai.md
       - Easy Archive: reference/easy_archive.md
