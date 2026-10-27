@@ -21,8 +21,12 @@ class EasyUrlError(Exception):
 def _parsed(url: str):
     if not isinstance(url, str) or not url.strip():
         raise EasyUrlError("\n\nERROR: url must be a non-empty string.") from None
-    parsed = urlparse(url)
-    if not parsed.scheme or not parsed.netloc:
+    try:
+        parsed = urlparse(url)
+        hostname = parsed.hostname
+    except ValueError as error:
+        raise EasyUrlError(f"\n\nERROR: {error}") from None
+    if not parsed.scheme or not hostname:
         raise EasyUrlError("\n\nERROR: url must include a scheme and a host.") from None
     return parsed
 
