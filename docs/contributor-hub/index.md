@@ -15,6 +15,9 @@ The [Tutorial Template](tutorial_template.md) walks through the exact structure 
 **🚨 "My function needs to raise an error, and I don't know how this project wants errors to look."**
 The [Custom Exception Template](error_template.md) has a fill-in-the-blanks class definition, plus a worked example showing both raising and catching it. Errors sound intimidating, but the pattern here is always the same one — once you've seen it once, you'll recognize it everywhere in this codebase.
 
+**🏗️ "I want to add a brand-new module from scratch, from file creation to tests."**
+The [Adding a New Module Guide](new_module_template.md) walks through the complete checklist, file locations, docstring requirements, and testing steps.
+
 ## Still stuck, or something's not covered here?
 
 That's okay too. Open an issue, or mention it in your pull request, and it'll get sorted out together — see [CONTRIBUTING.md](https://github.com/sara-czasak/py-simple-wrap/blob/main/CONTRIBUTING.md) for how to reach out. Nobody's expected to figure this out alone.
