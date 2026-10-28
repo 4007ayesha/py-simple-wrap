@@ -635,4 +635,7 @@ def test_setup_file_logger_updates_existing_handler_format(tmp_path, new_format)
     assert configured is logger
     assert logger.handlers == original_handlers
     expected = "[INFO] after" if new_format.startswith("[") else "after"
-    assert log_file.read_text(encoding="utf-8").splitlines() == ["old: before", expected]
+    assert log_file.read_text(encoding="utf-8").splitlines() == [
+        "old: before",
+        expected,
+    ]
