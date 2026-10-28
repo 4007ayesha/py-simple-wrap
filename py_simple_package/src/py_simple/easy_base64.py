@@ -288,5 +288,3 @@ def decode_to_file(encoded: str, file_path: str) -> None:
             file.write(data)
     except (FileNotFoundError, OSError) as error:
         raise EasyBase64Error(f"\n\nERROR: {error}") from None
-
-

@@ -132,5 +132,3 @@ def test_decode_to_file_rejects_invalid_path(tmp_path):
 
 def test_public_imports_includes_decode_to_file():
     assert public_decode_to_file is decode_to_file
-
-
