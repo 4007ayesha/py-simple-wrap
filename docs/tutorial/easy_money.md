@@ -30,6 +30,8 @@ $17.36
 `add_tax()` takes the price and a percent, then returns the total rounded to
 cents.
 
+`remove_tax()` finds the original pre-tax price from a tax-inclusive total.
+
 `calculate_tip()` calculates the tip amount to add based on a percentage.
 
 `split_bill()` divides that total by the number of people and rounds each
@@ -56,6 +58,15 @@ from py_simple import calculate_discount, format_money
 
 sale_price = calculate_discount(100, 15)
 print(format_money(sale_price))  # $85.00
+```
+
+Use `remove_tax()` to reverse a tax rate and find the original pre-tax price:
+
+```python
+from py_simple import format_money, remove_tax
+
+pre_tax = remove_tax(10.85, 8.5)
+print(format_money(pre_tax))  # $10.00
 ```
 
 ## Keep every cent when splitting a bill

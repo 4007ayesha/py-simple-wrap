@@ -247,6 +247,7 @@ from .easy_money import (
     calculate_discount,
     calculate_tip,
     format_money,
+    remove_tax,
     split_bill,
     split_bill_exact,
 )
