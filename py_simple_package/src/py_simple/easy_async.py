@@ -35,7 +35,8 @@ async def run_at_the_same_time_no_params(functions: list) -> list:
         functions (list): Functions to run, each taking no arguments.
 
     Returns:
-        list: A list of (name, result) tuples, one per function.
+        list: A list of (name, result) tuples, one per function. Exception
+            objects returned by callbacks are preserved as values.
 
     Example:
         === "The Py_simple Way"
@@ -78,8 +79,9 @@ async def run_at_the_same_time_no_params(functions: list) -> list:
     loop = asyncio.get_running_loop()
     tasks = [loop.run_in_executor(None, function) for function in functions]
     results = await asyncio.gather(*tasks, return_exceptions=True)
-    for result in results:
-        if isinstance(result, Exception):
+    for task, result in zip(tasks, results):
+        # Exception instances may also be ordinary callback return values.
+        if isinstance(result, Exception) and task.exception() is not None:
             raise EasyAsyncError(f"\n\n\nERROR: {result}") from None
     return list(zip((f.__name__ for f in functions), results))
 
@@ -99,7 +101,8 @@ async def run_at_the_same_time_with_params(functions_and_args: list[tuple]) -> l
             with, e.g. (func, arg1, arg2).
 
     Returns:
-        list: A list of (name, result) tuples, one per function.
+        list: A list of (name, result) tuples, one per function. Exception
+            objects returned by callbacks are preserved as values.
 
     Example:
         === "The Py_simple Way"
@@ -151,8 +154,9 @@ async def run_at_the_same_time_with_params(functions_and_args: list[tuple]) -> l
         loop.run_in_executor(None, items[0], *items[1:]) for items in functions_and_args
     ]
     results = await asyncio.gather(*tasks, return_exceptions=True)
-    for result in results:
-        if isinstance(result, Exception):
+    for task, result in zip(tasks, results):
+        # Exception instances may also be ordinary callback return values.
+        if isinstance(result, Exception) and task.exception() is not None:
             raise EasyAsyncError(f"\n\n\nERROR: {result}") from None
     names = [items[0].__name__ for items in functions_and_args]
     return list(zip(names, results))
@@ -228,7 +232,8 @@ async def run_concurrent_map(func, items: list) -> list:
         items (list): The list of items to pass one by one into the function.
 
     Returns:
-        list: The list of return values in the same order as items.
+        list: The list of return values in the same order as items, including
+            exception objects returned (rather than raised) by callbacks.
 
     Example:
         === "The Py_simple Way"
@@ -264,8 +269,9 @@ async def run_concurrent_map(func, items: list) -> list:
     loop = asyncio.get_running_loop()
     tasks = [loop.run_in_executor(None, func, item) for item in items]
     results = await asyncio.gather(*tasks, return_exceptions=True)
-    for result in results:
-        if isinstance(result, Exception):
+    for task, result in zip(tasks, results):
+        # Exception instances may also be ordinary callback return values.
+        if isinstance(result, Exception) and task.exception() is not None:
             raise EasyAsyncError(f"\n\n\nERROR: {result}") from None
     return results
 
@@ -672,3 +678,70 @@ async def run_first_completed(functions: list) -> tuple:
         return (func_name, result)
     except Exception as e:
         raise EasyAsyncError(f"\n\n\nERROR: {e}") from None
+
+
+async def run_with_default(func, fallback, *args) -> tuple:
+    """
+    Runs a function asynchronously, returning a fallback value if it fails.
+
+    When the function succeeds you get its result; when it raises, you
+    get the fallback instead of an exception. Useful for optional work
+    where a default is fine, such as reading an optional config file
+    or fetching a best-effort value. This is the async counterpart of
+    the synchronous `run_with_fallback` in easy_flow: it runs the
+    function in an executor and returns a `(name, result)` tuple like
+    the other helpers in this module.
+
+    Args:
+        func (callable): The function to execute.
+        fallback: The value to return if the function raises.
+        *args: Positional arguments to pass to the function.
+
+    Returns:
+        tuple: A tuple containing `(name, result)` on success
+            or `(name, fallback)` on failure, where `name` is
+            `func.__name__` when present and `repr(func)` otherwise
+            (same approach as `run_first_completed`).
+
+    Example:
+        === "The Py_simple Way"
+            ```python
+            import asyncio
+            from py_simple import run_with_default
+
+            def read_config():
+                raise FileNotFoundError("no config file")
+
+            async def main():
+                return await run_with_default(read_config, {"theme": "light"})
+
+            asyncio.run(main())  # -> ("read_config", {"theme": "light"})
+            ```
+
+        === "The Traditional Way"
+            ```python
+            import asyncio
+
+            def read_config():
+                raise FileNotFoundError("no config file")
+
+            async def main():
+                loop = asyncio.get_running_loop()
+                try:
+                    result = await loop.run_in_executor(None, read_config)
+                    return (read_config.__name__, result)
+                except Exception:
+                    return (read_config.__name__, {"theme": "light"})
+
+            asyncio.run(main())
+            ```
+    """
+    func_name = getattr(func, "__name__", None)
+    if func_name is None:
+        func_name = repr(func)
+    loop = asyncio.get_running_loop()
+    try:
+        result = await loop.run_in_executor(None, func, *args)
+        return (func_name, result)
+    except Exception:
+        return (func_name, fallback)

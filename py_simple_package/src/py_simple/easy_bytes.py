@@ -320,24 +320,38 @@ def add_bytes(values: list, decimal: bool = False) -> int:
         EasyBytesError: If `values` is not a list or a tuple, if an item is
             neither a non-negative integer nor a string, if a string is not
             a valid size label, or if `decimal` is not a boolean.
+
+    Example:
+        === "The Py_simple Way"
+            ```python
+            from py_simple import add_bytes
+
+            print(add_bytes([512, "1 KB", "1 KiB"]))
+            print(add_bytes([512, "1 KB", "1 KiB"], decimal=True))
+            ```
+
+        === "The Traditional Way"
+            ```python
+            print(512 + 1024 + 1024)
+            print(512 + 1000 + 1024)
+            ```
     """
     _check_flag("decimal", decimal)
     if not isinstance(values, (list, tuple)):
-        raise EasyBytesError(
-            "\n\nERROR: values must be a list or a tuple.") from None
+        raise EasyBytesError("\n\nERROR: values must be a list or a tuple.") from None
 
     total = 0
     for value in values:
         if isinstance(value, str):
             total += human_to_bytes(value, decimal=decimal)
-        elif isinstance(value, int) and not isinstance(value,
-                                                       bool) and value >= 0:
+        elif isinstance(value, int) and not isinstance(value, bool) and value >= 0:
             total += value
         else:
             raise EasyBytesError(
                 "\n\nERROR: each value must be a non-negative integer or a size string."
             ) from None
     return total
+
 
 def percent_free(used: int, total: int) -> float:
     """

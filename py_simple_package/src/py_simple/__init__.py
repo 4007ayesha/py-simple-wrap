@@ -44,6 +44,7 @@ from .easy_async import (
     run_concurrent_map_limited,
     run_periodically,
     run_first_completed,
+    run_with_default,
 )
 from .easy_bytes import (
     EasyBytesError,
@@ -69,6 +70,7 @@ from .easy_config import (
     gh_workflow_config,
     create_env_file,
     read_env_file,
+    create_env_example_file,
     dockerfile_config,
     gitignore_config,
     requirements_config,
@@ -199,6 +201,7 @@ from .easy_hash import (
     EasyHashError,
     compare_file_hashes,
     hash_bytes,
+    hash_directory,
     hash_file,
     hash_text,
     hashes_match,
@@ -375,7 +378,9 @@ from .easy_url import (
     add_query_param,
     get_domain,
     get_path,
+    get_query_values,
     is_https,
+    remove_query_param,
 )
 from .easy_web import (
     count_links,
@@ -391,5 +396,7 @@ from .easy_web import (
 )
 from .easy_terminal import (
     EasyTerminal,
+    print_centered,
+    print_rule,
     print_styled,
 )

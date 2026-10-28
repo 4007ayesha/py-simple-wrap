@@ -17,6 +17,7 @@ from py_simple_package.src.py_simple.easy_async import (
     run_with_retry,
     run_periodically,
     run_first_completed,
+    run_with_default,
 )
 
 
@@ -595,3 +596,86 @@ def test_run_first_completed_outer_cancellation():
             await task
 
     asyncio.run(scenario())
+
+
+def test_run_with_default_returns_result_on_success():
+    def add(a, b):
+        return a + b
+
+    assert asyncio.run(run_with_default(add, 0, 2, 3)) == ("add", 5)
+
+
+def test_run_with_default_returns_fallback_on_failure():
+    def failing():
+        raise ValueError("Something went wrong")
+
+    assert asyncio.run(run_with_default(failing, "default")) == (
+        "failing",
+        "default",
+    )
+
+
+def test_run_with_default_passes_args_and_keeps_name():
+    def greet(name):
+        raise RuntimeError("no greeting available")
+
+    assert asyncio.run(run_with_default(greet, "hello", "world")) == (
+        "greet",
+        "hello",
+    )
+
+
+def test_run_with_default_uses_repr_for_callables_without_name():
+    from functools import partial
+
+    def add(a, b):
+        return a + b
+
+    adder = partial(add, 2)
+    assert asyncio.run(run_with_default(adder, 0, 3)) == (repr(adder), 5)
+
+
+def test_run_with_default_fallback_uses_repr_for_callables_without_name():
+    from functools import partial
+
+    def failing(a):
+        raise ValueError("boom")
+
+    failer = partial(failing, 1)
+    assert asyncio.run(run_with_default(failer, "default")) == (
+        repr(failer),
+        "default",
+    )
+
+
+@pytest.mark.parametrize("runner", ["no_params", "with_params", "map"])
+@pytest.mark.parametrize("raises_later", [False, True])
+def test_concurrent_helpers_distinguish_returned_and_raised_exceptions(runner, raises_later):
+    returned_error = ValueError("returned as data")
+
+    def return_error(*args):
+        return returned_error
+
+    def second_result(*args):
+        if raises_later:
+            raise RuntimeError("actually raised")
+        return "ok"
+
+    def mapped(index):
+        return return_error() if index == 0 else second_result()
+
+    async def run():
+        if runner == "no_params":
+            return await run_at_the_same_time_no_params([return_error, second_result])
+        if runner == "with_params":
+            return await run_at_the_same_time_with_params([(return_error, 1), (second_result, 2)])
+        return await run_concurrent_map(mapped, [0, 1])
+
+    if raises_later:
+        with pytest.raises(EasyAsyncError, match="actually raised"):
+            asyncio.run(run())
+    else:
+        results = asyncio.run(run())
+        values = results if runner == "map" else [value for _, value in results]
+        assert values[0] is returned_error
+        assert values[1] == "ok"
