@@ -3,6 +3,7 @@ import pytest
 from py_simple_package.src.py_simple import (
     decode_text as public_decode_text,
     decode_to_bytes as public_decode_to_bytes,
+    decode_to_file as public_decode_to_file,
     encode_bytes as public_encode_bytes,
     encode_file as public_encode_file,
     encode_text as public_encode_text,
@@ -12,6 +13,7 @@ from py_simple_package.src.py_simple.easy_base64 import (
     EasyBase64Error,
     decode_text,
     decode_to_bytes,
+    decode_to_file,
     encode_bytes,
     encode_file,
     encode_text,
@@ -89,3 +91,44 @@ def test_encode_file_rejects_missing_file(tmp_path):
 def test_public_imports_includes_encode_file():
     assert public_encode_file is encode_file
 
+
+def test_decode_to_file(tmp_path):
+    output_file = tmp_path / "restored.txt"
+    encoded = encode_text("hello world")
+    decode_to_file(encoded, str(output_file))
+    assert output_file.read_bytes() == b"hello world"
+
+
+def test_decode_to_file_binary(tmp_path):
+    output_file = tmp_path / "binary.bin"
+    raw = b"\x00\x01\x02\xff"
+    encoded = encode_bytes(raw)
+    decode_to_file(encoded, str(output_file))
+    assert output_file.read_bytes() == raw
+
+
+def test_decode_to_file_rejects_non_string_encoded(tmp_path):
+    output_file = tmp_path / "test.txt"
+    with pytest.raises(EasyBase64Error):
+        decode_to_file(123, str(output_file))
+
+
+def test_decode_to_file_rejects_non_string_path():
+    with pytest.raises(EasyBase64Error):
+        decode_to_file("aGVsbG8=", 123)
+
+
+def test_decode_to_file_rejects_invalid_text(tmp_path):
+    output_file = tmp_path / "test.txt"
+    with pytest.raises(EasyBase64Error):
+        decode_to_file("not base64!!!", str(output_file))
+
+
+def test_decode_to_file_rejects_invalid_path(tmp_path):
+    output_file = tmp_path / "nonexistent_dir" / "nested" / "test.txt"
+    with pytest.raises(EasyBase64Error):
+        decode_to_file("aGVsbG8=", str(output_file))
+
+
+def test_public_imports_includes_decode_to_file():
+    assert public_decode_to_file is decode_to_file
