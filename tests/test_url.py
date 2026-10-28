@@ -182,3 +182,15 @@ def test_get_query_values_public_imports():
         "one",
         "two",
     ]
+
+
+@pytest.mark.parametrize("url", ["https://[", "https://[invalid]", "https://example.com／path", "https://user@", "https://:443"])
+@pytest.mark.parametrize("helper", [get_domain, get_path, is_https, lambda url: add_query_param(url, "page", "2")])
+def test_url_helpers_wrap_malformed_or_missing_hosts(url, helper):
+    with pytest.raises(EasyUrlError):
+        helper(url)
+
+
+def test_get_domain_accepts_ipv6_and_user_information():
+    assert get_domain("https://[::1]:443/path") == "::1"
+    assert get_domain("https://user:password@school.example/path") == "school.example"
