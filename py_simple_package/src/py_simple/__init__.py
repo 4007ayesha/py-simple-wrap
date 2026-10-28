@@ -244,6 +244,7 @@ from .easy_lists import (
 from .easy_money import (
     EasyMoneyError,
     add_tax,
+    calculate_compound_interest,
     calculate_discount,
     calculate_tip,
     format_money,
