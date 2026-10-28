@@ -16,6 +16,7 @@ from py_simple_package.src.py_simple.easy_hash import (
     hash_bytes,
     hash_directory,
     hash_file,
+    hash_files,
     hash_text,
     hashes_match,
     verify_file_hash,
@@ -526,3 +527,68 @@ def test_hash_directory_docstring_examples_agree(tmp_path, monkeypatch, layout):
         exec(block, namespace)
         digests.append(namespace["digest"])
     assert digests[0] == digests[1] == hash_directory(project)
+
+
+def test_hash_files_returns_checksum_per_path(tmp_path):
+    notes = tmp_path / "notes.txt"
+    backup = tmp_path / "backup.txt"
+    notes.write_bytes(b"hello")
+    backup.write_bytes(b"world")
+
+    checksums = hash_files([str(notes), str(backup)])
+
+    assert checksums == {
+        str(notes): hash_file(str(notes)),
+        str(backup): hash_file(str(backup)),
+    }
+
+
+def test_hash_files_accepts_path_objects_and_tuple(tmp_path):
+    notes = tmp_path / "notes.txt"
+    notes.write_bytes(b"hello")
+
+    checksums = hash_files((notes,))
+
+    assert checksums == {str(notes): hash_text("hello")}
+
+
+def test_hash_files_empty_list_returns_empty_dict():
+    assert hash_files([]) == {}
+
+
+@pytest.mark.parametrize("filepaths", ["notes.txt", None, 123, {"notes.txt"}])
+def test_hash_files_rejects_non_list_paths(filepaths):
+    with pytest.raises(EasyHashError, match="filepaths must be a list of paths"):
+        hash_files(filepaths)
+
+
+def test_hash_files_rejects_non_path_item(tmp_path):
+    notes = tmp_path / "notes.txt"
+    notes.write_bytes(b"hello")
+    with pytest.raises(EasyHashError, match="each path must be a string or path"):
+        hash_files([str(notes), 123])
+
+
+def test_hash_files_missing_file_raises(tmp_path):
+    with pytest.raises(EasyHashError):
+        hash_files([str(tmp_path / "missing.txt")])
+
+
+def test_hash_files_rejects_unsupported_algorithm(tmp_path):
+    notes = tmp_path / "notes.txt"
+    notes.write_bytes(b"hello")
+    with pytest.raises(
+        EasyHashError, match="algorithm must be 'sha256', 'sha1', or 'md5'"
+    ):
+        hash_files([str(notes)], "sha512")
+
+
+def test_hash_files_public_imports(tmp_path):
+    from py_simple import hash_files as public_hash_files
+    from py_simple.easy_hash import hash_files as module_hash_files
+
+    notes = tmp_path / "notes.txt"
+    notes.write_bytes(b"hello")
+
+    assert public_hash_files is module_hash_files
+    assert public_hash_files([notes]) == module_hash_files([notes])

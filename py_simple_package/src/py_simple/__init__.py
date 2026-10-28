@@ -203,6 +203,7 @@ from .easy_hash import (
     hash_bytes,
     hash_directory,
     hash_file,
+    hash_files,
     hash_text,
     hashes_match,
     verify_file_hash,
