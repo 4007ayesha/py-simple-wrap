@@ -15,6 +15,9 @@ The [Tutorial Template](tutorial_template.md) walks through the exact structure 
 **🚨 "My function needs to raise an error, and I don't know how this project wants errors to look."**
 The [Custom Exception Template](error_template.md) has a fill-in-the-blanks class definition, plus a worked example showing both raising and catching it. Errors sound intimidating, but the pattern here is always the same one — once you've seen it once, you'll recognize it everywhere in this codebase.
 
+**🏗️ "I want to add a brand-new module from scratch, from file creation to tests."**
+The [Adding a New Module Guide](new_module_template.md) walks through the complete checklist, file locations, docstring requirements, and testing steps.
+
 **📦 "My helper works in its module, but I cannot import it from py_simple."**
 The [Public API Export Template](public_api_template.md) shows where to expose a helper, how to check both import paths, and how to avoid name collisions.
 
