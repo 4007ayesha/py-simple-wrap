@@ -33,7 +33,7 @@ module**. Those files already describe the module you are extending.
 
 ## The helper itself
 
-Keep the name specific (`hash_files()`, not `process()`). Follow the
+Keep the name specific (`miles_to_km()`, not `process()`). Follow the
 helpers already in that file for arguments, return values, and error
 messages.
 
