@@ -88,6 +88,22 @@ Decimal context; precision or rounding-trap failures also raise `EasyMoneyError`
 `split_bill()` keeps its existing behavior: it returns one rounded share,
 so `split_bill(10, 3)` is still `Decimal('3.33')`.
 
+## Growing savings with compound interest
+
+Use `calculate_compound_interest()` to find what savings grow to when
+interest is added to the balance each period:
+
+```python
+from py_simple import calculate_compound_interest, format_money
+
+balance = calculate_compound_interest(1000, 5, 2)
+print(format_money(balance))  # $1102.50
+```
+
+Pass `12` as the fourth argument for monthly compounding instead of the
+default yearly compounding. The rate is a percent per year, and the result
+is rounded to cents.
+
 ## Why use these helpers?
 
 Float math can print `17.359999999` when you only wanted `$17.36`. These

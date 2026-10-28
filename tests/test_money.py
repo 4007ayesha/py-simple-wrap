@@ -12,6 +12,7 @@ import pytest
 from py_simple_package.src.py_simple.easy_money import (
     EasyMoneyError,
     add_tax,
+    calculate_compound_interest,
     calculate_discount,
     calculate_tip,
     format_money,
@@ -274,3 +275,59 @@ def test_split_bill_exact_public_imports():
 
     assert public_split is module_split
     assert public_split("10.00", 3) == split_bill_exact("10.00", 3)
+
+
+@pytest.mark.parametrize(
+    "principal,rate,years,compounds,expected",
+    [
+        (1000, 5, 2, 1, "1102.50"),
+        (1000, 12, 1, 12, "1126.83"),
+        (1000, 0, 5, 1, "1000.00"),
+        (1000, 5, 0, 1, "1000.00"),
+        ("250.50", "4", 3, 1, "281.78"),
+        (0, 5, 10, 1, "0.00"),
+    ],
+)
+def test_calculate_compound_interest(
+    principal, rate, years, compounds, expected
+):
+    assert calculate_compound_interest(
+        principal, rate, years, compounds
+    ) == Decimal(expected)
+
+
+def test_calculate_compound_interest_default_is_yearly():
+    assert calculate_compound_interest(1000, 5, 2) == Decimal("1102.50")
+
+
+@pytest.mark.parametrize(
+    "principal,rate,years,compounds",
+    [
+        (-100, 5, 2, 1),
+        (100, -5, 2, 1),
+        (100, 5, -1, 1),
+        (100, 5, 2.5, 1),
+        (100, 5, True, 1),
+        (100, 5, 2, 0),
+        (100, 5, 2, 1.5),
+        (100, 5, 2, True),
+        ("not money", 5, 2, 1),
+        (float("inf"), 5, 2, 1),
+        (100, float("nan"), 2, 1),
+    ],
+)
+def test_calculate_compound_interest_rejects_bad_inputs(
+    principal, rate, years, compounds
+):
+    with pytest.raises(EasyMoneyError):
+        calculate_compound_interest(principal, rate, years, compounds)
+
+
+def test_calculate_compound_interest_public_imports():
+    from py_simple import calculate_compound_interest as public_helper
+    from py_simple.easy_money import (
+        calculate_compound_interest as module_helper,
+    )
+
+    assert public_helper is module_helper
+    assert public_helper(1000, 5, 2) == Decimal("1102.50")
