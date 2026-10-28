@@ -54,6 +54,7 @@ from .easy_bytes import (
     percent_used,
     remaining_bytes,
     add_bytes,
+    average_bytes,
 )
 from .easy_colors import (
     contrast_ratio,

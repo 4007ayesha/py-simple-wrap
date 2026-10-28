@@ -98,6 +98,28 @@ print(add_bytes([512, "1 KB", "1 KiB"], decimal=True))
 2536
 ```
 
+## Averaging sizes together
+
+`average_bytes()` takes the same kind of list as `add_bytes()` and
+returns the average size in bytes. A fractional average is truncated to a
+whole byte count.
+
+```python
+from py_simple import average_bytes, bytes_to_human
+
+average = average_bytes([512, "1 KB", "1 KiB"])
+
+print(average)
+print(bytes_to_human(average))
+```
+
+Example output:
+
+```text
+853
+853 B
+```
+
 ## What happened?
 
 `human_to_bytes()` reads a label like `"2.5 MB"` and returns the byte count.
@@ -127,6 +149,10 @@ print(bytes_to_human(1500, decimal=True))
 `add_bytes()` converts each string with `human_to_bytes()` first, then adds
 everything up. Each item must be a non-negative whole number or a valid size
 label, and the input must be a list or a tuple. An empty list adds up to `0`.
+
+`average_bytes()` works on the same kind of list, but divides the total by
+how many items there are. An empty list raises `EasyBytesError`, since an
+average of nothing is undefined.
 
 `percent_used()` compares the two counts and returns the filled share rounded
 to one decimal place.
