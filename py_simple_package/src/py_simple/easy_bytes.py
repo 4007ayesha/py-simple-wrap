@@ -395,3 +395,56 @@ def percent_free(used: int, total: int) -> float:
         raise EasyBytesError("\n\nERROR: used cannot exceed total.") from None
     return round((total - used) / total * 100, 1)
 
+
+
+def average_bytes(values: list, decimal: bool = False) -> int:
+    """
+    Return the average size of a list of sizes, in bytes.
+
+    Each value is either an integer (already a byte count) or a size label
+    such as `"1 KiB"` (1024 bytes). Labels such as `"1 KB"` follow the same
+    rule as `human_to_bytes`: 1024 bytes by default, or 1000 bytes with
+    `decimal=True`. The average is a whole byte count, so a fractional
+    average is truncated, and each label is converted to bytes first, the
+    same way `add_bytes` converts it.
+
+    Args:
+        values (list): Byte counts (non-negative integers) and/or size
+            labels. A tuple is accepted too. Must not be empty.
+        decimal (bool): When `True`, `KB`-style units use factors of 1000.
+            Defaults to `False`.
+
+    Returns:
+        int: The average of all the values, in bytes.
+
+    Raises:
+        EasyBytesError: If `values` is not a list or a tuple, if it is
+            empty, if an item is neither a non-negative integer nor a
+            string, if a string is not a valid size label, or if
+            `decimal` is not a boolean.
+
+    Example:
+        === "The Py_simple Way"
+            ```python
+            from py_simple import average_bytes
+
+            print(average_bytes([512, "1 KB", "1 KiB"]))
+            print(average_bytes([512, "1 KB", "1 KiB"], decimal=True))
+            ```
+
+        === "The Traditional Way"
+            ```python
+            print((512 + 1024 + 1024) // 3)
+            print((512 + 1000 + 1024) // 3)
+            ```
+    """
+    _check_flag("decimal", decimal)
+    if not isinstance(values, (list, tuple)):
+        raise EasyBytesError(
+            "\n\nERROR: values must be a list or a tuple."
+        ) from None
+    if len(values) == 0:
+        raise EasyBytesError(
+            "\n\nERROR: values must not be empty."
+        ) from None
+    return add_bytes(values, decimal=decimal) // len(values)

@@ -9,6 +9,7 @@ from py_simple_package.src.py_simple.easy_bytes import (
     percent_used,
     remaining_bytes,
     add_bytes,
+    average_bytes,
 )
 
 BOTH = [False, True]
@@ -687,3 +688,85 @@ def test_percent_free_public_imports():
     assert public_helper is module_helper
     assert public_helper(250, 1000) == 75.0
 
+
+
+# --- average_bytes --------------------------------------------------------
+
+
+@pytest.mark.parametrize(
+    "values, expected",
+    [
+        ([512], 512),
+        ([512, "1 KB", "1 KiB"], 853),
+        (("1 KB", "1 KiB"), 1024),
+        ([0, 0], 0),
+        ([1, 2], 1),
+        ([1024, 2048, 3072], 2048),
+        ([], None),
+    ],
+)
+def test_average_bytes(values, expected):
+    """Average a mix of byte counts and size labels, truncating fractions."""
+    if values == []:
+        with pytest.raises(EasyBytesError, match="values must not be empty"):
+            average_bytes(values)
+        return
+    result = average_bytes(values)
+    assert result == expected
+    assert isinstance(result, int)
+
+
+@pytest.mark.parametrize(
+    "values, expected",
+    [
+        ([512, "1 KB", "1 KiB"], 845),
+        (("1 KB",), 1000),
+    ],
+)
+def test_average_bytes_decimal(values, expected):
+    """With decimal=True, KB style labels count in factors of 1000."""
+    assert average_bytes(values, decimal=True) == expected
+
+
+@pytest.mark.parametrize("value", [0, 1, "yes", None, [], 1.0])
+def test_average_bytes_rejects_bad_decimal_flag(value):
+    """The decimal flag must be a real boolean."""
+    with pytest.raises(
+        EasyBytesError, match=re.escape("decimal must be a boolean (True or False).")
+    ):
+        average_bytes([512], decimal=value)
+
+
+@pytest.mark.parametrize("values", ["1 KB", 512, {"a": 1}, None])
+def test_average_bytes_rejects_non_list(values):
+    """The input must be a list or a tuple."""
+    with pytest.raises(EasyBytesError, match="values must be a list or a tuple"):
+        average_bytes(values)
+
+
+@pytest.mark.parametrize(
+    "bad_item", [-1, True, False, 1.5, None, [], {}, float("nan")]
+)
+def test_average_bytes_rejects_bad_item(bad_item):
+    """Each item must be a non-negative integer or a valid size label."""
+    with pytest.raises(
+        EasyBytesError,
+        match="each value must be a non-negative integer or a size string",
+    ):
+        average_bytes([512, bad_item])
+
+
+@pytest.mark.parametrize("bad_label", ["1 XB", "KB", "1.5", "-1 KB", "1.5 KB extra"])
+def test_average_bytes_propagates_label_errors(bad_label):
+    """An invalid size label raises EasyBytesError, not a raw parse error."""
+    with pytest.raises(EasyBytesError):
+        average_bytes([bad_label])
+
+
+def test_average_bytes_public_imports():
+    """Both documented import paths expose the average_bytes helper."""
+    from py_simple import average_bytes as public_helper
+    from py_simple.easy_bytes import average_bytes as module_helper
+
+    assert public_helper is module_helper
+    assert public_helper([512, "1 KB", "1 KiB"]) == 853
