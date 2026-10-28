@@ -16,6 +16,7 @@ from py_simple_package.src.py_simple.easy_money import (
     calculate_discount,
     calculate_tip,
     format_money,
+    remove_tax,
     split_bill,
     split_bill_exact,
 )
@@ -40,6 +41,32 @@ def test_add_tax():
 def test_add_tax_rejects_negative_rate():
     with pytest.raises(EasyMoneyError):
         add_tax(10, -1)
+
+
+def test_remove_tax():
+    assert remove_tax(10.85, 8.5) == Decimal("10.00")
+    assert remove_tax("110.00", 10) == Decimal("100.00")
+    assert remove_tax(100, 0) == Decimal("100.00")
+    assert remove_tax(15.99, 5) == Decimal("15.23")
+
+
+def test_remove_tax_rejects_negative_rate():
+    with pytest.raises(EasyMoneyError):
+        remove_tax(10, -1)
+
+
+def test_remove_tax_rejects_invalid_amount():
+    with pytest.raises(EasyMoneyError):
+        remove_tax("invalid", 10)
+    with pytest.raises(EasyMoneyError):
+        remove_tax(True, 10)
+
+
+def test_remove_tax_rejects_invalid_rate():
+    with pytest.raises(EasyMoneyError):
+        remove_tax(100, "invalid")
+    with pytest.raises(EasyMoneyError):
+        remove_tax(100, False)
 
 
 def test_split_bill():

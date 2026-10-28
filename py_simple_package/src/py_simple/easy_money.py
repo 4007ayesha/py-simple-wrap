@@ -105,6 +105,48 @@ def add_tax(amount, rate: float) -> Decimal:
     return _cents(total)
 
 
+def remove_tax(amount, rate: float) -> Decimal:
+    """
+    Calculate the original pre-tax price from a tax-inclusive amount.
+
+    Args:
+        amount: The total price including tax.
+        rate (float): Tax rate as a percent, such as `8.5` for 8.5%.
+
+    Returns:
+        Decimal: The price before tax, rounded to two decimal places.
+
+    Raises:
+        EasyMoneyError: If `amount` or `rate` is not a number, or if
+            `rate` is negative.
+
+    Example:
+        === "The Py_simple Way"
+            ```python
+            from py_simple import remove_tax
+
+            original = remove_tax(10.85, 8.5)
+            ```
+
+        === "The Traditional Way"
+            ```python
+            from decimal import Decimal, ROUND_HALF_UP
+
+            total = Decimal("10.85")
+            tax_rate = Decimal("8.5")
+            original = (total / (1 + tax_rate / 100)).quantize(
+                Decimal("0.01"), rounding=ROUND_HALF_UP
+            )
+            ```
+    """
+    total = _as_money(amount)
+    tax_rate = _as_money(rate)
+    if tax_rate < 0:
+        raise EasyMoneyError("\n\nERROR: tax rate cannot be negative.") from None
+    pre_tax = total / (1 + tax_rate / Decimal(100))
+    return _cents(pre_tax)
+
+
 def calculate_discount(amount, discount_rate: float) -> Decimal:
     """
     Calculate the price after applying a percentage discount.
