@@ -21,6 +21,9 @@ The [Adding a New Module Guide](new_module_template.md) walks through the comple
 **📦 "My helper works in its module, but I cannot import it from py_simple."**
 The [Public API Export Template](public_api_template.md) shows where to expose a helper, how to check both import paths, and how to avoid name collisions.
 
+**🌐 "My test calls a website. How do I test it without going online?"**
+The [Network Test Template](network_tests_template.md) gives you a working example with fake responses and request failures, then shows which parts to change for your own helper.
+
 **🧹 "A pre-commit check failed, or changed my files. What do I do next?"**
 The [Pre-commit Guide](pre_commit_template.md) shows how to run the repository's hooks, review their fixes, and stage and check your files again.
 
