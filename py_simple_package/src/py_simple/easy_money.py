@@ -307,3 +307,82 @@ def split_bill_exact(total, people: int) -> list[Decimal]:
         return shares
     except (DecimalException, ValueError) as error:
         raise EasyMoneyError(f"\n\nERROR: {error}") from None
+
+
+def calculate_compound_interest(
+    principal, rate: float, years: int, compounds_per_year: int = 1
+) -> Decimal:
+    """
+    Calculate the balance after compound interest, rounded to cents.
+
+    Interest is added to the balance each compounding period, so later
+    periods earn interest on earlier interest as well as on the
+    principal.
+
+    Args:
+        principal: The starting amount.
+        rate (float): Interest rate as a percent per year, such as `5`
+            for 5%.
+        years (int): How many years the money is left to grow. Must be
+            at least 0.
+        compounds_per_year (int, optional): How many times per year
+            interest is added, such as `12` for monthly compounding.
+            Must be at least 1. Defaults to `1`.
+
+    Returns:
+        Decimal: The balance after interest, rounded to two decimal
+            places. For example, 1000 at 5% for 2 years compounded
+            yearly gives `Decimal('1102.50')`.
+
+    Raises:
+        EasyMoneyError: If the principal or rate is invalid, negative
+            or non-finite, or if `years` or `compounds_per_year` is
+            not a valid count.
+
+    Example:
+        === "The Py_simple Way"
+            ```python
+            from py_simple import calculate_compound_interest
+
+            balance = calculate_compound_interest(1000, 5, 2)
+            ```
+
+        === "The Traditional Way"
+            ```python
+            from decimal import Decimal, ROUND_HALF_UP
+
+            balance = (Decimal("1000") * (1 + Decimal("5") / 100) ** 2).quantize(
+                Decimal("0.01"), rounding=ROUND_HALF_UP
+            )
+            ```
+    """
+    if isinstance(years, bool) or not isinstance(years, int) or years < 0:
+        raise EasyMoneyError(
+            "\n\nERROR: years must be an integer of at least 0."
+        ) from None
+    if (
+        isinstance(compounds_per_year, bool)
+        or not isinstance(compounds_per_year, int)
+        or compounds_per_year < 1
+    ):
+        raise EasyMoneyError(
+            "\n\nERROR: compounds_per_year must be an integer of at least 1."
+        ) from None
+    try:
+        amount = _as_money(principal)
+        percent = _as_money(rate)
+        if not amount.is_finite() or not percent.is_finite():
+            raise EasyMoneyError("\n\nERROR: amount must be finite.") from None
+        if amount < 0:
+            raise EasyMoneyError(
+                "\n\nERROR: principal cannot be negative."
+            ) from None
+        if percent < 0:
+            raise EasyMoneyError(
+                "\n\nERROR: interest rate cannot be negative."
+            ) from None
+        periods = compounds_per_year * years
+        factor = (1 + percent / Decimal(100) / Decimal(compounds_per_year)) ** periods
+        return _cents(amount * factor)
+    except (DecimalException, ValueError) as error:
+        raise EasyMoneyError(f"\n\nERROR: {error}") from None
