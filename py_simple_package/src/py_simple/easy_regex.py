@@ -10,6 +10,9 @@ def extract_emails(text: str) -> list | None:
     r"""
     Returns a list of all email addresses found in the text.
 
+    Keeps subdomains, such as `user@mail.example.com`, in the extracted
+    address. This is a text extraction helper, not a full email validator.
+
     Arguments:
         text (str): Text to search for email addresses.
 
@@ -29,12 +32,12 @@ def extract_emails(text: str) -> list | None:
             ```python
             import re
 
-            pattern = r'[a-zA-Z_.%+-]+@[a-zA-Z0-9-]+\.[a-zA-Z]+'
+            pattern = r'[a-zA-Z0-9_.%+-]+@(?:[a-zA-Z0-9-]+\.)+[a-zA-Z]+'
             result = re.findall(pattern, "Contact us at hello@example.com or support@test.org")
             # -> ['hello@example.com', 'support@test.org']
             ```
     """
-    pattern = r"[a-zA-Z0-9_.%+-]+@[a-zA-Z0-9-]+\.[a-zA-Z]+"
+    pattern = r"[a-zA-Z0-9_.%+-]+@(?:[a-zA-Z0-9-]+\.)+[a-zA-Z]+"
     return re.findall(pattern, text)
 
 
