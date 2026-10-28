@@ -18,6 +18,9 @@ The [Custom Exception Template](error_template.md) has a fill-in-the-blanks clas
 **🏗️ "I want to add a brand-new module from scratch, from file creation to tests."**
 The [Adding a New Module Guide](new_module_template.md) walks through the complete checklist, file locations, docstring requirements, and testing steps.
 
+**✏️ "The issue asks me to add one function to a module that already exists."**
+The [Adding a Function to an Existing Module](expand_module_template.md) guide lists the files to touch, where the tests go, and how to export the helper without creating a new module.
+
 **📦 "My helper works in its module, but I cannot import it from py_simple."**
 The [Public API Export Template](public_api_template.md) shows where to expose a helper, how to check both import paths, and how to avoid name collisions.
 
