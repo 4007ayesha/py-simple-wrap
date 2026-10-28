@@ -149,6 +149,64 @@ def hash_file(filepath: str, algorithm: str = "sha256") -> str:
     return hasher.hexdigest()
 
 
+def hash_files(
+    filepaths: list[str | Path] | tuple[str | Path, ...],
+    algorithm: str = "sha256",
+) -> dict[str, str]:
+    """
+    Create a checksum for each file in a list.
+
+    Use this when you want a fingerprint per file, rather than one
+    checksum for a whole folder. Paths may be strings or `pathlib.Path`
+    objects. The returned keys are the paths as strings.
+
+    Args:
+        filepaths (list | tuple): Paths of the files to hash.
+        algorithm (str, optional): One of `"sha256"`, `"sha1"`, or
+            `"md5"`. Defaults to `"sha256"`.
+
+    Returns:
+        dict: Each path string mapped to its lowercase hex checksum.
+
+    Raises:
+        EasyHashError: If `filepaths` is not a list or tuple of paths, a
+            path is not a string or path-like object, a file cannot be
+            read, or the algorithm is not supported.
+
+    Example:
+        === "The Py_simple Way"
+            ```python
+            from py_simple import hash_files
+
+            checksums = hash_files(["notes.txt", "backup.txt"])
+            ```
+
+        === "The Traditional Way"
+            ```python
+            import hashlib
+
+            checksums = {}
+            for path in ["notes.txt", "backup.txt"]:
+                hasher = hashlib.sha256()
+                with open(path, "rb") as file:
+                    while chunk := file.read(64 * 1024):
+                        hasher.update(chunk)
+                checksums[path] = hasher.hexdigest()
+            ```
+    """
+    if isinstance(filepaths, (str, bytes)) or not isinstance(filepaths, (list, tuple)):
+        raise EasyHashError("\n\nERROR: filepaths must be a list of paths.") from None
+    _new_hasher(algorithm)
+    checksums = {}
+    for filepath in filepaths:
+        if not isinstance(filepath, (str, Path)):
+            raise EasyHashError(
+                "\n\nERROR: each path must be a string or path."
+            ) from None
+        checksums[os.fspath(filepath)] = _hash_file_chunks(filepath, algorithm)
+    return checksums
+
+
 def hash_directory(dirpath: str | Path, algorithm: str = "sha256") -> str:
     """
     Create a single checksum for a whole directory tree.
