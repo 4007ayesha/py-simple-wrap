@@ -620,3 +620,22 @@ def test_setup_file_logger_updates_level_on_existing_handler(tmp_path):
     content = log_file.read_text(encoding="utf-8")
     assert "Ignored before update" not in content
     assert "INFO - Captured after update" in content
+
+
+@pytest.mark.parametrize("new_format", ["[%(levelname)s] %(message)s", "%(message)s"])
+def test_setup_file_logger_updates_existing_handler_format(tmp_path, new_format):
+    log_file = tmp_path / "reconfigured.log"
+    logger = setup_file_logger(str(log_file), format_string="old: %(message)s")
+    logger.info("before")
+    original_handlers = list(logger.handlers)
+
+    configured = setup_file_logger(str(log_file), format_string=new_format)
+    configured.info("after")
+
+    assert configured is logger
+    assert logger.handlers == original_handlers
+    expected = "[INFO] after" if new_format.startswith("[") else "after"
+    assert log_file.read_text(encoding="utf-8").splitlines() == [
+        "old: before",
+        expected,
+    ]

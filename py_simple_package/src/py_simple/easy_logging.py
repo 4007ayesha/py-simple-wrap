@@ -464,6 +464,9 @@ def setup_file_logger(
     specified logging level. If a handler for the same file path is already
     attached to the logger, duplicate handlers are not added.
 
+    Calling this again for the same logger and file updates both the
+    handler level and format without adding another handler.
+
     Args:
         log_file (str): Path to the log file to write to.
         level (int or str, optional): Logging level such as `logging.INFO`,
@@ -517,6 +520,7 @@ def setup_file_logger(
             and os.path.abspath(getattr(handler, "baseFilename", "")) == abs_path
         ):
             handler.setLevel(level)
+            handler.setFormatter(logging.Formatter(format_string))
             handler_exists = True
 
     if not handler_exists:
