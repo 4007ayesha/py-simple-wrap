@@ -31,7 +31,7 @@ https://www.google.com
 https://github.com
 https://offline.invalid
 https://www.python.org
-https://stackoverflow.com
+https://youtube.com
 ```
 
 The first row is the column name, `url`. Be sure to include `https://` or `http://` in
@@ -165,7 +165,7 @@ Checking 5 websites...
 [✓] https://github.com                   ONLINE
 [✗] https://offline.invalid              OFFLINE
 [✓] https://www.python.org               ONLINE
-[✓] https://stackoverflow.com            ONLINE
+[✓] https://youtube.com                  ONLINE
 
 ───────────────────────── SUMMARY ──────────────────────────
 Total Websites: 5
