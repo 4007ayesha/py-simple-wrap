@@ -48,6 +48,7 @@ from pathlib import Path
 from py_simple import (
     EasyTerminal,
     get_page_title,
+    get_csv_columns,
     is_page_up,
     read_csv_to_list,
     write_csv_from_list,
@@ -90,16 +91,13 @@ def main() -> None:
     print("─" * 60)
     # 1. Read list of websites from websites.csv.
     try:
+        columns = get_csv_columns(str(input_file))
         websites = read_csv_to_list(str(input_file))
     except (OSError, ValueError) as error:
         EasyTerminal(f"Cannot read websites.csv: {error}").set_color("red").show()
         return
 
-    if not websites:
-        print("No websites to check. Add addresses below the url header.")
-        return
-
-    if "url" not in websites[0]:
+    if "url" not in columns:
         print("websites.csv must have a column named url.")
         return
 
@@ -186,7 +184,8 @@ Report saved: website_health.csv
 of dictionaries. Each website becomes a row such as
 `{"url": "https://github.com"}`.
 
-The script then checks for the `url` column, strips surrounding whitespace from
+`get_csv_columns()` reads the actual header so an empty first data row does not
+hide a valid `url` column. The script checks that header, strips surrounding whitespace from
 addresses, and skips empty addresses. If there are no addresses, it stops
 before calculating a percentage or trying to write an empty report.
 
@@ -245,8 +244,8 @@ These are the helpers used in this project:
 | Module | Helpers |
 | --- | --- |
 | Easy Web | `is_page_up()`, `get_page_title()` |
-| Easy CSV | `read_csv_to_list()`, `write_csv_from_list()` |
-| Easy Terminal | `EasyTerminal`, `set_color()`, `set_bold()`, `show()`, `print_rule()` |
+| Easy CSV | `get_csv_columns()`, `read_csv_to_list()`, `write_csv_from_list()` |
+| Easy Terminal | `EasyTerminal`, `set_color()`, `set_bold()`, `show()` |
 
 ## Why use these helpers?
 
