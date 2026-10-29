@@ -10,6 +10,8 @@ from py_simple_package.src.py_simple.easy_bytes import (
     remaining_bytes,
     add_bytes,
     average_bytes,
+    is_larger,
+    is_smaller
 )
 
 BOTH = [False, True]
@@ -770,3 +772,36 @@ def test_average_bytes_public_imports():
 
     assert public_helper is module_helper
     assert public_helper([512, "1 KB", "1 KiB"]) == 853
+
+def test_is_larger():
+    # Basic comparisons
+    assert is_larger("1.5 GB", "1000 MB") is True
+    assert is_larger("500 B", "1 KB") is False
+    assert is_larger(2048, "1 KB") is True
+
+    # Edge cases (equal values)
+    assert is_larger("1 KB", 1024) is False
+
+    # Decimal flag
+    assert is_larger("1 KB", 1000, decimal=True) is False
+
+    # Errors handling
+    with pytest.raises(EasyBytesError):
+        is_larger(-10, "1 KB")
+
+    with pytest.raises(EasyBytesError):
+        is_larger("1 KB", "invalid_size")
+
+
+def test_is_smaller():
+    # Basic comparisons
+    assert is_smaller("500 B", "1 KB") is True
+    assert is_smaller("1.5 GB", "1000 MB") is False
+    assert is_smaller(512, "1 KB") is True
+
+    # Edge cases (equal values)
+    assert is_smaller("1 KB", 1024) is False
+
+    # Errors handling
+    with pytest.raises(EasyBytesError):
+        is_smaller("invalid_size", "1 KB")
