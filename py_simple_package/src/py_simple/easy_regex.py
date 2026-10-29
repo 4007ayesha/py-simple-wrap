@@ -64,9 +64,11 @@ def extract_urls(text: str) -> list | None:
             ```python
             import re
 
-            pattern = (r'(?:https?://(?:www\.)?|www\.)[a-zA-Z0-9-]+\.
-            (?:(?:[a-zA-Z0-9-]+\.)*)?(?:(?:[a-zA-Z0-9-]+\\)*)?[a-zA-Z]{2,}
-            (?:\.[a-zA-Z]{2,})?(?:/\S*)?')
+            pattern = (
+                r'(?:https?://(?:www\.)?|www\.)[a-zA-Z0-9-]+\.'
+                r'(?:(?:[a-zA-Z0-9-]+\.)*)?(?:(?:[a-zA-Z0-9-]+\\)*)?'
+                r'[a-zA-Z]{2,}(?:\.[a-zA-Z]{2,})?(?:/\S*)?'
+            )
             result = re.findall(pattern, "Visit https://www.example.com or www.test.org today")
             # -> ['https://www.example.com', 'www.test.org']
             ```
@@ -171,8 +173,8 @@ def extract_hex_colors(text: str) -> list | None:
             import re
 
             pattern = (
-                r'(?<![\\w#])#(?:[0-9a-fA-F]{8}|[0-9a-fA-F]{6}|'
-                r'[0-9a-fA-F]{4}|[0-9a-fA-F]{3})\\b'
+                r'(?<![\w#])#(?:[0-9a-fA-F]{8}|[0-9a-fA-F]{6}|'
+                r'[0-9a-fA-F]{4}|[0-9a-fA-F]{3})\b'
             )
             result = re.findall(pattern, "Use #fff on #1a2b3c")
             # -> ['#fff', '#1a2b3c']
