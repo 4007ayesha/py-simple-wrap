@@ -33,7 +33,6 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           REPO: ${{ github.repository }}
           EVENT_NAME: ${{ github.event_name }}
-          EVENT_PATH: ${{ github.event_path }}
 
         shell: bash
         run: |
@@ -42,31 +41,31 @@ jobs:
           # Identify the original mention.
           case "$EVENT_NAME" in
             pull_request_target)
-              SOURCE=$(jq -c '.pull_request' "$EVENT_PATH")
-              PR=$(jq -r '.pull_request.number' "$EVENT_PATH")
+              SOURCE=$(jq -c '.pull_request' "$GITHUB_EVENT_PATH")
+              PR=$(jq -r '.pull_request.number' "$GITHUB_EVENT_PATH")
               KIND="pr"
-              TIMESTAMP=$(jq -r '.pull_request.created_at' "$EVENT_PATH")
+              TIMESTAMP=$(jq -r '.pull_request.created_at' "$GITHUB_EVENT_PATH")
               ;;
 
             issue_comment)
-              SOURCE=$(jq -c '.comment' "$EVENT_PATH")
-              PR=$(jq -r '.issue.number' "$EVENT_PATH")
+              SOURCE=$(jq -c '.comment' "$GITHUB_EVENT_PATH")
+              PR=$(jq -r '.issue.number' "$GITHUB_EVENT_PATH")
               KIND="comment"
-              TIMESTAMP=$(jq -r '.comment.created_at' "$EVENT_PATH")
+              TIMESTAMP=$(jq -r '.comment.created_at' "$GITHUB_EVENT_PATH")
               ;;
 
             pull_request_review)
-              SOURCE=$(jq -c '.review' "$EVENT_PATH")
-              PR=$(jq -r '.pull_request.number' "$EVENT_PATH")
+              SOURCE=$(jq -c '.review' "$GITHUB_EVENT_PATH")
+              PR=$(jq -r '.pull_request.number' "$GITHUB_EVENT_PATH")
               KIND="review"
-              TIMESTAMP=$(jq -r '.review.submitted_at' "$EVENT_PATH")
+              TIMESTAMP=$(jq -r '.review.submitted_at' "$GITHUB_EVENT_PATH")
               ;;
 
             pull_request_review_comment)
-              SOURCE=$(jq -c '.comment' "$EVENT_PATH")
-              PR=$(jq -r '.pull_request.number' "$EVENT_PATH")
+              SOURCE=$(jq -c '.comment' "$GITHUB_EVENT_PATH")
+              PR=$(jq -r '.pull_request.number' "$GITHUB_EVENT_PATH")
               KIND="inline"
-              TIMESTAMP=$(jq -r '.comment.created_at' "$EVENT_PATH")
+              TIMESTAMP=$(jq -r '.comment.created_at' "$GITHUB_EVENT_PATH")
               ;;
           esac
 
