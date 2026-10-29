@@ -113,7 +113,7 @@ def main() -> None:
 
     print(f"\nChecking {len(urls)} websites...\n")
     results = []
-    # 2. For each website address check its online status. 
+    # 2. For each website address check its online status.
     for url in urls:
         result = check_website(url)
         results.append(result)
@@ -123,7 +123,7 @@ def main() -> None:
         color = "green" if online else "red"
         message = f"[{symbol}] {url:<36} {result['status']}"
         EasyTerminal(message).set_color(color).show()
-        
+
     # 3. Compute statistics and display results in terminal.
     total = len(results)
     online_count = sum(result["status"] == "ONLINE" for result in results)
@@ -137,7 +137,7 @@ def main() -> None:
     print(f"Offline:        {offline_count}")
     print(f"Availability:   {availability:.0f}%")
     print()
-    
+
     # 4. Save results to a csv file.
     write_csv_from_list(str(report_file), results)
     print(f"Report saved: {report_file.name}")
@@ -207,7 +207,7 @@ connection might have a problem. The report's `error` column gives more detail.
 After a successful health check, `get_page_title()` makes another request to
 retrieve the HTML title. Wrapping it in its own `try`/`except` keeps a title retrieval failure
 from changing an `ONLINE` result to `OFFLINE`. For example, a page might
-respond successfully but have no title element. 
+respond successfully but have no title element.
 
 ### Styling the terminal output
 
