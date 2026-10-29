@@ -49,7 +49,6 @@ from py_simple import (
     EasyTerminal,
     get_page_title,
     is_page_up,
-    print_rule,
     read_csv_to_list,
     write_csv_from_list,
 )
@@ -86,9 +85,9 @@ def main() -> None:
     input_file = folder / "websites.csv"
     report_file = folder / "website_health.csv"
 
-    print_rule()
+    print("─" * 60)
     EasyTerminal("WEBSITE HEALTH MONITOR").set_bold().show()
-    print_rule()
+    print("─" * 60)
     # 1. Read list of websites from websites.csv.
     try:
         websites = read_csv_to_list(str(input_file))
@@ -131,7 +130,7 @@ def main() -> None:
     availability = online_count / total * 100
 
     print()
-    print_rule("SUMMARY")
+    print(" SUMMARY ".center(60, "─"))
     print(f"Total Websites: {total}")
     print(f"Online:         {online_count}")
     print(f"Offline:        {offline_count}")
@@ -213,7 +212,8 @@ respond successfully but have no title element.
 
 `EasyTerminal()` holds the text you want to display. `set_color()` selects its
 color, `set_bold()` emphasizes the heading, and `show()` prints it.
-`print_rule()` separates the heading and summary from the results.
+`print()` repeats the `─` character to separate the heading and summary from the
+results.
 
 ### Calculating the summary and saving the report
 
