@@ -1019,6 +1019,15 @@
         "code",
         "documentation"
       ]
+    },
+    {
+      "login": "maestro-00",
+      "name": "Adam Tungtaiya Lukman",
+      "avatar_url": "https://github.com/maestro-00.png",
+      "profile": "https://github.com/maestro-00",
+      "contributions": [
+        "documentation"
+      ]
     }
   ]
 }
