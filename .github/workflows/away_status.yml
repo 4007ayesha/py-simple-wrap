@@ -1,33 +1,186 @@
-name: Away status on PR
+name: Away status on mention
 
 on:
-  pull_request:
+  pull_request_target:
     types: [opened]
+
+  issue_comment:
+    types: [created]
+
+  pull_request_review:
+    types: [submitted]
+
+  pull_request_review_comment:
+    types: [created]
+
+permissions:
+  contents: read
+  issues: write
+  pull-requests: write
 
 jobs:
   away-status:
     runs-on: ubuntu-latest
-    permissions:
-      pull-requests: write
+
+    # Ignore regular issue comments.
+    if: >-
+      github.event_name != 'issue_comment' ||
+      github.event.issue.pull_request != null
+
     steps:
-      - uses: actions/checkout@v7
-      - name: Check if within away window and comment
+      - name: Respond to mention during away hours
         env:
           GH_TOKEN: ${{ github.token }}
           REPO: ${{ github.repository }}
-          PR_NUMBER: ${{ github.event.pull_request.number }}
+          EVENT_NAME: ${{ github.event_name }}
+          EVENT_PATH: ${{ github.event_path }}
+
+        shell: bash
         run: |
           set -euo pipefail
 
-          # Europe/Warsaw handles CET/CEST DST switches automatically —
-          # no manual UTC offset math needed.
-          day=$(TZ='Europe/Warsaw' date +%u)   # 1=Mon ... 7=Sun
-          hour=$(TZ='Europe/Warsaw' date +%H)  # 00-23, local Warsaw time
+          # Identify the original mention.
+          case "$EVENT_NAME" in
+            pull_request_target)
+              SOURCE=$(jq -c '.pull_request' "$EVENT_PATH")
+              PR=$(jq -r '.pull_request.number' "$EVENT_PATH")
+              KIND="pr"
+              TIMESTAMP=$(jq -r '.pull_request.created_at' "$EVENT_PATH")
+              ;;
 
-          # Wed(3) through Sun(7), before 17:00 local time.
-          if [ "$day" -ge 3 ] && [ "$day" -le 7 ] && [ "$hour" -lt 17 ]; then
-            echo "Within away window (day=$day hour=$hour Warsaw time) — posting comment."
-            gh pr comment "$PR_NUMBER" --repo "$REPO" --body-file .github/ISSUE_TEMPLATE/away_message.md
-          else
-            echo "Outside away window (day=$day hour=$hour Warsaw time) — skipping."
+            issue_comment)
+              SOURCE=$(jq -c '.comment' "$EVENT_PATH")
+              PR=$(jq -r '.issue.number' "$EVENT_PATH")
+              KIND="comment"
+              TIMESTAMP=$(jq -r '.comment.created_at' "$EVENT_PATH")
+              ;;
+
+            pull_request_review)
+              SOURCE=$(jq -c '.review' "$EVENT_PATH")
+              PR=$(jq -r '.pull_request.number' "$EVENT_PATH")
+              KIND="review"
+              TIMESTAMP=$(jq -r '.review.submitted_at' "$EVENT_PATH")
+              ;;
+
+            pull_request_review_comment)
+              SOURCE=$(jq -c '.comment' "$EVENT_PATH")
+              PR=$(jq -r '.pull_request.number' "$EVENT_PATH")
+              KIND="inline"
+              TIMESTAMP=$(jq -r '.comment.created_at' "$EVENT_PATH")
+              ;;
+          esac
+
+          BODY=$(jq -r '.body // ""' <<< "$SOURCE")
+          AUTHOR=$(jq -r '.user.login // ""' <<< "$SOURCE")
+          ID=$(jq -r '.id' <<< "$SOURCE")
+          URL=$(jq -r '.html_url' <<< "$SOURCE")
+
+          # Ignore mentions made by the maintainer or bots.
+          if [[ "${AUTHOR,,}" == "sara-czasak" ]] ||
+             [[ "$AUTHOR" == *"[bot]" ]]; then
+            echo "Ignoring maintainer/bot activity."
+            exit 0
           fi
+
+          # Only respond to explicit mentions.
+          if ! grep -Eiq \
+            '(^|[^[:alnum:]_-])@sara-czasak([^[:alnum:]_-]|$)' \
+            <<< "$BODY"; then
+            echo "No mention found."
+            exit 0
+          fi
+
+          # Convert the ORIGINAL mention timestamp to Warsaw time.
+          DAY=$(TZ=Europe/Warsaw date -d "$TIMESTAMP" +%u)
+          HOUR=$(TZ=Europe/Warsaw date -d "$TIMESTAMP" +%H)
+          HOUR=$((10#$HOUR))
+
+          AWAY=false
+
+          # Wednesday-Friday: before 14:00, after 18:00.
+          if (( DAY >= 3 && DAY <= 5 )); then
+            if (( HOUR < 14 || HOUR >= 18 )); then
+              AWAY=true
+            fi
+          fi
+
+          # Saturday-Sunday: before 18:00, after 20:00.
+          if (( DAY >= 6 && DAY <= 7 )); then
+            if (( HOUR < 18 || HOUR >= 20 )); then
+              AWAY=true
+            fi
+          fi
+
+          if [[ "$AWAY" != true ]]; then
+            echo "Mention outside away hours. Skipping."
+            exit 0
+          fi
+
+          # Unique identifier for this specific mention event.
+          MARKER="<!-- away-reply:${KIND}:${ID} -->"
+
+          # Collect existing timeline and review comments.
+          EXISTING=$(
+            {
+              gh api --paginate \
+                "repos/$REPO/issues/$PR/comments?per_page=100" \
+                --jq '.[].body'
+
+              gh api --paginate \
+                "repos/$REPO/pulls/$PR/comments?per_page=100" \
+                --jq '.[].body'
+            }
+          )
+
+          # Prevent duplicate replies on workflow reruns.
+          if grep -Fq "$MARKER" <<< "$EXISTING"; then
+            echo "Already replied to this mention."
+            exit 0
+          fi
+
+          # Read the message from the trusted default branch.
+          MESSAGE=$(
+            gh api \
+              "repos/$REPO/contents/.github/ISSUE_TEMPLATE/away_message.md" \
+              --jq '.content' |
+              base64 --decode
+          )
+
+          if [[ "$KIND" == "inline" ]]; then
+
+            # Reply directly in the code-review discussion.
+            # GitHub requires replies to target the root comment.
+            ROOT_ID=$(jq -r '.in_reply_to_id // .id' <<< "$SOURCE")
+
+            gh api \
+              --method POST \
+              "repos/$REPO/pulls/$PR/comments/$ROOT_ID/replies" \
+              -f body="$MESSAGE
+
+          $MARKER"
+
+          else
+
+            # Regular comments/reviews do not support
+            # threaded replies through the REST API.
+            # Include a quote and link to the original mention.
+            QUOTE=$(
+              printf '%s' "$BODY" |
+              head -c 300 |
+              sed 's/^/> /'
+            )
+
+            gh api \
+              --method POST \
+              "repos/$REPO/issues/$PR/comments" \
+              -f body="↳ Replying to [this mention]($URL):
+
+          $QUOTE
+
+          $MESSAGE
+
+          $MARKER"
+
+          fi
+
+          echo "Away reply posted for $KIND mention $ID."
