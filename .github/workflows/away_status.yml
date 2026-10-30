@@ -1,185 +1,147 @@
 name: Away status on mention
 
 on:
-  pull_request_target:
-    types: [opened]
-
-  issue_comment:
-    types: [created]
-
-  pull_request_review:
-    types: [submitted]
-
-  pull_request_review_comment:
-    types: [created]
+  schedule:
+    - cron: '*/15 * * * *'
+  workflow_dispatch:
 
 permissions:
   contents: read
   issues: write
   pull-requests: write
 
+concurrency:
+  group: away-status-mentions
+  cancel-in-progress: false
+
 jobs:
   away-status:
     runs-on: ubuntu-latest
-
-    # Ignore regular issue comments.
-    if: >-
-      github.event_name != 'issue_comment' ||
-      github.event.issue.pull_request != null
-
     steps:
-      - name: Respond to mention during away hours
+      - name: Reply to mentions made during away hours
         env:
           GH_TOKEN: ${{ github.token }}
           REPO: ${{ github.repository }}
-          EVENT_NAME: ${{ github.event_name }}
-
-        shell: bash
         run: |
-          set -euo pipefail
+          python - <<'PY'
+          import base64
+          import json
+          import os
+          import re
+          import urllib.error
+          import urllib.parse
+          import urllib.request
+          from datetime import datetime, timedelta, timezone
+          from zoneinfo import ZoneInfo
 
-          # Identify the original mention.
-          case "$EVENT_NAME" in
-            pull_request_target)
-              SOURCE=$(jq -c '.pull_request' "$GITHUB_EVENT_PATH")
-              PR=$(jq -r '.pull_request.number' "$GITHUB_EVENT_PATH")
-              KIND="pr"
-              TIMESTAMP=$(jq -r '.pull_request.created_at' "$GITHUB_EVENT_PATH")
-              ;;
+          repo = os.environ['REPO']
+          token = os.environ['GH_TOKEN']
+          base = f'https://api.github.com/repos/{repo}'
+          now = datetime.now(timezone.utc)
+          cutoff = now - timedelta(hours=3)
+          mention = re.compile(r'(?<![\w-])@sara-czasak(?![\w-])', re.I)
+          cache = {}
 
-            issue_comment)
-              SOURCE=$(jq -c '.comment' "$GITHUB_EVENT_PATH")
-              PR=$(jq -r '.issue.number' "$GITHUB_EVENT_PATH")
-              KIND="comment"
-              TIMESTAMP=$(jq -r '.comment.created_at' "$GITHUB_EVENT_PATH")
-              ;;
+          def api(path, data=None):
+              url = path if path.startswith('https://') else base + path
+              headers = {
+                  'Authorization': f'Bearer {token}',
+                  'Accept': 'application/vnd.github+json',
+                  'X-GitHub-Api-Version': '2022-11-28',
+              }
+              body = None if data is None else json.dumps(data).encode()
+              request = urllib.request.Request(url, data=body, headers=headers)
+              if data is not None:
+                  request.method = 'POST'
+                  request.add_header('Content-Type', 'application/json')
+              with urllib.request.urlopen(request, timeout=30) as response:
+                  return json.load(response)
 
-            pull_request_review)
-              SOURCE=$(jq -c '.review' "$GITHUB_EVENT_PATH")
-              PR=$(jq -r '.pull_request.number' "$GITHUB_EVENT_PATH")
-              KIND="review"
-              TIMESTAMP=$(jq -r '.review.submitted_at' "$GITHUB_EVENT_PATH")
-              ;;
+          def pages(path, max_pages=10):
+              for page in range(1, max_pages + 1):
+                  separator = '&' if '?' in path else '?'
+                  batch = api(f'{path}{separator}per_page=100&page={page}')
+                  if not batch:
+                      break
+                  yield from batch
+                  if len(batch) < 100:
+                      break
 
-            pull_request_review_comment)
-              SOURCE=$(jq -c '.comment' "$GITHUB_EVENT_PATH")
-              PR=$(jq -r '.pull_request.number' "$GITHUB_EVENT_PATH")
-              KIND="inline"
-              TIMESTAMP=$(jq -r '.comment.created_at' "$GITHUB_EVENT_PATH")
-              ;;
-          esac
+          def date(value):
+              return datetime.fromisoformat(value.replace('Z', '+00:00'))
 
-          BODY=$(jq -r '.body // ""' <<< "$SOURCE")
-          AUTHOR=$(jq -r '.user.login // ""' <<< "$SOURCE")
-          ID=$(jq -r '.id' <<< "$SOURCE")
-          URL=$(jq -r '.html_url' <<< "$SOURCE")
+          def away(when):
+              local = when.astimezone(ZoneInfo('Europe/Warsaw'))
+              day = local.isoweekday()
+              hour = local.hour
+              return (3 <= day <= 5 and (hour < 14 or hour >= 18)) or (
+                  day >= 6 and (hour < 18 or hour >= 20)
+              )
 
-          # Ignore mentions made by the maintainer or bots.
-          if [[ "${AUTHOR,,}" == "sara-czasak" ]] ||
-             [[ "$AUTHOR" == *"[bot]" ]]; then
-            echo "Ignoring maintainer/bot activity."
-            exit 0
-          fi
+          def existing(pr):
+              if pr not in cache:
+                  bodies = []
+                  bodies.extend(c.get('body') or '' for c in pages(f'/issues/{pr}/comments'))
+                  bodies.extend(c.get('body') or '' for c in pages(f'/pulls/{pr}/comments'))
+                  cache[pr] = '\n'.join(bodies)
+              return cache[pr]
 
-          # Only respond to explicit mentions.
-          if ! grep -Eiq \
-            '(^|[^[:alnum:]_-])@sara-czasak([^[:alnum:]_-]|$)' \
-            <<< "$BODY"; then
-            echo "No mention found."
-            exit 0
-          fi
+          def respond(kind, item, pr, timestamp):
+              body = item.get('body') or ''
+              author = (item.get('user') or {}).get('login', '')
+              if author.lower() == 'sara-czasak' or author.lower().endswith('[bot]'):
+                  return
+              if not mention.search(body) or not timestamp:
+                  return
+              when = date(timestamp)
+              if not cutoff <= when <= now or not away(when):
+                  return
+              marker = f'<!-- away-reply:{kind}:{item["id"]} -->'
+              if marker in existing(pr):
+                  print(f'Already replied to {kind} #{item["id"]}')
+                  return
+              message = api('/contents/.github/ISSUE_TEMPLATE/away_message.md')
+              text = base64.b64decode(message['content']).decode().strip()
+              if kind == 'inline':
+                  root = item.get('in_reply_to_id') or item['id']
+                  api(f'/pulls/{pr}/comments/{root}/replies', {'body': f'{text}\n\n{marker}'})
+              else:
+                  quoted = '\n'.join('> ' + line for line in body[:300].splitlines())
+                  url = item.get('html_url') or f'https://github.com/{repo}/pull/{pr}'
+                  reply = f'↳ Replying to [this mention]({url}):\n\n{quoted}\n\n{text}\n\n{marker}'
+                  api(f'/issues/{pr}/comments', {'body': reply})
+              cache[pr] += '\n' + marker
+              print(f'Replied to {kind} mention {item["id"]} on PR #{pr}')
 
-          # Convert the ORIGINAL mention timestamp to Warsaw time.
-          DAY=$(TZ=Europe/Warsaw date -d "$TIMESTAMP" +%u)
-          HOUR=$(TZ=Europe/Warsaw date -d "$TIMESTAMP" +%H)
-          HOUR=$((10#$HOUR))
+          since = urllib.parse.quote(cutoff.isoformat().replace('+00:00', 'Z'))
 
-          AWAY=false
+          # New PR descriptions and submitted review summaries.
+          recent_prs = []
+          for pr in pages('/pulls?state=all&sort=updated&direction=desc'):
+              if date(pr['updated_at']) < cutoff:
+                  break
+              number = pr['number']
+              recent_prs.append(number)
+              respond('pr', pr, number, pr['created_at'])
 
-          # Wednesday-Friday: before 14:00, after 18:00.
-          if (( DAY >= 3 && DAY <= 5 )); then
-            if (( HOUR < 14 || HOUR >= 18 )); then
-              AWAY=true
-            fi
-          fi
+          # Regular timeline comments, limited to PRs (not issues).
+          for comment in pages(f'/issues/comments?sort=created&direction=desc&since={since}'):
+              if date(comment['created_at']) < cutoff:
+                  continue
+              if not mention.search(comment.get('body') or ''):
+                  continue
+              number = int(comment['issue_url'].rstrip('/').split('/')[-1])
+              issue = api(f'/issues/{number}')
+              if 'pull_request' in issue:
+                  respond('comment', comment, number, comment['created_at'])
 
-          # Saturday-Sunday: before 18:00, after 20:00.
-          if (( DAY >= 6 && DAY <= 7 )); then
-            if (( HOUR < 18 || HOUR >= 20 )); then
-              AWAY=true
-            fi
-          fi
+          # Inline code-review comments across the repository.
+          for comment in pages(f'/pulls/comments?sort=created&direction=desc&since={since}'):
+              number = int(comment['pull_request_url'].rstrip('/').split('/')[-1])
+              respond('inline', comment, number, comment['created_at'])
 
-          if [[ "$AWAY" != true ]]; then
-            echo "Mention outside away hours. Skipping."
-            exit 0
-          fi
-
-          # Unique identifier for this specific mention event.
-          MARKER="<!-- away-reply:${KIND}:${ID} -->"
-
-          # Collect existing timeline and review comments.
-          EXISTING=$(
-            {
-              gh api --paginate \
-                "repos/$REPO/issues/$PR/comments?per_page=100" \
-                --jq '.[].body'
-
-              gh api --paginate \
-                "repos/$REPO/pulls/$PR/comments?per_page=100" \
-                --jq '.[].body'
-            }
-          )
-
-          # Prevent duplicate replies on workflow reruns.
-          if grep -Fq "$MARKER" <<< "$EXISTING"; then
-            echo "Already replied to this mention."
-            exit 0
-          fi
-
-          # Read the message from the trusted default branch.
-          MESSAGE=$(
-            gh api \
-              "repos/$REPO/contents/.github/ISSUE_TEMPLATE/away_message.md" \
-              --jq '.content' |
-              base64 --decode
-          )
-
-          if [[ "$KIND" == "inline" ]]; then
-
-            # Reply directly in the code-review discussion.
-            # GitHub requires replies to target the root comment.
-            ROOT_ID=$(jq -r '.in_reply_to_id // .id' <<< "$SOURCE")
-
-            gh api \
-              --method POST \
-              "repos/$REPO/pulls/$PR/comments/$ROOT_ID/replies" \
-              -f body="$MESSAGE
-
-          $MARKER"
-
-          else
-
-            # Regular comments/reviews do not support
-            # threaded replies through the REST API.
-            # Include a quote and link to the original mention.
-            QUOTE=$(
-              printf '%s' "$BODY" |
-              head -c 300 |
-              sed 's/^/> /'
-            )
-
-            gh api \
-              --method POST \
-              "repos/$REPO/issues/$PR/comments" \
-              -f body="↳ Replying to [this mention]($URL):
-
-          $QUOTE
-
-          $MESSAGE
-
-          $MARKER"
-
-          fi
-
-          echo "Away reply posted for $KIND mention $ID."
+          # Submitted review summaries on recently active PRs.
+          for number in recent_prs:
+              for review in pages(f'/pulls/{number}/reviews'):
+                  respond('review', review, number, review.get('submitted_at'))
+          PY
