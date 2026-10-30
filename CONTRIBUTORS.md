@@ -1252,6 +1252,12 @@ Every tile below is a real person who showed up for this project. 💛
         <sub><b>Adam Tungtaiya Lukman</b></sub>
       </a>
     </td>
+    <td align="center" valign="top" width="8.6%">
+      <a href="https://github.com/Renvian">
+        <img src="https://github.com/Renvian.png" width="100px;" alt="Renvil Vian Dsouza"/><br />
+        <sub><b>Renvil Vian Dsouza</b></sub>
+      </a>
+    </td>
   </tr>
 </table>
 
@@ -1530,6 +1536,7 @@ The Module Magicians. The Code Conjurers. The Test Sentinels. The Lore Keepers. 
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/spdly-studios"><img src="https://github.com/spdly-studios.png?size=80" width="80px" height="80px" alt="Shivaprasad V"/><br /><sub><b>Shivaprasad V</b></sub></a><br /><a href="https://github.com/sara-czasak/py_simple/commits?author=spdly-studios" title="Tests">🧪</a> <a href="https://github.com/sara-czasak/py_simple/commits?author=spdly-studios" title="Code">💻</a> <a href="https://github.com/sara-czasak/py_simple/issues?q=author%3Aspdly-studios" title="Bug reports">🐛</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/geethika870"><img src="https://github.com/geethika870.png?size=80" width="80px" height="80px" alt="geethika870"/><br /><sub><b>geethika870</b></sub></a><br /><a href="https://github.com/sara-czasak/py_simple/commits?author=geethika870" title="Tests">🧪</a> <a href="https://github.com/sara-czasak/py_simple/commits?author=geethika870" title="Code">💻</a> <a href="https://github.com/sara-czasak/py_simple/commits?author=geethika870" title="Docs">📖</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/maestro-00"><img src="https://github.com/maestro-00.png?size=80" width="80px" height="80px" alt="Adam Tungtaiya Lukman"/><br /><sub><b>Adam Tungtaiya Lukman</b></sub></a><br /><a href="https://github.com/sara-czasak/py_simple/commits?author=maestro-00" title="Docs">📖</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/Renvian"><img src="https://github.com/Renvian.png?size=80" width="80px" height="80px" alt="Renvil Vian Dsouza"/><br /><sub><b>Renvil Vian Dsouza</b></sub></a><br /><a href="https://github.com/sara-czasak/py_simple/commits?author=Renvian" title="Docs">📖</a></td>
     </tr>
   </tbody>
 </table>
