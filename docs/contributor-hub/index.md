@@ -12,6 +12,9 @@ Totally normal. The [Docstring Template](docstring_template.md) has a copy-paste
 **📖 "I added a new module and need to write a tutorial page, but I've never written docs before."**
 The [Tutorial Template](tutorial_template.md) walks through the exact structure every tutorial page in this project uses, with a real example to copy from. You're not writing from a blank page.
 
+**🧩 "The issue asks for a project that uses two modules, not one module page."**
+The [Project-Based Tutorial Template](project_tutorial_template.md) is the fill-in-the-blanks page for that build, plus where it goes in `mkdocs.yml`.
+
 **🚨 "My function needs to raise an error, and I don't know how this project wants errors to look."**
 The [Custom Exception Template](error_template.md) has a fill-in-the-blanks class definition, plus a worked example showing both raising and catching it. Errors sound intimidating, but the pattern here is always the same one — once you've seen it once, you'll recognize it everywhere in this codebase.
 
