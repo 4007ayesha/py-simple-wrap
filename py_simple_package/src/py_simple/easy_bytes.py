@@ -396,7 +396,6 @@ def percent_free(used: int, total: int) -> float:
     return round((total - used) / total * 100, 1)
 
 
-
 def average_bytes(values: list, decimal: bool = False) -> int:
     """
     Return the average size of a list of sizes, in bytes.
@@ -440,11 +439,113 @@ def average_bytes(values: list, decimal: bool = False) -> int:
     """
     _check_flag("decimal", decimal)
     if not isinstance(values, (list, tuple)):
-        raise EasyBytesError(
-            "\n\nERROR: values must be a list or a tuple."
-        ) from None
+        raise EasyBytesError("\n\nERROR: values must be a list or a tuple.") from None
     if len(values) == 0:
-        raise EasyBytesError(
-            "\n\nERROR: values must not be empty."
-        ) from None
+        raise EasyBytesError("\n\nERROR: values must not be empty.") from None
     return add_bytes(values, decimal=decimal) // len(values)
+
+
+def is_larger(a: int | str, b: int | str, decimal: bool = False) -> bool:
+    """
+    Check if size `a` is strictly larger than size `b`.
+
+    Each size can be a non-negative integer (byte count) or a size label
+    such as `"1.5 GB"`.
+
+    Args:
+        a (int | str): First size (byte count or label like `"1.5 GB"`).
+        b (int | str): Second size to compare against (byte count or label).
+        decimal (bool): When `True`, `KB`-style units use factors of 1000.
+            Defaults to `False`.
+
+    Returns:
+        bool: `True` if `a` is strictly greater than `b`, `False` otherwise.
+
+    Raises:
+        EasyBytesError: If `a` or `b` cannot be converted to bytes, or if
+            `decimal` is not a boolean.
+
+    Example:
+        === "The Py_simple Way"
+            ```python
+            from py_simple import is_larger
+
+            print(is_larger("1.5 GB", "1000 MB"))  # Returns True
+            print(is_larger("500 B", "1 KB"))      # Returns False
+            ```
+
+        === "The Traditional Way"
+            ```python
+            size_a = 1.5 * 1024 * 1024 * 1024
+            size_b = 1000 * 1024 * 1024
+            print(size_a > size_b)
+            ```
+    """
+
+    _check_flag("decimal", decimal)
+
+    bytes_a = (
+        a
+        if isinstance(a, int) and not isinstance(a, bool) and a >= 0
+        else human_to_bytes(a, decimal=decimal)
+    )
+    bytes_b = (
+        b
+        if isinstance(b, int) and not isinstance(b, bool) and b >= 0
+        else human_to_bytes(b, decimal=decimal)
+    )
+
+    return bytes_a > bytes_b
+
+
+def is_smaller(a: int | str, b: int | str, decimal: bool = False) -> bool:
+    """
+    Check if size `a` is strictly smaller than size `b`.
+
+    Each size can be a non-negative integer (byte count) or a size label
+    such as `"500 MB"`.
+
+    Args:
+        a (int | str): First size (byte count or label like `"500 MB"`).
+        b (int | str): Second size to compare against (byte count or label).
+        decimal (bool): When `True`, `KB`-style units use factors of 1000.
+            Defaults to `False`.
+
+    Returns:
+        bool: `True` if `a` is strictly less than `b`, `False` otherwise.
+
+    Raises:
+        EasyBytesError: If `a` or `b` cannot be converted to bytes, or if
+            `decimal` is not a boolean.
+
+    Example:
+        === "The Py_simple Way"
+            ```python
+            from py_simple import is_smaller
+
+            print(is_smaller("500 B", "1 KB"))     # Returns True
+            print(is_smaller("1.5 GB", "1000 MB")) # Returns False
+            ```
+
+        === "The Traditional Way"
+            ```python
+            size_a = 500
+            size_b = 1024
+            print(size_a < size_b)
+            ```
+    """
+
+    _check_flag("decimal", decimal)
+
+    bytes_a = (
+        a
+        if isinstance(a, int) and not isinstance(a, bool) and a >= 0
+        else human_to_bytes(a, decimal=decimal)
+    )
+    bytes_b = (
+        b
+        if isinstance(b, int) and not isinstance(b, bool) and b >= 0
+        else human_to_bytes(b, decimal=decimal)
+    )
+
+    return bytes_a < bytes_b
