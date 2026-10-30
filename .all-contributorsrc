@@ -1037,6 +1037,17 @@
       "contributions": [
         "documentation"
       ]
+    },
+    {
+      "login": "deltaaa00",
+      "name": "Delta",
+      "avatar_url": "https://github.com/deltaaa00.png",
+      "profile": "https://github.com/deltaaa00",
+      "contributions": [
+        "test",
+        "code",
+        "documentation"
+      ]
     }
   ]
 }
