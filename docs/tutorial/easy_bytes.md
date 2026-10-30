@@ -120,6 +120,50 @@ Example output:
 853 B
 ```
 
+## Comparing two sizes
+
+`is_smaller()` and `is_larger()` answer a yes-or-no question: is one size
+strictly smaller (or larger) than the other? Each side can be a plain byte
+count or a size label, and both sides can be different kinds.
+
+```python
+from py_simple import is_smaller, is_larger
+
+print(is_smaller("500 B", "1 KB"))
+print(is_smaller("1.5 GB", "1000 MB"))
+print(is_larger("1.5 GB", "1000 MB"))
+print(is_larger("500 B", "1 KB"))
+```
+
+Example output:
+
+```text
+True
+False
+True
+False
+```
+
+Both functions take the same optional `decimal=True` switch as the rest of
+the module, and it works the same way: it changes what `KB`-style units mean,
+and leaves `KiB`-style units alone. This is a good way to see the difference:
+
+```python
+from py_simple import is_smaller
+
+print(is_smaller("1 KB", "1 KiB"))
+print(is_smaller("1 KB", "1 KiB", decimal=True))
+```
+
+```text
+False
+True
+```
+
+By default `"1 KB"` and `"1 KiB"` are both 1024 bytes, so neither is smaller.
+With `decimal=True`, `"1 KB"` drops to 1000 bytes while `"1 KiB"` stays at
+1024, so the first one is now smaller.
+
 ## What happened?
 
 `human_to_bytes()` reads a label like `"2.5 MB"` and returns the byte count.
@@ -163,6 +207,11 @@ to one decimal place.
 non-negative byte counts, including a total of zero when usage is also zero.
 Booleans and usage greater than the total raise `EasyBytesError` instead of
 returning a misleading count. A full storage total returns zero.
+
+`is_smaller()` and `is_larger()` convert both sides to bytes and compare them.
+They are strict: two equal sizes are neither smaller nor larger, so both
+return `False`. A size that cannot be converted raises `EasyBytesError`, the
+same as everywhere else in the module.
 
 ## Why use these helpers?
 
