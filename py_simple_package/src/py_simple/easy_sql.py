@@ -554,12 +554,13 @@ def run_update(
             "\n\t- Lowercase letters (a-z)"
             "\n\t- Underscores  (_)."
         ) from None
+
+
 def table_exists(
     connection: sqlite3.Connection,
     cursor: sqlite3.Cursor,
     table_name: str,
 ) -> bool:
-
     """
     Checks whether a table exists in the SQLite database.
 
@@ -621,8 +622,7 @@ def table_exists(
 
     try:
         cursor.execute(
-            "SELECT name FROM sqlite_master "
-            "WHERE type = 'table' AND name = ?",
+            "SELECT name FROM sqlite_master " "WHERE type = 'table' AND name = ?",
             (table_name,),
         )
         return cursor.fetchone() is not None
@@ -642,7 +642,7 @@ def list_tables(connection: sqlite3.Connection, cursor: sqlite3.Cursor) -> list[
         cursor (sqlite3.Cursor): Cursor for executing SQL statements.
 
     Returns:
-        list[str]: Table names, in the order SQLite returns them. An
+        list[str]: Table names, sorted by name. An
             empty list means the database has no user tables yet.
 
     Raises:
@@ -666,7 +666,7 @@ def list_tables(connection: sqlite3.Connection, cursor: sqlite3.Cursor) -> list[
             cursor = connection.cursor()
             cursor.execute(
                 "SELECT name FROM sqlite_master "
-                "WHERE type = 'table' AND name NOT LIKE 'sqlite_%' "
+                "WHERE type = 'table' AND name NOT GLOB 'sqlite_*' "
                 "ORDER BY name"
             )
             print([row[0] for row in cursor.fetchall()])
@@ -680,7 +680,7 @@ def list_tables(connection: sqlite3.Connection, cursor: sqlite3.Cursor) -> list[
     try:
         cursor.execute(
             "SELECT name FROM sqlite_master "
-            "WHERE type = 'table' AND name NOT LIKE 'sqlite_%' "
+            "WHERE type = 'table' AND name NOT GLOB 'sqlite_*' "
             "ORDER BY name"
         )
         return [row[0] for row in cursor.fetchall()]
