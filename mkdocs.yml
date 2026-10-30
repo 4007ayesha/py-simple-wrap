@@ -108,6 +108,7 @@ nav:
       - Pull Request Workflow Guide: contributor-hub/pr_workflow_template.md
       - Adding a New Module Guide: contributor-hub/new_module_template.md
       - Adding a Function to an Existing Module: contributor-hub/expand_module_template.md
+      - Project-Based Tutorial Template: contributor-hub/project_tutorial_template.md
   - Reference:
       - Easy AI: reference/easy_ai.md
       - Easy Archive: reference/easy_archive.md
