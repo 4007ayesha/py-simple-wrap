@@ -30,6 +30,9 @@ The [Public API Export Template](public_api_template.md) shows where to expose a
 **🌐 "My test calls a website. How do I test it without going online?"**
 The [Network Test Template](network_tests_template.md) gives you a working example with fake responses and request failures, then shows which parts to change for your own helper.
 
+**🧪 "My test changes files, environment variables or the working directory. How do I keep the next test safe?"**
+The [Keeping Tests Isolated](test_isolation_template.md) guide starts with runnable `tmp_path` and `monkeypatch` examples, then shows what gets restored and what stays on disk.
+
 **🧹 "A pre-commit check failed, or changed my files. What do I do next?"**
 The [Pre-commit Guide](pre_commit_template.md) shows how to run the repository's hooks, review their fixes, and stage and check your files again.
 
