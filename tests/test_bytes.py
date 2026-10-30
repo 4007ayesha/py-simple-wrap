@@ -11,7 +11,7 @@ from py_simple_package.src.py_simple.easy_bytes import (
     add_bytes,
     average_bytes,
     is_larger,
-    is_smaller
+    is_smaller,
 )
 
 BOTH = [False, True]
@@ -655,7 +655,8 @@ def test_percent_free(used, total, expected):
 
 
 @pytest.mark.parametrize(
-    "invalid", [-1, True, False, 1.0, 1.5, "1", None, [], {}, float("nan"), float("inf")]
+    "invalid",
+    [-1, True, False, 1.0, 1.5, "1", None, [], {}, float("nan"), float("inf")],
 )
 @pytest.mark.parametrize("argument", ["used", "total"])
 def test_percent_free_rejects_bad_input(invalid, argument):
@@ -689,7 +690,6 @@ def test_percent_free_public_imports():
 
     assert public_helper is module_helper
     assert public_helper(250, 1000) == 75.0
-
 
 
 # --- average_bytes --------------------------------------------------------
@@ -746,9 +746,7 @@ def test_average_bytes_rejects_non_list(values):
         average_bytes(values)
 
 
-@pytest.mark.parametrize(
-    "bad_item", [-1, True, False, 1.5, None, [], {}, float("nan")]
-)
+@pytest.mark.parametrize("bad_item", [-1, True, False, 1.5, None, [], {}, float("nan")])
 def test_average_bytes_rejects_bad_item(bad_item):
     """Each item must be a non-negative integer or a valid size label."""
     with pytest.raises(
@@ -773,6 +771,7 @@ def test_average_bytes_public_imports():
     assert public_helper is module_helper
     assert public_helper([512, "1 KB", "1 KiB"]) == 853
 
+
 def test_is_larger():
     # Basic comparisons
     assert is_larger("1.5 GB", "1000 MB") is True
@@ -785,6 +784,38 @@ def test_is_larger():
     # Decimal flag
     assert is_larger("1 KB", 1000, decimal=True) is False
 
+    # Invalid decimal flag
+    for bad in [0, 1, "yes", None, [], 1.0]:
+        with pytest.raises(
+            EasyBytesError, match=re.escape("decimal must be a boolean")
+        ):
+            is_larger("1 KB", "2 KB", decimal=bad)
+
+    # Boolean inputs (fall through to human_to_bytes as a non-string label)
+    with pytest.raises(EasyBytesError, match="label must be a string"):
+        is_larger(True, "1 KB")
+    with pytest.raises(EasyBytesError, match="label must be a string"):
+        is_larger("1 KB", False)
+
+    # Negative values: a negative label fails the negative-size check, while a
+    # negative int fails the int branch and reaches human_to_bytes as a
+    # non-string label. Both sides are covered for each form.
+    with pytest.raises(EasyBytesError, match="size cannot be negative"):
+        is_larger("-1 KB", "1 KB")
+    with pytest.raises(EasyBytesError, match="size cannot be negative"):
+        is_larger("1 KB", "-1 KB")
+    with pytest.raises(EasyBytesError, match="label must be a string"):
+        is_larger(-10, "1 KB")
+    with pytest.raises(EasyBytesError, match="label must be a string"):
+        is_larger("1 KB", -10)
+
+    # Mixed unit types: KB (1024) and KiB (1024) are equal by default...
+    assert is_larger("1 KB", "1 KiB") is False
+    # ...but decimal=True shrinks only KB, so KB is still not larger.
+    assert is_larger("1 KB", "1 KiB", decimal=True) is False
+    assert is_larger("1 GiB", "1000 MB") is True
+    assert is_larger("1025 B", "1 KiB") is True
+
     # Errors handling
     with pytest.raises(EasyBytesError):
         is_larger(-10, "1 KB")
@@ -796,11 +827,46 @@ def test_is_larger():
 def test_is_smaller():
     # Basic comparisons
     assert is_smaller("500 B", "1 KB") is True
+    assert is_smaller("500 GB", "1 KiB") is False
     assert is_smaller("1.5 GB", "1000 MB") is False
+    assert is_smaller("1.5 TB", "1000 TiB") is True
     assert is_smaller(512, "1 KB") is True
 
     # Edge cases (equal values)
     assert is_smaller("1 KB", 1024) is False
+
+    # Invalid decimal flag
+    for bad in [0, 1, "yes", None, [], 1.0]:
+        with pytest.raises(
+            EasyBytesError, match=re.escape("decimal must be a boolean")
+        ):
+            is_smaller("1 KB", "2 KB", decimal=bad)
+
+    # Boolean inputs (fall through to human_to_bytes as a non-string label)
+    with pytest.raises(EasyBytesError, match="label must be a string"):
+        is_smaller(True, "1 KB")
+    with pytest.raises(EasyBytesError, match="label must be a string"):
+        is_smaller("1 KB", False)
+
+    # Negative values: a negative label fails the negative-size check, while a
+    # negative int fails the int branch and reaches human_to_bytes as a
+    # non-string label. Both sides are covered for each form.
+    with pytest.raises(EasyBytesError, match="size cannot be negative"):
+        is_smaller("-1 KB", "1 KB")
+    with pytest.raises(EasyBytesError, match="size cannot be negative"):
+        is_smaller("1 KB", "-1 KB")
+    with pytest.raises(EasyBytesError, match="label must be a string"):
+        is_smaller(-10, "1 KB")
+    with pytest.raises(EasyBytesError, match="label must be a string"):
+        is_smaller("1 KB", -10)
+
+    # Mixed unit types: KB (1024) and KiB (1024) are equal by default...
+    assert is_smaller("1 KB", "1 KiB") is False
+    # ...but decimal=True shrinks only KB, so KB is then smaller.
+    assert is_smaller("1 KB", "1 KiB", decimal=True) is True
+    assert is_smaller("1000 MB", "1 GiB") is True
+    assert is_smaller(1024, "1 KiB") is False
+    assert is_smaller(1023, "1 KiB") is True
 
     # Errors handling
     with pytest.raises(EasyBytesError):

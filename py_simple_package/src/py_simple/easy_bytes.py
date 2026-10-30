@@ -396,7 +396,6 @@ def percent_free(used: int, total: int) -> float:
     return round((total - used) / total * 100, 1)
 
 
-
 def average_bytes(values: list, decimal: bool = False) -> int:
     """
     Return the average size of a list of sizes, in bytes.
@@ -440,14 +439,11 @@ def average_bytes(values: list, decimal: bool = False) -> int:
     """
     _check_flag("decimal", decimal)
     if not isinstance(values, (list, tuple)):
-        raise EasyBytesError(
-            "\n\nERROR: values must be a list or a tuple."
-        ) from None
+        raise EasyBytesError("\n\nERROR: values must be a list or a tuple.") from None
     if len(values) == 0:
-        raise EasyBytesError(
-            "\n\nERROR: values must not be empty."
-        ) from None
+        raise EasyBytesError("\n\nERROR: values must not be empty.") from None
     return add_bytes(values, decimal=decimal) // len(values)
+
 
 def is_larger(a: int | str, b: int | str, decimal: bool = False) -> bool:
     """
@@ -488,10 +484,19 @@ def is_larger(a: int | str, b: int | str, decimal: bool = False) -> bool:
 
     _check_flag("decimal", decimal)
 
-    bytes_a = a if isinstance(a, int) and not isinstance(a, bool) and a >= 0 else human_to_bytes(a, decimal=decimal)
-    bytes_b = b if isinstance(b, int) and not isinstance(b, bool) and b >= 0 else human_to_bytes(b, decimal=decimal)
+    bytes_a = (
+        a
+        if isinstance(a, int) and not isinstance(a, bool) and a >= 0
+        else human_to_bytes(a, decimal=decimal)
+    )
+    bytes_b = (
+        b
+        if isinstance(b, int) and not isinstance(b, bool) and b >= 0
+        else human_to_bytes(b, decimal=decimal)
+    )
 
     return bytes_a > bytes_b
+
 
 def is_smaller(a: int | str, b: int | str, decimal: bool = False) -> bool:
     """
@@ -532,7 +537,15 @@ def is_smaller(a: int | str, b: int | str, decimal: bool = False) -> bool:
 
     _check_flag("decimal", decimal)
 
-    bytes_a = a if isinstance(a, int) and not isinstance(a, bool) and a >= 0 else human_to_bytes(a, decimal=decimal)
-    bytes_b = b if isinstance(b, int) and not isinstance(b, bool) and b >= 0 else human_to_bytes(b, decimal=decimal)
+    bytes_a = (
+        a
+        if isinstance(a, int) and not isinstance(a, bool) and a >= 0
+        else human_to_bytes(a, decimal=decimal)
+    )
+    bytes_b = (
+        b
+        if isinstance(b, int) and not isinstance(b, bool) and b >= 0
+        else human_to_bytes(b, decimal=decimal)
+    )
 
     return bytes_a < bytes_b
