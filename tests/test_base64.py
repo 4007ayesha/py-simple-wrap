@@ -166,3 +166,14 @@ def test_encode_urlsafe_text_wraps_invalid_unicode():
 
 def test_public_import_includes_encode_urlsafe_text():
     assert public_encode_urlsafe_text is encode_urlsafe_text
+
+
+@pytest.mark.parametrize("text", ["\ud800", "\udfff", "prefix\ud800suffix"])
+def test_encode_text_wraps_unencodable_unicode(text):
+    with pytest.raises(EasyBase64Error):
+        encode_text(text)
+
+
+@pytest.mark.parametrize("text", ["", "café", "नमस्ते", "🎉"])
+def test_encode_text_preserves_valid_unicode(text):
+    assert decode_text(encode_text(text)) == text
