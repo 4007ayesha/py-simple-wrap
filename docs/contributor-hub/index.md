@@ -33,6 +33,9 @@ The [Pre-commit Guide](pre_commit_template.md) shows how to run the repository's
 **🔀 "I wrote my changes, but what are the exact steps to test, commit, and open a PR?"**
 The [Pull Request Workflow Guide](pr_workflow_template.md) breaks down the complete lifecycle: branch naming, running local pytest and ruff checks, formatting commit messages, opening the pull request, and addressing review feedback.
 
+**🎲 "My helper uses randomness. How can its tests pass reliably?"**
+The [Testing Random Helpers](random_tests_template.md) guide shows controlled draws, boundary cases, and shuffle checks that accept every valid ordering.
+
 ## Still stuck, or something's not covered here?
 
 That's okay too. Open an issue, or mention it in your pull request, and it'll get sorted out together — see [CONTRIBUTING.md](https://github.com/sara-czasak/py-simple-wrap/blob/main/CONTRIBUTING.md) for how to reach out. Nobody's expected to figure this out alone.
