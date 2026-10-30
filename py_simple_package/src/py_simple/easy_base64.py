@@ -288,3 +288,47 @@ def decode_to_file(encoded: str, file_path: str) -> None:
             file.write(data)
     except (FileNotFoundError, OSError) as error:
         raise EasyBase64Error(f"\n\nERROR: {error}") from None
+
+
+def encode_urlsafe_text(text: str) -> str:
+    """
+    Encode text as Base64 using the URL-safe alphabet.
+
+    Uses '-' and '_' instead of '+' and '/'. Standard '=' padding is kept;
+    use a URL query builder when placing the result in a query string.
+    Base64 is reversible encoding, not encryption.
+
+    Args:
+        text (str): Text to encode as UTF-8, including Unicode text.
+
+    Returns:
+        str: URL-safe Base64 text, or an empty string for empty input.
+
+    Raises:
+        EasyBase64Error: If `text` is not a string or cannot be UTF-8 encoded.
+
+    Example:
+        === "The Py_simple Way"
+            ```python
+            from py_simple import encode_urlsafe_text
+
+            encoded = encode_urlsafe_text("hello?")  # 'aGVsbG8_'
+            ```
+
+        === "The Traditional Way"
+            ```python
+            import base64
+
+            encoded = base64.urlsafe_b64encode("hello?".encode("utf-8")).decode("ascii")
+            ```
+
+    Note:
+        Decode with `base64.urlsafe_b64decode(encoded).decode("utf-8")`.
+        `decode_text` accepts the standard Base64 alphabet, not '-' and '_'.
+    """
+    if not isinstance(text, str):
+        raise EasyBase64Error("\n\nERROR: text must be a string.")
+    try:
+        return base64.urlsafe_b64encode(text.encode("utf-8")).decode("ascii")
+    except UnicodeEncodeError as error:
+        raise EasyBase64Error(f"\n\nERROR: {error}") from None
