@@ -142,15 +142,14 @@ class TestRunSelect:
                 "name UNION SELECT sql FROM sqlite_master",
             )
 
+
 class TestTableExists:
     """Tests for table_exists function."""
 
     def setup_method(self):
         """Create a fresh in-memory database before each test."""
         self.conn, self.cursor = open_db(":memory:")
-        self.cursor.execute(
-            "CREATE TABLE users (id INTEGER PRIMARY KEY, name TEXT)"
-        )
+        self.cursor.execute("CREATE TABLE users (id INTEGER PRIMARY KEY, name TEXT)")
         self.conn.commit()
 
     def teardown_method(self):
@@ -881,3 +880,26 @@ class TestListTables:
 
     def test_public_import(self):
         assert public_list_tables is list_tables
+
+
+def test_list_tables_preserves_names_similar_to_internal_prefix():
+    connection, cursor = open_db(":memory:")
+    try:
+        cursor.execute("CREATE TABLE sqlitex_notes (id INTEGER)")
+        cursor.execute("CREATE TABLE sqlite (id INTEGER)")
+        cursor.execute("CREATE TABLE sqliteX (id INTEGER)")
+        cursor.execute("CREATE TABLE notes (id INTEGER PRIMARY KEY AUTOINCREMENT)")
+        assert (
+            cursor.execute(
+                "SELECT name FROM sqlite_master WHERE name = 'sqlite_sequence'"
+            ).fetchone()
+            is not None
+        )
+        assert list_tables(connection, cursor) == [
+            "notes",
+            "sqlite",
+            "sqliteX",
+            "sqlitex_notes",
+        ]
+    finally:
+        connection.close()
