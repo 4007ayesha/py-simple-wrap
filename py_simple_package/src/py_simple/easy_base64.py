@@ -30,7 +30,7 @@ def encode_text(text: str) -> str:
         str: The Base64 text, safe to paste into a file or a message.
 
     Raises:
-        EasyBase64Error: If `text` is not a string.
+        EasyBase64Error: If `text` is not a string or cannot be UTF-8 encoded.
 
     Example:
         === "The Py_simple Way"
@@ -49,7 +49,10 @@ def encode_text(text: str) -> str:
     """
     if not isinstance(text, str):
         raise EasyBase64Error("\n\nERROR: text must be a string.")
-    return base64.b64encode(text.encode("utf-8")).decode("ascii")
+    try:
+        return base64.b64encode(text.encode("utf-8")).decode("ascii")
+    except UnicodeEncodeError as error:
+        raise EasyBase64Error(f"\n\nERROR: {error}") from None
 
 
 def decode_text(encoded: str) -> str:
