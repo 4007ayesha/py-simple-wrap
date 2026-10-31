@@ -82,8 +82,8 @@ def hash_text(text: str, algorithm: str = "sha256") -> str:
         str: The checksum as lowercase hex.
 
     Raises:
-        EasyHashError: If `text` is not a string or the algorithm is
-            not supported.
+        EasyHashError: If `text` is not a string, cannot be UTF-8 encoded,
+            or the algorithm is not supported.
 
     Example:
         === "The Py_simple Way"
@@ -103,7 +103,10 @@ def hash_text(text: str, algorithm: str = "sha256") -> str:
     if not isinstance(text, str):
         raise EasyHashError("\n\nERROR: text must be a string.")
     hasher = _new_hasher(algorithm)
-    hasher.update(text.encode("utf-8"))
+    try:
+        hasher.update(text.encode("utf-8"))
+    except UnicodeEncodeError as error:
+        raise EasyHashError(f"\n\nERROR: {error}") from None
     return hasher.hexdigest()
 
 

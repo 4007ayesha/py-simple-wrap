@@ -592,3 +592,16 @@ def test_hash_files_public_imports(tmp_path):
 
     assert public_hash_files is module_hash_files
     assert public_hash_files([notes]) == module_hash_files([notes])
+
+
+@pytest.mark.parametrize("algorithm", ["sha256", "sha1", "md5"])
+@pytest.mark.parametrize("text", ["\ud800", "\udfff", "hello\ud800world"])
+def test_hash_text_wraps_unencodable_unicode(algorithm, text):
+    with pytest.raises(EasyHashError):
+        hash_text(text, algorithm)
+
+
+@pytest.mark.parametrize("algorithm", ["sha256", "sha1", "md5"])
+@pytest.mark.parametrize("text", ["", "café", "नमस्ते 🎉"])
+def test_hash_text_unicode_matches_byte_checksum(algorithm, text):
+    assert hash_text(text, algorithm) == hash_bytes(text.encode("utf-8"), algorithm)
