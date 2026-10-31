@@ -393,6 +393,7 @@ def test_zip_files_numbers_collisions_with_the_same_parent_name(tmp_path):
             "report_shared_2.txt",
         }
 
+
 def test_get_zip_file_count_success(tmp_path):
     zip_path = tmp_path / "test.zip"
     with zipfile.ZipFile(zip_path, "w") as zf:
@@ -426,7 +427,9 @@ def test_get_zip_file_count_invalid_zip(tmp_path):
 
 
 @pytest.mark.parametrize("alias", ["same_path", "relative_path", "symlink", "hardlink"])
-def test_zip_files_rejects_output_alias_of_input_without_changing_files(tmp_path, monkeypatch, alias):
+def test_zip_files_rejects_output_alias_of_input_without_changing_files(
+    tmp_path, monkeypatch, alias
+):
     source = tmp_path / "source.zip"
     original = b"original input contents"
     source.write_bytes(original)
@@ -449,7 +452,9 @@ def test_zip_files_rejects_output_alias_of_input_without_changing_files(tmp_path
     note = tmp_path / "note.txt"
     note.write_text("another input", encoding="utf-8")
 
-    with pytest.raises(EasyArchiveError, match="Output must not refer to an input file"):
+    with pytest.raises(
+        EasyArchiveError, match="Output must not refer to an input file"
+    ):
         zip_files([str(note), str(source)], str(output))
 
     assert source.read_bytes() == original
@@ -467,3 +472,32 @@ def test_zip_files_allows_overwriting_unrelated_output(tmp_path):
     with zipfile.ZipFile(output) as archive:
         assert archive.namelist() == ["note.txt"]
         assert archive.read("note.txt") == b"keep this note"
+
+
+@pytest.mark.parametrize("alias_kind", ["same", "relative", "symlink", "hardlink"])
+def test_add_to_zip_rejects_itself_before_writing(tmp_path, monkeypatch, alias_kind):
+    archive = tmp_path / "notes.zip"
+    with zipfile.ZipFile(archive, "w") as zf:
+        zf.writestr("note.txt", "keep this")
+    before = archive.read_bytes()
+    source = archive
+    if alias_kind == "relative":
+        monkeypatch.chdir(tmp_path)
+        source = "notes.zip"
+    elif alias_kind in ("symlink", "hardlink"):
+        source = tmp_path / "alias.zip"
+        try:
+            if alias_kind == "symlink":
+                source.symlink_to(archive)
+            else:
+                os.link(archive, source)
+        except (OSError, NotImplementedError):
+            pytest.skip("Filesystem does not support this link type")
+
+    def unexpected_write(*args, **kwargs):
+        pytest.fail("Self-append must be rejected before ZipFile.write")
+
+    monkeypatch.setattr(zipfile.ZipFile, "write", unexpected_write)
+    with pytest.raises(EasyArchiveError, match="itself"):
+        add_to_zip(str(archive), str(source))
+    assert archive.read_bytes() == before
