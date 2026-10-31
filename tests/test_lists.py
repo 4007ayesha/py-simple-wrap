@@ -169,3 +169,35 @@ def test_sort_numbers(items, expected):
 )
 def test_sort_words(items, expected):
     assert sort_words(items) == expected
+
+
+@pytest.mark.parametrize(
+    "items,expected",
+    [
+        ([1, 2, 2, 1], [1, 2]),
+        (
+            ["first", "second", "third", "third", "second", "first"],
+            ["first", "second", "third"],
+        ),
+        ([0, 1, 2, 2, 1, 1, 3], [1, 2]),
+    ],
+)
+def test_find_duplicates_keeps_first_occurrence_order(items, expected):
+    original = items.copy()
+    assert find_duplicates(items) == expected
+    assert items == original
+
+
+@pytest.mark.parametrize(
+    "items, expected",
+    [
+        ([2, 1], 2),
+        ([2, 1, 1, 2], 2),
+        ([3, 2, 3, 2, 1], 3),
+        (["zebra", "apple", "apple", "zebra"], "zebra"),
+    ],
+)
+def test_most_common_item_ties_keep_first_occurrence(items, expected):
+    original = items.copy()
+    assert most_common_item(items) == expected
+    assert items == original

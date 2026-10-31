@@ -34,6 +34,69 @@ accepts uppercase or lowercase hex.
 `hash_file()` does the same job for a file on disk. You can pass `"md5"` or
 `"sha1"` when a tool asks for that kind of checksum instead.
 
+## Check a file against a checksum
+
+`verify_file_hash()` compares a file with an expected checksum. It reads in
+64 KiB chunks, so a large file does not need to fit in memory.
+
+```python
+from pathlib import Path
+from py_simple import verify_file_hash
+
+Path("notes.txt").write_bytes(b"hello")
+expected = "2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824"
+
+print(verify_file_hash("notes.txt", expected))  # True
+print(verify_file_hash("notes.txt", "0" * 64))  # False
+```
+
+Pass a string path or a `pathlib.Path`, and use `algorithm="sha1"` or
+`algorithm="md5"` if that is how the expected checksum was made. Hex letters
+can be uppercase or lowercase. Non-string or malformed checksums return
+`False`; surrounding whitespace is not stripped. A non-string checksum
+returns `False` before the file or algorithm is checked. With a string
+checksum, missing/unreadable files and unsupported algorithms raise
+`EasyHashError`, just as `hash_file()` does.
+
+Checksums help detect changed contents. Compare against a checksum from a
+trusted source; a matching checksum alone does not prove who made the file.
+
+## Compare two files by checksum
+
+Use `compare_file_hashes()` to check whether two files on disk have identical
+checksums without loading either file completely into memory. It reads both
+files in 64 KiB chunks:
+
+```python
+from py_simple import compare_file_hashes
+
+identical = compare_file_hashes("notes.txt", "backup.txt")
+print(identical)  # True or False
+```
+
+Like `verify_file_hash()`, you can pass string paths or `pathlib.Path` objects
+and specify `"sha256"`, `"sha1"`, or `"md5"` (defaults to `"sha256"`). If
+either file cannot be read or the algorithm is unsupported, an `EasyHashError`
+is raised.
+
+## Fingerprint several files at once
+
+`hash_files()` returns one checksum per path. Use it when you want to
+check a handful of notes separately, instead of one checksum for a whole
+folder.
+
+```python
+from py_simple import hash_files
+
+checksums = hash_files(["notes.txt", "backup.txt"])
+print(checksums["notes.txt"])
+```
+
+Pass a list or a tuple. An empty list returns an empty dictionary. A
+string path by itself is rejected, because Python would otherwise walk
+its characters. Missing files and unsupported algorithms raise
+`EasyHashError`.
+
 ## Why use these helpers?
 
 The usual version is a few steps every time:

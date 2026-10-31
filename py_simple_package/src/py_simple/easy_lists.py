@@ -52,18 +52,13 @@ def find_duplicates(items: list) -> list:
         === "The Traditional Way"
             ```python
             items = [1, 2, 2, 3, 3, 3]
-            result = list({item for item in items if items.count(item) > 1})
+            result = [item for item in dict.fromkeys(items) if items.count(item) > 1]
             ```
     """
-    seen = set()
-    duplicates = []
+    counts = {}
     for item in items:
-        if item in seen:
-            if item not in duplicates:
-                duplicates.append(item)
-        else:
-            seen.add(item)
-    return duplicates
+        counts[item] = counts.get(item, 0) + 1
+    return [item for item, count in counts.items() if count > 1]
 
 
 def chunk_list(items: list, size: int) -> list:
@@ -141,7 +136,7 @@ def most_common_item(items: list) -> object:
         items (list): List to examine.
 
     Returns:
-        object: The most frequent item.
+        object: The most frequent item. Ties return the first item encountered.
 
     Raises:
         ValueError: If the list is empty.
@@ -165,7 +160,10 @@ def most_common_item(items: list) -> object:
     if not items:
         raise ValueError("Cannot find the most common item of an empty list.")
 
-    return max(set(items), key=items.count)
+    from collections import Counter
+
+    counts = Counter(items)
+    return max(counts, key=counts.get)
 
 
 def rotate_list(items: list, steps: int) -> list:

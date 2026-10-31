@@ -25,6 +25,78 @@ If py-simple-wrap has been useful, or you just like what it's doing, a star mean
 
 Before submitting a new feature, ask yourself: **"Does this make a complex task easier for a beginner?"** My goal is to keep things intuitive and easy to read.
 
+## 📂 Understanding the Project Structure
+
+Before making your first contribution, here's a quick overview of where everything lives.
+
+```text
+py-simple-wrap/
+├── py_simple_package/
+│   └── src/
+│       └── py_simple/       # Python package source code
+├── tests/                   # Automated tests
+├── docs/                    # Documentation and tutorials
+├── module-book/             # Module reference website
+├── landing/                 # Website landing page
+├── .github/                 # GitHub workflows and templates
+├── scripts/                 # Project maintenance scripts
+├── pyproject.toml           # Package configuration and dependencies
+├── CONTRIBUTING.md          # Contribution guidelines
+└── README.md                # Project overview
+```
+
+### Where should I make changes?
+
+**Adding or updating a helper?**
+
+Look inside `py_simple_package/src/py_simple/`. This is where the Python source code lives.
+
+**Adding tests?**
+
+Look inside `tests/`. Tests verify that helpers work correctly and help prevent bugs.
+
+**Improving documentation?**
+
+Start with `docs/` or the relevant Markdown files in the repository. The `module-book/` directory contains the module reference website.
+
+### Why is the Python package inside `src/`?
+
+The project uses a source-based layout to separate the Python code from the rest of the repository.
+
+The package is located at:
+
+`py_simple_package/src/py_simple/`
+
+But when you install py-simple-wrap, you import it using:
+
+```python
+from py_simple import make_blank_file
+```
+
+You don't need to include the repository's directory structure in your imports.
+
+### What's an editable installation?
+
+When contributing, you want to test changes to your local code without reinstalling the package every time.
+
+An editable installation, such as:
+
+```bash
+pip install -e .
+```
+
+connects your Python environment to the source code in your cloned repository. Changes you make to Python files can then be tested directly.
+
+A normal installation, such as:
+
+```bash
+pip install py-simple-wrap
+```
+
+installs the published package instead.
+
+**Tip:** If you're contributing, follow the environment setup instructions below rather than installing the published package.
+
 ## 🛠️ Step-by-Step Guide for Beginners
 
 If you've never contributed to an open-source project before, here is exactly how to do it:
@@ -87,7 +159,6 @@ not sure how to format a docstring or write a tutorial page, check the
 [Contributor Hub](https://sara-czasak.github.io/py-simple-wrap/docs/contributor-hub/docstring_template/)
 on the docs site — it has copy-paste templates for both, built from this
 project's actual conventions.
-
 
 8. **Commit Your Changes**: Save your progress with a helpful message:
 

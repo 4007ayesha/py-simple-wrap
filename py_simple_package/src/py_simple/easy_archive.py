@@ -103,6 +103,12 @@ def zip_files(file_paths: list, zip_name: str) -> str:
     Returns:
         str: Path to the created zip file.
 
+    Raises:
+        EasyArchiveError: If an input is missing, no files are supplied,
+            the output does not end in '.zip', or the output refers to
+            an input file (including symbolic and hard links). Input/output
+            overlap is rejected before opening the output for writing.
+
     Example:
         === "The Py_simple Way"
             ```python
@@ -132,6 +138,14 @@ def zip_files(file_paths: list, zip_name: str) -> str:
 
     if not existing:
         raise EasyArchiveError("\n\n\nERROR: No valid files to zip.") from None
+
+    for path in existing:
+        if os.path.realpath(path) == os.path.realpath(zip_name) or (
+            os.path.exists(zip_name) and os.path.samefile(path, zip_name)
+        ):
+            raise EasyArchiveError(
+                f"\n\n\nERROR: Output must not refer to an input file: '{path}'."
+            )
 
     with zipfile.ZipFile(zip_name, "w", zipfile.ZIP_DEFLATED) as zf:
         used_names = set()
@@ -360,12 +374,19 @@ def add_to_zip(zip_path: str, file_to_add: str) -> bool:
     """
     Adds a single file to an existing .zip archive.
 
+    Rejects the archive itself, including symbolic and hard-link aliases,
+    before opening it for writing.
+
     Args:
         zip_path (str): Path to the existing .zip file.
         file_to_add (str): Path of the file to add to the archive.
 
     Returns:
         bool: True if the file was added.
+
+    Raises:
+        EasyArchiveError: If either file is missing, the archive is invalid,
+            or the source refers to the archive itself.
 
     Example:
         === "The Py_simple Way"
@@ -396,6 +417,11 @@ def add_to_zip(zip_path: str, file_to_add: str) -> bool:
     if not os.path.isfile(file_to_add):
         raise EasyArchiveError(
             f"\n\n\nERROR: File '{file_to_add}' does not exist."
+        ) from None
+
+    if os.path.samefile(zip_path, file_to_add):
+        raise EasyArchiveError(
+            "\n\n\nERROR: Cannot add an archive to itself."
         ) from None
 
     with zipfile.ZipFile(zip_path, "a", zipfile.ZIP_DEFLATED) as zf:
@@ -431,6 +457,7 @@ def is_zip_file(path: str) -> bool:
             ```
     """
     return zipfile.is_zipfile(path)
+
 
 def get_zip_file_count(zip_path: str) -> int:
     """

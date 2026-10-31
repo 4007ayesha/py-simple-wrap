@@ -16,10 +16,11 @@
  
 [![PyPI](https://img.shields.io/pypi/v/py-simple-wrap?style=flat-square&logo=pypi&logoColor=white&color=3775A9)](https://pypi.org/project/py-simple-wrap/)
 [![Tests](https://img.shields.io/github/actions/workflow/status/sara-czasak/py-simple-wrap/tests.yml?style=flat-square&logo=github&label=tests)](https://github.com/sara-czasak/py-simple-wrap/actions/workflows/tests.yml)
-[![Contributors](https://img.shields.io/badge/contributors-75-orange?style=flat-square)](CONTRIBUTORS.md)
+[![Security: SkillsLLM](https://skillsllm.com/security-check/badge.svg?owner=sara-czasak&repo=py-simple-wrap)](https://skillsllm.com/security-check/ClrqG49aEoiZ)
+[![Contributors](https://img.shields.io/badge/contributors-98-orange?style=flat-square)](CONTRIBUTORS.md)
 [![PyPI Downloads](https://static.pepy.tech/personalized-badge/py-simple-wrap?period=total&units=NONE&left_color=BLACK&right_color=GREEN&left_text=downloads)](https://pepy.tech/projects/py-simple-wrap)
 [![License](https://img.shields.io/badge/license-MIT-yellow?style=flat-square)](LICENSE.md)
-[![Discord](https://img.shields.io/discord/1533803449895092245?style=flat-square&logo=discord&logoColor=white&label=discord&color=5865F2)](https://discord.gg/Ge5HnVw2p)
+[![Discord](https://img.shields.io/discord/1533803449895092245?style=flat-square&logo=discord&logoColor=white&label=discord&color=5865F2)](https://discord.gg/f9PUGNaVZ)
  
 </div>
 <br>
@@ -68,6 +69,12 @@ py-simple-wrap is a beginner-friendly Python toolbox — simple, intuitive funct
       </a>
     </td>
     <td align="center" valign="top" width="14.28%">
+      <a href="https://github.com/Cid-oe">
+        <img src="https://github.com/Cid-oe.png" width="100px;" alt="Cid-oe"/><br />
+        <sub><b>Cid-oe</b></sub>
+      </a>
+    </td>
+    <td align="center" valign="top" width="14.28%">
       <a href="https://github.com/SemTiOne">
         <img src="https://github.com/SemTiOne.png" width="100px;" alt="Dane Parin"/><br />
         <sub><b>Dane Parin</b></sub>
@@ -97,14 +104,26 @@ py-simple-wrap is a beginner-friendly Python toolbox — simple, intuitive funct
         <sub><b>jagjitkaur0000</b></sub>
       </a>
     </td>
+  </tr>
+  <tr>
     <td align="center" valign="top" width="14.28%">
       <a href="https://github.com/sara-czasak">
         <img src="https://github.com/sara-czasak.png" width="100px;" alt="Sara Czasak"/><br />
         <sub><b>Sara Czasak</b></sub>
       </a>
     </td>
-  </tr>
-  <tr>
+    <td align="center" valign="top" width="8.6%">
+      <a href="https://github.com/Pratham2511">
+        <img src="https://github.com/Pratham2511.png" width="100px;" alt="Pratham Pansare"/><br />
+        <sub><b>Pratham Pansare</b></sub>
+      </a>
+    </td>
+    <td align="center" valign="top" width="8.6%">
+      <a href="https://github.com/Utkarsh3725">
+        <img src="https://github.com/Utkarsh3725.png" width="100px;" alt="Utkarsh Arya"/><br />
+        <sub><b>Utkarsh Arya</b></sub>
+      </a>
+    </td>
     <td align="center" valign="top" width="14.28%">
       <a href="https://github.com/VidyavathiGK">
         <img src="https://github.com/VidyavathiGK.png" width="100px;" alt="Vidyavathi GK"/><br />
@@ -117,7 +136,7 @@ py-simple-wrap is a beginner-friendly Python toolbox — simple, intuitive funct
         <sub><b>Yassin Azzouzi</b></sub>
       </a>
     </td>
-    <td align="center" valign="top" width="8.6%">
+    <td align="center" valign="top" width="14.28%">
       <a href="https://github.com/Ymax27">
         <img src="https://github.com/Ymax27.png" width="100px;" alt="Ymax27"/><br />
         <sub><b>Ymax27</b></sub>
@@ -125,7 +144,22 @@ py-simple-wrap is a beginner-friendly Python toolbox — simple, intuitive funct
     </td>
   </tr>
 </table>
+
 </div>
+<br>
+
+### 🐍 Python Compatibility
+
+**py-simple-wrap v0.9.0+ requires Python 3.11 or newer.**
+
+Supported versions: **Python 3.11, 3.12, 3.13, and 3.14.**
+
+⚠️ **Python 3.10 support has been discontinued** due to security vulnerabilities affecting Pillow, a dependency used by the image utilities.
+
+If you're using Python 3.10, please upgrade to a supported version before installing v0.9.0 or later.
+
+For more details, see our [Security Policy](SECURITY.md).
+
 <br>
 
 ```bash
@@ -137,7 +171,7 @@ This installs the lightweight core; a few modules need extra packages — see [I
 ```python
 from py_simple import make_blank_file, miles_to_km, is_valid_email
 
-make_blank_file("notes.txt")
+make_blank_file("notes","txt")
 print(miles_to_km(26.2))  # 42.16...
 print(is_valid_email("hello@example.com"))  # True
 ```
@@ -196,6 +230,6 @@ gets built next. **[Take the 2-minute survey →](https://docs.google.com/forms/
 
 **[Contributing](CONTRIBUTING.md) · [Changelog](CHANGELOG.md) · [License](LICENSE.md)**
  
-<sub>Built for beginners, grown by 70+ contributors ✨</sub>
+<sub>Built for beginners, grown by 80+ contributors ✨</sub>
  
 </div>

@@ -183,6 +183,57 @@ def rotate_image(input_path: str, output_path: str, angle: float):
         img.rotate(angle, expand=True).save(output_path)
 
 
+def convert_to_greyscale(
+    input_path: str | os.PathLike[str], output_path: str | os.PathLike[str]
+) -> None:
+    """
+    Convert an image to grayscale and save it.
+
+    Each pixel becomes a brightness value from 0 (black) to 255 (white),
+    giving 256 possible shades of gray. Pillow calls this 8-bit
+    grayscale. Mode `L` stores the gray value; mode `LA` also stores
+    opacity. Outputs ending in .jpg, .jpeg or .bmp use `L` because
+    Pillow's JPEG/BMP encoders cannot save `LA` and would raise
+    OSError. Other extensions use `LA`.
+    The original dimensions are kept.
+
+    PNG, TIFF and WebP output retain transparency. JPEG, BMP and GIF
+    output discard it without blending a background. Only the first
+    frame of animated or multi-frame images is converted.
+
+    Args:
+        input_path (str | os.PathLike[str]): Path of the source image.
+        output_path (str | os.PathLike[str]): Path to save the grayscale image to. The
+            file extension determines the output format.
+
+    Raises:
+        ImageProcessingError: If the input file is missing or its
+            image format is not recognized.
+        OSError: If the image cannot be read or written.
+        ValueError: If the output file extension is not recognized.
+
+    Example:
+        === "The Py_simple Way"
+            ```python
+            from py_simple import convert_to_greyscale
+
+            convert_to_greyscale("photo.jpg", "photo_gray.png")
+            ```
+
+        === "The Traditional Way"
+            ```python
+            from PIL import Image
+
+            with Image.open("photo.jpg") as img:
+                img.convert("LA").save("photo_gray.png")
+            ```
+    """
+    output_path = os.fspath(output_path)
+    with _open_image(os.fspath(input_path)) as img:
+        mode = "L" if output_path.lower().endswith((".jpg", ".jpeg", ".bmp")) else "LA"
+        img.convert(mode).save(output_path)
+
+
 def get_image_info(input_path: str) -> dict:
     """
     Get basic information about an image.
@@ -268,3 +319,123 @@ def flip_image(input_path: str, output_path: str, direction: str = "horizontal")
 
     with _open_image(input_path) as img:
         img.transpose(flips[direction]).save(output_path)
+
+def adjust_brightness(input_path: str, output_path: str, value: float):
+    """
+    Adjusts the brightness of an image by darkening or brightening it.
+
+    Args:
+        input_path (str): Path of the image to adjust.
+        output_path (str): Path to save the adjusted image to.
+        value (float): A value of 0 gives a completely black image, 1 leaves
+            it untouched, and anything above 1 brightens it.
+
+    Raises:
+        ValueError: If ``value`` is not a finite number (``bool`` is also
+            rejected) or is less than 0.
+
+    Example:
+        === "The Py_simple Way"
+            ```python
+            from py_simple import adjust_brightness
+
+            adjust_brightness("photo.jpg", "photo_bright.jpg", 1.5)
+            ```
+
+        === "The Traditional Way"
+            ```python
+            from PIL import Image, ImageEnhance
+
+            with Image.open("photo.jpg") as img:
+                ImageEnhance.Brightness(img).enhance(1.5).save("photo_bright.jpg")
+            ```
+    """
+    from PIL import ImageEnhance
+    import math
+    if (
+        not isinstance(value, (int, float))
+        or isinstance(value, bool)
+        or not math.isfinite(value)
+        or value < 0
+    ):
+        raise ValueError("value must be a finite number that is 0 or greater.")
+
+    with _open_image(input_path) as img:
+        if img.mode == "P":
+            img = img.convert("RGBA" if "transparency" in img.info else "RGB")
+        if img.mode == "RGBA" and output_path.lower().endswith((".jpg", ".jpeg")):
+            img = img.convert("RGB")
+        adj_img = ImageEnhance.Brightness(img).enhance(value)
+        adj_img.save(output_path)
+
+
+def crop_image(
+    input_path: str,
+    output_path: str,
+    left: int,
+    top: int,
+    right: int,
+    bottom: int,
+):
+    """
+    Crop an image to a bounding box and save the result.
+
+    Args:
+        input_path (str): Path of the image to crop.
+        output_path (str): Path to save the cropped image to.
+        left (int): Left pixel coordinate.
+        top (int): Top pixel coordinate.
+        right (int): Right pixel coordinate.
+        bottom (int): Bottom pixel coordinate.
+
+    Raises:
+        ValueError: If coordinates are not non-negative integers, if
+            `left >= right` or `top >= bottom`, or if boundaries exceed
+            image dimensions.
+        ImageProcessingError: If the input file is missing or not a
+            supported image.
+
+    Example:
+        === "The Py_simple Way"
+            ```python
+            from py_simple import crop_image
+
+            crop_image("photo.jpg", "cropped.jpg", 10, 10, 100, 100)
+            ```
+
+        === "The Traditional Way"
+            ```python
+            from PIL import Image
+
+            with Image.open("photo.jpg") as img:
+                img.crop((10, 10, 100, 100)).save("cropped.jpg")
+            ```
+    """
+    coords = (left, top, right, bottom)
+    if any(
+        not isinstance(val, int) or isinstance(val, bool) or val < 0
+        for val in coords
+    ):
+        raise ValueError("Crop coordinates must be non-negative integers.")
+
+    if left >= right:
+        raise ValueError(
+            f"left coordinate ({left}) must be less than right coordinate ({right})."
+        )
+    if top >= bottom:
+        raise ValueError(
+            f"top coordinate ({top}) must be less than bottom coordinate ({bottom})."
+        )
+
+    with _open_image(input_path) as img:
+        if right > img.width or bottom > img.height:
+            raise ValueError(
+                f"Crop boundaries ({right}, {bottom}) exceed image dimensions ({img.width}, {img.height})."
+            )
+        if img.mode in ("RGBA", "P") and output_path.lower().endswith(
+            (".jpg", ".jpeg")
+        ):
+            img = img.convert("RGB")
+        cropped = img.crop((left, top, right, bottom))
+        cropped.save(output_path)
+
