@@ -24,6 +24,9 @@ The [Adding a New Module Guide](new_module_template.md) walks through the comple
 **✏️ "The issue asks me to add one function to a module that already exists."**
 The [Adding a Function to an Existing Module](expand_module_template.md) guide lists the files to touch, where the tests go, and how to export the helper without creating a new module.
 
+**🪢 "Rebase stopped on `__init__.py` or `mkdocs.yml`. What do I keep?"**
+The [Rebase Conflicts on Shared Files](rebase_conflicts_template.md) guide shows how to keep main's new lines and your addition, then continue the rebase.
+
 **📦 "My helper works in its module, but I cannot import it from py_simple."**
 The [Public API Export Template](public_api_template.md) shows where to expose a helper, how to check both import paths, and how to avoid name collisions.
 
