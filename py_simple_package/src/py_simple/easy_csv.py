@@ -3,6 +3,7 @@ easy_csv is built to simplify reading and writing CSV files.
 """
 
 import csv
+import io
 import os.path
 from collections.abc import Generator
 from typing import Any
@@ -537,6 +538,10 @@ def append_row_to_csv(
     """
     Append a single row (as a dictionary or list) to an existing CSV file.
 
+    Adds a record separator first if the existing file has no final newline.
+    Existing contents are preserved. CSV serialization errors are raised
+    before changing the file.
+
     Args:
         filepath (str): Path to the CSV file.
         row (dict or list): The row data to append.
@@ -553,13 +558,22 @@ def append_row_to_csv(
     if not headers:
         raise ValueError(f"File is empty: {filepath}")
 
+    # Validate and serialize before changing the existing file.
+    buffer = io.StringIO(newline="")
+    if isinstance(row, dict):
+        writer = csv.DictWriter(buffer, fieldnames=headers, delimiter=delimiter)
+    else:
+        writer = csv.writer(buffer, delimiter=delimiter)
+    writer.writerow(row)
+
+    with open(filepath, "rb") as source:
+        source.seek(-1, os.SEEK_END)
+        needs_newline = source.read(1) not in (b"\n", b"\r")
+
     with open(filepath, "a", newline="", encoding="utf-8") as f:
-        if isinstance(row, dict):
-            writer = csv.DictWriter(f, fieldnames=headers, delimiter=delimiter)
-            writer.writerow(row)
-        else:
-            writer = csv.writer(f, delimiter=delimiter)
-            writer.writerow(row)
+        if needs_newline:
+            f.write("\r\n")
+        f.write(buffer.getvalue())
 
 
 def read_csv_column(
